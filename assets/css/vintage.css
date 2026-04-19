@@ -1,0 +1,28 @@
+body {
+    background: #f4ecd8;
+    font-family: "Times New Roman", serif;
+    color: #222;
+}
+
+h1, h2 {
+    text-align: center;
+    border-bottom: 2px solid black;
+    padding-bottom: 5px;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+}
+
+nav a {
+    margin: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    color: black;
+}
+
+.article {
+    column-count: 2;
+    column-gap: 40px;
+}
