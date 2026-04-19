@@ -9,6 +9,9 @@ $result = $conn->query($query);
 if (!$result) {
     die("Query Error: " . $conn->error);
 }
+
+// Store results in an array to iterate multiple times
+$articles = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <div class="container">
@@ -16,20 +19,20 @@ if (!$result) {
 
     <div class="article">
         <?php
-        while ($row = $result->fetch_assoc()) {
+        foreach ($articles as $row) {
             echo "<h3>{$row['title']}</h3>";
             echo "<p>" . substr($row['content'], 0, 150) . "...</p>";
         }
         ?>
     </div>
 </div>
-<div class="container">
 
+<div class="container">
     <h2>Latest News</h2>
 
     <div class="article">
         <?php
-        while ($row = $result->fetch_assoc()) {
+        foreach ($articles as $row) {
             echo "<div class='post'>";
             echo "<h3>{$row['title']}</h3>";
             echo "<p>" . substr($row['content'], 0, 200) . "...</p>";
@@ -37,7 +40,6 @@ if (!$result) {
         }
         ?>
     </div>
-
 </div>
 
 <?php include('includes/footer.php'); ?>
