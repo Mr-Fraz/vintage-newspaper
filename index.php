@@ -15,28 +15,19 @@ $articles = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <div class="container">
-    <h1>📰 Vintage Daily</h1>
-
-    <div class="article">
-        <?php
-        foreach ($articles as $row) {
-            echo "<h3>{$row['title']}</h3>";
-            echo "<p>" . substr($row['content'], 0, 150) . "...</p>";
-        }
-        ?>
-    </div>
-</div>
-
-<div class="container">
     <h2>Latest News</h2>
 
-    <div class="article">
+    <div class="articles-list">
         <?php
-        foreach ($articles as $row) {
-            echo "<div class='post'>";
-            echo "<h3>{$row['title']}</h3>";
-            echo "<p>" . substr($row['content'], 0, 200) . "...</p>";
-            echo "</div>";
+        if (empty($articles)) {
+            echo "<p>No articles available at this time.</p>";
+        } else {
+            foreach ($articles as $row) {
+                echo "<div class='post'>";
+                echo "<h3>" . htmlspecialchars($row['title']) . "</h3>";
+                echo "<p>" . htmlspecialchars(substr($row['content'], 0, 200)) . "...</p>";
+                echo "</div>";
+            }
         }
         ?>
     </div>
