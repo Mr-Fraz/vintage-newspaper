@@ -1,28 +1,75 @@
 body {
-    background: #f4ecd8;
+    margin: 0;
+    padding: 0;
+    background: #f5ecd7;
     font-family: "Times New Roman", serif;
     color: #222;
 }
 
-h1, h2 {
+/* Newspaper header */
+header {
     text-align: center;
-    border-bottom: 2px solid black;
-    padding-bottom: 5px;
+    padding: 20px;
+    border-bottom: 3px double #000;
+    background: #f8f1e1;
 }
 
-.container {
-    width: 80%;
-    margin: auto;
+header h1 {
+    font-size: 42px;
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+nav {
+    text-align: center;
+    padding: 10px;
+    border-bottom: 1px solid #000;
 }
 
 nav a {
-    margin: 10px;
+    margin: 0 10px;
     text-decoration: none;
+    color: #000;
     font-weight: bold;
-    color: black;
 }
 
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* Layout */
+.container {
+    width: 85%;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Articles like newspaper columns */
 .article {
     column-count: 2;
     column-gap: 40px;
+    line-height: 1.6;
+}
+
+/* Headlines */
+h3 {
+    font-size: 22px;
+    border-bottom: 1px solid #999;
+    padding-bottom: 5px;
+}
+
+/* Card style (optional modern touch) */
+.post {
+    break-inside: avoid;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 15px;
+    border-top: 2px solid #000;
+    margin-top: 30px;
+    font-size: 14px;
 }
