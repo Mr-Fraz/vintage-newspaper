@@ -23,5 +23,21 @@ if (!$result) {
         ?>
     </div>
 </div>
+<div class="container">
+
+    <h2>Latest News</h2>
+
+    <div class="article">
+        <?php
+        while ($row = $result->fetch_assoc()) {
+            echo "<div class='post'>";
+            echo "<h3>{$row['title']}</h3>";
+            echo "<p>" . substr($row['content'], 0, 200) . "...</p>";
+            echo "</div>";
+        }
+        ?>
+    </div>
+
+</div>
 
 <?php include('includes/footer.php'); ?>
