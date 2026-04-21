@@ -6,6 +6,16 @@ require('../../functions/helpers.php');
 $error = '';
 $success = '';
 
+// Get current user ID
+$userId = $_SESSION['user']['id'];
+
+// Fetch categories
+$categories = $conn->query("SELECT id, name FROM categories ORDER BY name");
+$categoryList = [];
+while ($cat = $categories->fetch_assoc()) {
+    $categoryList[] = $cat;
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Verify CSRF token
     if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
@@ -17,17 +27,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (empty($errors)) {
             $title = sanitizeInput($_POST['title']);
             $content = sanitizeInput($_POST['content']);
+            $categoryId = !empty($_POST['category_id']) ? (int)$_POST['category_id'] : null;
             
             if (strlen($title) < 3) {
                 $error = 'Title must be at least 3 characters.';
-            } else if (strlen($content) < 10) {
+            } elseif (strlen($content) < 10) {
                 $error = 'Content must be at least 10 characters.';
             } else {
-                $stmt = $conn->prepare("INSERT INTO articles (title, content) VALUES (?,?)");
+                $stmt = $conn->prepare("INSERT INTO articles (title, content, category_id, author_id, status) VALUES (?, ?, ?, ?, ?)");
                 if (!$stmt) {
                     $error = 'Database error: ' . $conn->error;
                 } else {
-                    $stmt->bind_param("ss", $title, $content);
+                    $status = 'published';
+                    $stmt->bind_param("ssisi", $title, $content, $categoryId, $userId, $status);
                     if ($stmt->execute()) {
                         $success = 'Article added successfully! Redirecting...';
                         header("refresh:2;url=list.php");
@@ -61,7 +73,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <form method="POST">
     <?php echo csrfField(); ?>
     
-    <input type="text" name="title" placeholder="Title" required><br>
-    <textarea name="content" placeholder="Content" required></textarea><br>
-    <button type="submit">Add</button>
+    <label>Title *</label>
+    <input type="text" name="title" placeholder="Article Title" required><br>
+    
+    <label>Category</label>
+    <select name="category_id">
+        <option value="">-- Select Category --</option>
+        <?php foreach ($categoryList as $cat): ?>
+            <option value="<?php echo (int)$cat['id']; ?>"><?php echo escape($cat['name']); ?></option>
+        <?php endforeach; ?>
+    </select><br>
+    
+    <label>Content *</label>
+    <textarea name="content" placeholder="Article Content" required rows="10"></textarea><br>
+    
+    <button type="submit">Add Article</button>
+    <a href="list.php">Cancel</a>
 </form>

@@ -6,19 +6,26 @@ require('../../functions/helpers.php');
 $error = '';
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die('Invalid article ID');
+    die('Invalid user ID');
 }
 
 $id = (int)$_GET['id'];
 
-$stmt = $conn->prepare("SELECT id FROM articles WHERE id=?");
+// Prevent self-deletion
+if ($id === $_SESSION['user']['id']) {
+    die('You cannot delete your own account');
+}
+
+// Check if user exists
+$stmt = $conn->prepare("SELECT id, name FROM users WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
-if ($stmt->get_result()->num_rows === 0) {
-    $stmt->close();
-    die('Article not found');
-}
+$user = $stmt->get_result()->fetch_assoc();
 $stmt->close();
+
+if (!$user) {
+    die('User not found');
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
@@ -26,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (($_POST['confirm'] ?? '') !== 'yes') {
         $error = 'Please confirm deletion.';
     } else {
-        $stmt = $conn->prepare("DELETE FROM articles WHERE id=?");
+        $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
         $stmt->bind_param("i", $id);
         if ($stmt->execute()) {
             header("Location: list.php?deleted=1");
@@ -39,14 +46,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-<h2>Delete Article</h2>
+<h2>Delete User</h2>
+
 <?php if (!empty($error)): ?>
     <div class="error-message"><?php echo escape($error); ?></div>
 <?php endif; ?>
-<div class="warning-message"><p>This action cannot be undone!</p></div>
+
+<div class="warning-message">
+    <p>Are you sure you want to delete the user: <strong><?php echo escape($user['name']); ?></strong>?</p>
+    <p>This action cannot be undone.</p>
+</div>
+
 <form method="POST">
     <?php echo csrfField(); ?>
-    <label><input type="checkbox" name="confirm" value="yes" required> Yes, delete this article</label><br><br>
-    <button type="submit" class="delete-btn">Delete Article</button>
+    
+    <label>
+        <input type="checkbox" name="confirm" value="yes" required> 
+        Yes, I confirm deletion
+    </label><br><br>
+    
+    <button type="submit" class="delete-btn">Delete User</button>
     <a href="list.php">Cancel</a>
 </form>
