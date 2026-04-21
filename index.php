@@ -3,7 +3,7 @@ require('includes/init.php');
 include('includes/header.php');
 include('includes/navbar.php');
 
-$query = "SELECT * FROM articles ORDER BY created_at DESC LIMIT 5";
+$query = "SELECT id, title, content, created_at FROM articles ORDER BY created_at DESC LIMIT 5";
 $result = $conn->query($query);
 
 if (!$result) {
@@ -24,8 +24,9 @@ $articles = $result->fetch_all(MYSQLI_ASSOC);
         } else {
             foreach ($articles as $row) {
                 echo "<div class='post'>";
-                echo "<h3>" . htmlspecialchars($row['title']) . "</h3>";
-                echo "<p>" . htmlspecialchars(substr($row['content'], 0, 200)) . "...</p>";
+                echo "<h3><a href='pages/article.php?id=" . (int)$row['id'] . "'>" . escape($row['title']) . "</a></h3>";
+                echo "<p>" . escape(substr($row['content'], 0, 200)) . "...</p>";
+                echo "<small>" . escape(date('M d, Y', strtotime($row['created_at']))) . "</small>";
                 echo "</div>";
             }
         }
