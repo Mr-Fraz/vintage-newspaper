@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Vintage Newspaper</title>
-    <link rel="stylesheet" href="/assets/css/vintage.css">
+    <link rel="stylesheet" href="assets/css/vintage.css">
 </head>
 <body>
 
