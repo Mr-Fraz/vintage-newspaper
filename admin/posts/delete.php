@@ -1,52 +1,13 @@
 <?php
-require('../../includes/init.php');
-require('../../includes/auth-middleware.php');
-require('../../functions/helpers.php');
+require_once __DIR__ . '/../includes/auth-check.php';
+require_once __DIR__ . '/../../functions/db.php';
 
-$error = '';
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die('Invalid article ID');
+if ($id > 0) {
+    DB::deleteArticle($id);
 }
 
-$id = (int)$_GET['id'];
-
-$stmt = $conn->prepare("SELECT id FROM articles WHERE id=?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-if ($stmt->get_result()->num_rows === 0) {
-    $stmt->close();
-    die('Article not found');
-}
-$stmt->close();
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
-        $error = 'Security error. Please try again.';
-    } elseif (($_POST['confirm'] ?? '') !== 'yes') {
-        $error = 'Please confirm deletion.';
-    } else {
-        $stmt = $conn->prepare("DELETE FROM articles WHERE id=?");
-        $stmt->bind_param("i", $id);
-        if ($stmt->execute()) {
-            header("Location: list.php?deleted=1");
-            exit;
-        } else {
-            $error = 'Error: ' . $stmt->error;
-        }
-        $stmt->close();
-    }
-}
+header('Location: list.php');
+exit;
 ?>
-
-<h2>Delete Article</h2>
-<?php if (!empty($error)): ?>
-    <div class="error-message"><?php echo escape($error); ?></div>
-<?php endif; ?>
-<div class="warning-message"><p>This action cannot be undone!</p></div>
-<form method="POST">
-    <?php echo csrfField(); ?>
-    <label><input type="checkbox" name="confirm" value="yes" required> Yes, delete this article</label><br><br>
-    <button type="submit" class="delete-btn">Delete Article</button>
-    <a href="list.php">Cancel</a>
-</form>

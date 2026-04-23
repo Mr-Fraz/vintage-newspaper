@@ -1,21 +1,18 @@
- CREATE DATABASE vintage_news;
-USE vintage_news;
+-- Create database
+CREATE DATABASE IF NOT EXISTS vintage_newspaper CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-CREATE TABLE articles (
+USE vintage_newspaper;
+
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255),
-    content TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'editor', 'user') DEFAULT 'user',
+    avatar VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_email (email),
+    INDEX idx_username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100) UNIQUE,
-    password VARCHAR(255),
-    role ENUM('admin','user') DEFAULT 'user',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-INSERT INTO users (name,email,password,role)
-VALUES ('Admin','admin@gmail.com', MD5('123456'),'admin');

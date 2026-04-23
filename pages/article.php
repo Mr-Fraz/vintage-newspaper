@@ -1,50 +1,52 @@
 <?php
-require('../includes/init.php');
-require('../functions/helpers.php');
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../functions/db.php';
+require_once __DIR__ . '/../functions/helpers.php';
+require_once __DIR__ . '/../functions/validation.php';
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die('Invalid article ID');
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$article = DB::getArticle($id);
+
+if (!$article) {
+    header('Location: ' . SITE_URL);
+    exit;
 }
 
-$id = (int)$_GET['id'];
+$pageTitle = $article['title'];
 
-$stmt = $conn->prepare("SELECT a.id, a.title, a.content, a.created_at, c.name as category_name, c.slug, u.name as author_name 
-                        FROM articles a 
-                        LEFT JOIN categories c ON a.category_id = c.id 
-                        LEFT JOIN users u ON a.author_id = u.id 
-                        WHERE a.id = ? AND a.status = 'published'");
-if (!$stmt) die('Database error');
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$article = $stmt->get_result()->fetch_assoc();
-$stmt->close();
-
-if (!$article) die('Article not found');
-
-include('../includes/header.php');
+include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/navbar.php';
 ?>
 
-<div class="article-container">
-    <?php if ($article['category_name']): ?>
-        <a href="/pages/category.php?slug=<?php echo escape($article['slug']); ?>" class="category-link">
-            <?php echo escape($article['category_name']); ?>
-        </a>
-    <?php endif; ?>
-    
-    <h1><?php echo escape($article['title']); ?></h1>
-    
-    <div class="article-meta">
-        <small>
-            <?php echo escape(date('F d, Y', strtotime($article['created_at']))); ?>
-            <?php if ($article['author_name']): ?>
-                by <?php echo escape($article['author_name']); ?>
+<main class="main-content">
+    <div class="container">
+        <article class="article-single">
+            <header class="article-header">
+                <span class="category-badge"><?php echo $article['category_name']; ?></span>
+                <h1><?php echo htmlspecialchars($article['title']); ?></h1>
+                
+                <div class="article-meta">
+                    <span class="author">By <?php echo htmlspecialchars($article['author']); ?></span>
+                    <span class="date"><?php echo Helper::formatDate($article['created_at'], 'F j, Y g:i A'); ?></span>
+                </div>
+            </header>
+            
+            <?php if ($article['image']): ?>
+                <div class="article-image">
+                    <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $article['image']; ?>" alt="<?php echo htmlspecialchars($article['title']); ?>">
+                </div>
             <?php endif; ?>
-        </small>
+            
+            <div class="article-content">
+                <?php echo $article['content']; ?>
+            </div>
+            
+            <footer class="article-footer">
+                <a href="<?php echo SITE_URL; ?>" class="btn">← Back to Home</a>
+                <a href="<?php echo SITE_URL; ?>/category/<?php echo $article['category_name']; ?>" class="btn">More in <?php echo $article['category_name']; ?></a>
+            </footer>
+        </article>
     </div>
-    
-    <div class="article-content">
-        <?php echo nl2br(escape($article['content'])); ?>
-    </div>
-</div>
+</main>
 
-<?php include('../includes/footer.php'); ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

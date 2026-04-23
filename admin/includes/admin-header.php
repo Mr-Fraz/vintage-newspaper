@@ -1,6 +1,6 @@
 <?php
 if (!defined('SITE_NAME')) {
-    require_once __DIR__ . '/../config/config.php';
+    require_once __DIR__ . '/../../config/config.php';
 }
 ?>
 <!DOCTYPE html>
@@ -8,8 +8,8 @@ if (!defined('SITE_NAME')) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?><?php echo SITE_NAME; ?></title>
+    <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?>Admin Panel</title>
     <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/style.css">
-    <?php if (isset($extraCSS)) echo $extraCSS; ?>
+    <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/admin.css">
 </head>
-<body>
+<body class="admin-body">

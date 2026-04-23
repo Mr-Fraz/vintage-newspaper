@@ -1,6 +1,6 @@
 <?php
-require('../config/database.php');
-require('../functions/helpers.php');
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../functions/helpers.php';
 
 header('Content-Type: application/json');
 

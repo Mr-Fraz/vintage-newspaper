@@ -1,72 +1,85 @@
 <?php
-/**
- * Debug output function
- */
-function dd($data) {
-    echo "<pre>";
-    print_r($data);
-    echo "</pre>";
-    die();
-}
-
-/**
- * Sanitize string input - removes HTML tags and trims whitespace
- */
-function sanitizeInput($input) {
-    return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
-}
-
-/**
- * Validate email address
- */
-function validateEmail($email) {
-    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
-}
-
-/**
- * Escape output for safe HTML display
- */
-function escape($string) {
-    return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
-}
-
-/**
- * Generate CSRF token
- */
-function generateCSRFToken() {
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+class Helper {
+    // Format date
+    public static function formatDate($date, $format = 'F j, Y') {
+        return date($format, strtotime($date));
     }
-    return $_SESSION['csrf_token'];
-}
-
-/**
- * Verify CSRF token
- */
-function verifyCSRFToken($token) {
-    if (empty($_SESSION['csrf_token']) || empty($token)) {
-        return false;
-    }
-    return hash_equals($_SESSION['csrf_token'], $token);
-}
-
-/**
- * Get CSRF token field for forms
- */
-function csrfField() {
-    return '<input type="hidden" name="csrf_token" value="' . generateCSRFToken() . '">';
-}
-
-/**
- * Validate required fields
- */
-function validateRequired($data, $requiredFields) {
-    $errors = [];
-    foreach ($requiredFields as $field) {
-        if (empty($data[$field])) {
-            $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is required.';
+    
+    // Truncate text
+    public static function truncate($text, $length = 150) {
+        if (strlen($text) > $length) {
+            return substr($text, 0, $length) . '...';
         }
+        return $text;
     }
-    return $errors;
+    
+    // Get excerpt
+    public static function excerpt($content, $length = 200) {
+        $content = strip_tags($content);
+        return self::truncate($content, $length);
+    }
+    
+    // Time ago
+    public static function timeAgo($datetime) {
+        $time = strtotime($datetime);
+        $diff = time() - $time;
+        
+        if ($diff < 60) return 'just now';
+        if ($diff < 3600) return floor($diff / 60) . ' minutes ago';
+        if ($diff < 86400) return floor($diff / 3600) . ' hours ago';
+        if ($diff < 604800) return floor($diff / 86400) . ' days ago';
+        
+        return date('M j, Y', $time);
+    }
+    
+    // Upload image
+    public static function uploadImage($file) {
+        $validate = Validate::image($file);
+        if (!$validate['success']) {
+            return $validate;
+        }
+        
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $filename = uniqid() . '.' . $ext;
+        $destination = UPLOAD_DIR . $filename;
+        
+        if (!is_dir(UPLOAD_DIR)) {
+            mkdir(UPLOAD_DIR, 0755, true);
+        }
+        
+        if (move_uploaded_file($file['tmp_name'], $destination)) {
+            return ['success' => true, 'filename' => $filename];
+        }
+        
+        return ['success' => false, 'message' => 'Upload failed'];
+    }
+    
+    // Pagination
+    public static function pagination($total, $perPage, $currentPage, $url) {
+        $totalPages = ceil($total / $perPage);
+        
+        if ($totalPages <= 1) return '';
+        
+        $html = '<div class="pagination">';
+        
+        // Previous
+        if ($currentPage > 1) {
+            $html .= '<a href="' . $url . '?page=' . ($currentPage - 1) . '">&laquo; Prev</a>';
+        }
+        
+        // Pages
+        for ($i = 1; $i <= $totalPages; $i++) {
+            $active = ($i == $currentPage) ? 'active' : '';
+            $html .= '<a href="' . $url . '?page=' . $i . '" class="' . $active . '">' . $i . '</a>';
+        }
+        
+        // Next
+        if ($currentPage < $totalPages) {
+            $html .= '<a href="' . $url . '?page=' . ($currentPage + 1) . '">Next &raquo;</a>';
+        }
+        
+        $html .= '</div>';
+        return $html;
+    }
 }
-
+?>

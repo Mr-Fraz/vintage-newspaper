@@ -1,46 +1,62 @@
 <?php
-require('../../includes/init.php');
-require('../../includes/auth-middleware.php');
-require('../../functions/helpers.php');
+require_once __DIR__ . '/../includes/auth-check.php';
+require_once __DIR__ . '/../../functions/db.php';
+require_once __DIR__ . '/../../functions/helpers.php';
 
-$result = $conn->query("SELECT a.id, a.title, a.created_at, c.name as category_name, a.status FROM articles a LEFT JOIN categories c ON a.category_id = c.id ORDER BY a.created_at DESC");
-if (!$result) die('Database error: ' . $conn->error);
+$pageTitle = 'All Posts';
 
-$deleted = isset($_GET['deleted']) ? true : false;
+global $db;
+$articles = $db->query("SELECT a.*, u.username, c.name as category_name 
+                        FROM articles a 
+                        LEFT JOIN users u ON a.user_id = u.id 
+                        LEFT JOIN categories c ON a.category_id = c.id 
+                        ORDER BY a.created_at DESC")->fetchAll();
+
+include __DIR__ . '/../includes/admin-header.php';
 ?>
 
-<h2>All Articles</h2>
-<?php if ($deleted): ?>
-    <div class="success-message">Article deleted successfully!</div>
-<?php endif; ?>
-<a href="add.php">Add New Article</a>
-
-<?php if ($result->num_rows === 0): ?>
-    <p>No articles found.</p>
-<?php else: ?>
-    <table border="1" cellpadding="10">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($row = $result->fetch_assoc()): ?>
+<div class="admin-wrapper">
+    <?php include __DIR__ . '/../includes/sidebar.php'; ?>
+    
+    <main class="admin-main">
+        <header class="admin-page-header">
+            <h1>All Posts</h1>
+            <a href="add.php" class="btn btn-primary">Add New Post</a>
+        </header>
+        
+        <table class="admin-table">
+            <thead>
                 <tr>
-                    <td><?php echo escape($row['title']); ?></td>
-                    <td><?php echo $row['category_name'] ? escape($row['category_name']) : '--'; ?></td>
-                    <td><span class="status status-<?php echo escape($row['status']); ?>"><?php echo escape(ucfirst($row['status'])); ?></span></td>
-                    <td><?php echo escape(date('M d, Y', strtotime($row['created_at']))); ?></td>
-                    <td>
-                        <a href="edit.php?id=<?php echo (int)$row['id']; ?>">Edit</a> | 
-                        <a href="delete.php?id=<?php echo (int)$row['id']; ?>">Delete</a>
-                    </td>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Author</th>
+                    <th>Status</th>
+                    <th>Views</th>
+                    <th>Date</th>
+                    <th>Actions</th>
                 </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
-<?php endif; ?>
+            </thead>
+            <tbody>
+                <?php foreach ($articles as $article): ?>
+                    <tr>
+                        <td><?php echo $article['id']; ?></td>
+                        <td><?php echo htmlspecialchars($article['title']); ?></td>
+                        <td><?php echo htmlspecialchars($article['category_name']); ?></td>
+                        <td><?php echo htmlspecialchars($article['username']); ?></td>
+                        <td><span class="badge badge-<?php echo $article['status']; ?>"><?php echo $article['status']; ?></span></td>
+                        <td><?php echo $article['views']; ?></td>
+                        <td><?php echo Helper::formatDate($article['created_at'], 'M j, Y'); ?></td>
+                        <td>
+                            <a href="edit.php?id=<?php echo $article['id']; ?>" class="btn-sm">Edit</a>
+                            <a href="delete.php?id=<?php echo $article['id']; ?>" class="btn-sm btn-danger" onclick="return confirm('Delete this article?')">Delete</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </main>
+</div>
+
+</body>
+</html>

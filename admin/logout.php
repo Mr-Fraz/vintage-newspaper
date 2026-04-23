@@ -1,4 +1,6 @@
 <?php
-session_start();
-session_destroy();
-header("Location: ../pages/login.php"); 
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../functions/auth.php';
+
+Auth::logout();
+?>

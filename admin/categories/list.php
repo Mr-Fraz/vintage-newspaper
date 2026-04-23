@@ -1,53 +1,52 @@
 <?php
-require('../../includes/init.php');
-require('../../includes/auth-middleware.php');
-require('../../functions/helpers.php');
+require_once __DIR__ . '/../includes/auth-check.php';
+require_once __DIR__ . '/../../functions/db.php';
 
-$result = $conn->query("SELECT id, name, slug, description, created_at FROM categories ORDER BY created_at DESC");
-if (!$result) die('Database error: ' . $conn->error);
+$pageTitle = 'Categories';
 
-$deleted = isset($_GET['deleted']) ? true : false;
-$updated = isset($_GET['updated']) ? true : false;
+$categories = DB::getCategories();
+
+include __DIR__ . '/../includes/admin-header.php';
 ?>
 
-<h2>Categories Management</h2>
-
-<?php if ($deleted): ?>
-    <div class="success-message">Category deleted successfully!</div>
-<?php endif; ?>
-
-<?php if ($updated): ?>
-    <div class="success-message">Category updated successfully!</div>
-<?php endif; ?>
-
-<a href="add.php" class="btn btn-primary">Add New Category</a>
-
-<?php if ($result->num_rows === 0): ?>
-    <p>No categories found.</p>
-<?php else: ?>
-    <table border="1" cellpadding="10">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Slug</th>
-                <th>Description</th>
-                <th>Created</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($row = $result->fetch_assoc()): ?>
+<div class="admin-wrapper">
+    <?php include __DIR__ . '/../includes/sidebar.php'; ?>
+    
+    <main class="admin-main">
+        <header class="admin-page-header">
+            <h1>Categories</h1>
+            <a href="add.php" class="btn btn-primary">Add New Category</a>
+        </header>
+        
+        <table class="admin-table">
+            <thead>
                 <tr>
-                    <td><?php echo escape($row['name']); ?></td>
-                    <td><?php echo escape($row['slug']); ?></td>
-                    <td><?php echo escape(substr($row['description'], 0, 50)); ?></td>
-                    <td><?php echo escape(date('M d, Y', strtotime($row['created_at']))); ?></td>
-                    <td>
-                        <a href="edit.php?id=<?php echo (int)$row['id']; ?>">Edit</a> | 
-                        <a href="delete.php?id=<?php echo (int)$row['id']; ?>">Delete</a>
-                    </td>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Slug</th>
+                    <th>Description</th>
+                    <th>Created</th>
+                    <th>Actions</th>
                 </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
-<?php endif; ?>
+            </thead>
+            <tbody>
+                <?php foreach ($categories as $cat): ?>
+                    <tr>
+                        <td><?php echo $cat['id']; ?></td>
+                        <td><?php echo htmlspecialchars($cat['name']); ?></td>
+                        <td><?php echo htmlspecialchars($cat['slug']); ?></td>
+                        <td><?php echo htmlspecialchars($cat['description']); ?></td>
+                        <td><?php echo date('M j, Y', strtotime($cat['created_at'])); ?></td>
+                        <td>
+                            <a href="edit.php?id=<?php echo $cat['id']; ?>" class="btn-sm">Edit</a>
+                            <a href="delete.php?id=<?php echo $cat['id']; ?>" class="btn-sm btn-danger" onclick="return confirm('Delete category?')">Delete</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </main>
+</div>
+
+</body>
+</html>

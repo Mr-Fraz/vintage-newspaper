@@ -1,65 +1,53 @@
 <?php
-require('../includes/init.php');
-require('../functions/helpers.php');
-include('../includes/header.php');
-include('../includes/navbar.php');
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../functions/db.php';
+require_once __DIR__ . '/../functions/helpers.php';
+require_once __DIR__ . '/../functions/validation.php';
 
-if (!isset($_GET['slug']) || empty($_GET['slug'])) {
-    die('Category not specified');
+$slug = isset($_GET['slug']) ? Validate::sanitize($_GET['slug']) : '';
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+$articles = DB::getArticlesByCategory($slug, $page);
+
+if (empty($articles)) {
+    header('Location: ' . SITE_URL);
+    exit;
 }
 
-$slug = sanitizeInput($_GET['slug']);
+$categoryName = $articles[0]['category_name'];
+$pageTitle = $categoryName;
 
-// Get category
-$stmt = $conn->prepare("SELECT id, name, description FROM categories WHERE slug = ?");
-if (!$stmt) die('Database error');
-$stmt->bind_param("s", $slug);
-$stmt->execute();
-$category = $stmt->get_result()->fetch_assoc();
-$stmt->close();
-
-if (!$category) die('Category not found');
-
-// Get articles in this category
-$query = "SELECT a.id, a.title, a.content, a.created_at, u.name as author_name 
-          FROM articles a 
-          LEFT JOIN users u ON a.author_id = u.id 
-          WHERE a.category_id = ? AND a.status = 'published'
-          ORDER BY a.created_at DESC";
-
-$stmt = $conn->prepare($query);
-if (!$stmt) die('Database error');
-$stmt->bind_param("i", $category['id']);
-$stmt->execute();
-$result = $stmt->get_result();
-$articles = $result->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
+include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/navbar.php';
 ?>
 
-<div class="container">
-    <h1><?php echo escape($category['name']); ?></h1>
-    <p><?php echo escape($category['description']); ?></p>
-    
-    <div class="articles-list">
-        <?php
-        if (empty($articles)) {
-            echo "<p>No articles in this category yet.</p>";
-        } else {
-            foreach ($articles as $article) {
-                echo "<div class='post'>";
-                echo "<h3><a href='article.php?id=" . (int)$article['id'] . "'>" . escape($article['title']) . "</a></h3>";
-                echo "<p>" . escape(substr($article['content'], 0, 200)) . "...</p>";
-                echo "<small>";
-                echo escape(date('M d, Y', strtotime($article['created_at'])));
-                if ($article['author_name']) {
-                    echo " by " . escape($article['author_name']);
-                }
-                echo "</small>";
-                echo "</div>";
-            }
-        }
-        ?>
+<main class="main-content">
+    <div class="container">
+        <header class="page-header">
+            <h1>Category: <?php echo htmlspecialchars($categoryName); ?></h1>
+        </header>
+        
+        <section class="articles-grid">
+            <div class="grid">
+                <?php foreach ($articles as $article): ?>
+                    <article class="article-card">
+                        <?php if ($article['image']): ?>
+                            <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $article['image']; ?>" alt="<?php echo htmlspecialchars($article['title']); ?>">
+                        <?php endif; ?>
+                        
+                        <div class="article-content">
+                            <h3><a href="<?php echo SITE_URL; ?>/article/<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a></h3>
+                            <p><?php echo Helper::excerpt($article['content'], 120); ?></p>
+                            <div class="meta">
+                                <span><?php echo htmlspecialchars($article['author']); ?></span>
+                                <span><?php echo Helper::timeAgo($article['created_at']); ?></span>
+                            </div>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </section>
     </div>
-</div>
+</main>
 
-<?php include('../includes/footer.php'); ?> 
+<?php include __DIR__ . '/../includes/footer.php'; ?>

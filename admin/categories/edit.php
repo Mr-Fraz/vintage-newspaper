@@ -1,7 +1,6 @@
 <?php
-require('../../includes/init.php');
-require('../../includes/auth-middleware.php');
-require('../../functions/helpers.php');
+require_once __DIR__ . '/../includes/auth-check.php';
+require_once __DIR__ . '/../../functions/helpers.php';
 
 $error = '';
 $success = '';

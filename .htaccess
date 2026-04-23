@@ -1,3 +1,18 @@
 RewriteEngine On
+RewriteBase /vintage-newspaper/
+
+# Prevent directory listing
+Options -Indexes
+
+# Block access to sensitive files
+<FilesMatch "\.(env|sql|md)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Clean URLs
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^ index.php [QSA,L] 
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^article/([0-9]+)/?$ pages/article.php?id=$1 [L,QSA]
+RewriteRule ^category/([a-zA-Z0-9-]+)/?$ pages/category.php?slug=$1 [L,QSA]
+RewriteRule ^search/?$ pages/search.php [L,QSA]

@@ -1,7 +1,8 @@
 -- Migration: Add categories and enhance schema
 -- Created: 2024
 -- Purpose: Add category support and additional article fields
-
+CREATE DATABASE IF NOT EXISTS vintage_newspaper;
+USE vintage_newspaper;
 -- Create categories table
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -10,12 +11,21 @@ CREATE TABLE IF NOT EXISTS categories (
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS articles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE,
+    content TEXT NOT NULL,
 
--- Add category_id to articles table
-ALTER TABLE articles ADD COLUMN category_id INT DEFAULT NULL;
-ALTER TABLE articles ADD COLUMN author_id INT DEFAULT NULL;
-ALTER TABLE articles ADD COLUMN status ENUM('draft', 'published', 'archived') DEFAULT 'published';
-ALTER TABLE articles ADD COLUMN featured_image VARCHAR(255) DEFAULT NULL;
+    -- These columns are required BEFORE migration runs
+    category_id INT DEFAULT NULL,
+    author_id INT DEFAULT NULL,
+    status ENUM('draft', 'published', 'archived') DEFAULT 'published',
+    featured_image VARCHAR(255) DEFAULT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
 -- Add foreign key constraints
 ALTER TABLE articles 

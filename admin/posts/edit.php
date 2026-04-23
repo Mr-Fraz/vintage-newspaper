@@ -1,89 +1,123 @@
 <?php
-require('../../includes/init.php');
-require('../../includes/auth-middleware.php');
-require('../../functions/helpers.php');
+require_once __DIR__ . '/../includes/auth-check.php';
+require_once __DIR__ . '/../../functions/db.php';
+require_once __DIR__ . '/../../functions/validation.php';
+require_once __DIR__ . '/../../functions/helpers.php';
 
+$pageTitle = 'Edit Post';
 $error = '';
 $success = '';
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die('Invalid article ID');
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$article = DB::getArticle($id);
+
+if (!$article) {
+    header('Location: list.php');
+    exit;
 }
 
-$id = (int)$_GET['id'];
+$categories = DB::getCategories();
 
-$stmt = $conn->prepare("SELECT id, title, content, category_id FROM articles WHERE id=?");
-if (!$stmt) die('Database error');
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$article = $stmt->get_result()->fetch_assoc();
-$stmt->close();
-
-if (!$article) die('Article not found');
-
-// Fetch categories
-$categories = $conn->query("SELECT id, name FROM categories ORDER BY name");
-$categoryList = [];
-while ($cat = $categories->fetch_assoc()) {
-    $categoryList[] = $cat;
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
-        $error = 'Security error. Please try again.';
-    } else {
-        $errors = validateRequired($_POST, ['title', 'content']);
-        if (empty($errors)) {
-            $title = sanitizeInput($_POST['title']);
-            $content = sanitizeInput($_POST['content']);
-            $categoryId = !empty($_POST['category_id']) ? (int)$_POST['category_id'] : null;
-            
-            if (strlen($title) < 3) {
-                $error = 'Title must be at least 3 characters.';
-            } elseif (strlen($content) < 10) {
-                $error = 'Content must be at least 10 characters.';
-            } else {
-                $stmt = $conn->prepare("UPDATE articles SET title=?, content=?, category_id=? WHERE id=?");
-                $stmt->bind_param("ssii", $title, $content, $categoryId, $id);
-                if ($stmt->execute()) {
-                    $success = 'Article updated! Redirecting...';
-                    header("refresh:2;url=list.php");
-                } else {
-                    $error = 'Error: ' . $stmt->error;
-                }
-                $stmt->close();
-            }
-        } else {
-            $error = implode(' ', $errors);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $title = Validate::sanitize($_POST['title']);
+    $slug = Validate::slug($title);
+    $content = $_POST['content'];
+    $excerpt = Validate::sanitize($_POST['excerpt']);
+    $category_id = (int)$_POST['category_id'];
+    $status = Validate::sanitize($_POST['status']);
+    
+    $imageName = $article['image'];
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
+        $upload = Helper::uploadImage($_FILES['image']);
+        if ($upload['success']) {
+            $imageName = $upload['filename'];
         }
     }
+    
+    $data = [
+        'title' => $title,
+        'slug' => $slug,
+        'content' => $content,
+        'excerpt' => $excerpt,
+        'image' => $imageName,
+        'category_id' => $category_id,
+        'status' => $status
+    ];
+    
+    if (DB::updateArticle($id, $data)) {
+        $success = 'Article updated successfully!';
+        header('Location: list.php');
+        exit;
+    } else {
+        $error = 'Failed to update article';
+    }
 }
+
+include __DIR__ . '/../includes/admin-header.php';
 ?>
 
-<h2>Edit Article</h2>
-<?php if (!empty($error)): ?>
-    <div class="error-message"><?php echo escape($error); ?></div>
-<?php endif; ?>
-<?php if (!empty($success)): ?>
-    <div class="success-message"><?php echo escape($success); ?></div>
-<?php endif; ?>
-<form method="POST">
-    <?php echo csrfField(); ?>
-    <label>Title *</label>
-    <input type="text" name="title" value="<?php echo escape($article['title']); ?>" required><br>
+<div class="admin-wrapper">
+    <?php include __DIR__ . '/../includes/sidebar.php'; ?>
     
-    <label>Category</label>
-    <select name="category_id">
-        <option value="">-- Select Category --</option>
-        <?php foreach ($categoryList as $cat): ?>
-            <option value="<?php echo (int)$cat['id']; ?>" <?php echo $article['category_id'] == $cat['id'] ? 'selected' : ''; ?>>
-                <?php echo escape($cat['name']); ?>
-            </option>
-        <?php endforeach; ?>
-    </select><br>
-    
-    <label>Content *</label>
-    <textarea name="content" required rows="10"><?php echo escape($article['content']); ?></textarea><br>
-    <button type="submit">Update</button>
-    <a href="list.php">Cancel</a>
-</form>
+    <main class="admin-main">
+        <header class="admin-page-header">
+            <h1>Edit Post</h1>
+        </header>
+        
+        <?php if ($error): ?>
+            <div class="alert alert-error"><?php echo $error; ?></div>
+        <?php endif; ?>
+        
+        <form method="POST" enctype="multipart/form-data" class="admin-form">
+            <div class="form-group">
+                <label for="title">Title *</label>
+                <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($article['title']); ?>" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="category_id">Category *</label>
+                <select id="category_id" name="category_id" required>
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?php echo $cat['id']; ?>" <?php echo $cat['id'] == $article['category_id'] ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($cat['name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="excerpt">Excerpt</label>
+                <textarea id="excerpt" name="excerpt" rows="3"><?php echo htmlspecialchars($article['excerpt']); ?></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="content">Content *</label>
+                <textarea id="content" name="content" rows="15" required><?php echo htmlspecialchars($article['content']); ?></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="image">Featured Image</label>
+                <?php if ($article['image']): ?>
+                    <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $article['image']; ?>" alt="Current" style="max-width: 200px; margin-bottom: 10px;">
+                <?php endif; ?>
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+            
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                    <option value="draft" <?php echo $article['status'] == 'draft' ? 'selected' : ''; ?>>Draft</option>
+                    <option value="published" <?php echo $article['status'] == 'published' ? 'selected' : ''; ?>>Published</option>
+                </select>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Post</button>
+                <a href="list.php" class="btn">Cancel</a>
+            </div>
+        </form>
+    </main>
+</div>
+
+</body>
+</html>
