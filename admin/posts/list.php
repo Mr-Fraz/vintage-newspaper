@@ -8,7 +8,7 @@ $pageTitle = 'All Posts';
 global $db;
 $articles = $db->query("SELECT a.*, u.username, c.name as category_name 
                         FROM articles a 
-                        LEFT JOIN users u ON a.user_id = u.id 
+                        LEFT JOIN users u ON a.author_id = u.id 
                         LEFT JOIN categories c ON a.category_id = c.id 
                         ORDER BY a.created_at DESC")->fetchAll();
 

@@ -16,3 +16,10 @@ CREATE TABLE IF NOT EXISTS users (
     INDEX idx_username (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO users (username, email, password, role)
+VALUES (
+    'Administrator',
+    'admin@gmail.com',
+    '$2y$10$nSPasLzoX2/sTgc/3Hv7Rutkt20zRx5tKec7j2moltKNtfE8Knaua',
+    'admin'
+);

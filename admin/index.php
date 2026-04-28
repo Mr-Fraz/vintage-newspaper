@@ -1,4 +1,9 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+require_once __DIR__ . '/includes/auth-check.php';
+require_once __DIR__ . '/../functions/db.php';
 require_once __DIR__ . '/includes/auth-check.php';
 require_once __DIR__ . '/../functions/db.php';
 
@@ -21,10 +26,10 @@ foreach ($statsQueries as $key => $query) {
 
 // Recent articles
 $recentArticles = $db->query("SELECT a.*, u.username, c.name as category_name 
-                              FROM articles a 
-                              LEFT JOIN users u ON a.user_id = u.id 
-                              LEFT JOIN categories c ON a.category_id = c.id 
-                              ORDER BY a.created_at DESC LIMIT 5")->fetchAll();
+                                FROM articles a 
+                    	        LEFT JOIN users u ON a.author_id = u.id 
+                                LEFT JOIN categories c ON a.category_id = c.id 
+                                ORDER BY a.created_at DESC LIMIT 5")->fetchAll();
 
 include __DIR__ . '/includes/admin-header.php';
 ?>

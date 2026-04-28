@@ -1,7 +1,7 @@
 USE vintage_newspaper;
 
 -- Sample articles
-INSERT INTO articles (title, slug, content, excerpt, category_id, user_id, status) VALUES
+INSERT INTO articles (title, slug, content,excerpt,category_id, author_id , status) VALUES
 (
     'The Future of Artificial Intelligence',
     'future-of-artificial-intelligence',
