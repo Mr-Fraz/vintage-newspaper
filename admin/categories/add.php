@@ -1,78 +1,88 @@
 <?php
 require_once __DIR__ . '/../includes/auth-check.php';
 require_once __DIR__ . '/../../functions/helpers.php';
+require_once __DIR__ . '/../../functions/db.php';
 
 $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+    if (!Helper::verifyCSRFToken($_POST['csrf_token'] ?? '')) {
         $error = 'Security error. Please try again.';
     } else {
-        $errors = validateRequired($_POST, ['name', 'slug', 'description']);
+        $name = trim(htmlspecialchars($_POST['name'], ENT_QUOTES, 'UTF-8'));
+        $slug = trim(htmlspecialchars($_POST['slug'], ENT_QUOTES, 'UTF-8'));
+        $description = trim(htmlspecialchars($_POST['description'], ENT_QUOTES, 'UTF-8'));
         
-        if (empty($errors)) {
-            $name = sanitizeInput($_POST['name']);
-            $slug = sanitizeInput($_POST['slug']);
-            $description = sanitizeInput($_POST['description']);
-            
-            if (strlen($name) < 2) {
-                $error = 'Name must be at least 2 characters.';
-            } elseif (strlen($slug) < 2 || !preg_match('/^[a-z0-9-]+$/', $slug)) {
-                $error = 'Slug must be lowercase letters, numbers, and hyphens only.';
-            } elseif (strlen($description) < 5) {
-                $error = 'Description must be at least 5 characters.';
-            } else {
-                // Check if slug is unique
-                $stmt = $conn->prepare("SELECT id FROM categories WHERE slug = ?");
-                $stmt->bind_param("s", $slug);
-                $stmt->execute();
-                if ($stmt->get_result()->num_rows > 0) {
-                    $error = 'Slug already exists.';
-                    $stmt->close();
-                } else {
-                    $stmt->close();
-                    
-                    $stmt = $conn->prepare("INSERT INTO categories (name, slug, description) VALUES (?, ?, ?)");
-                    $stmt->bind_param("sss", $name, $slug, $description);
-                    if ($stmt->execute()) {
-                        $success = 'Category added successfully! Redirecting...';
-                        header("refresh:2;url=list.php");
-                    } else {
-                        $error = 'Error: ' . $stmt->error;
-                    }
-                    $stmt->close();
-                }
-            }
+        if (strlen($name) < 2) {
+            $error = 'Name must be at least 2 characters.';
+        } elseif (!preg_match('/^[a-z0-9-]+$/', $slug)) {
+            $error = 'Invalid slug format.';
+        } elseif (strlen($description) < 5) {
+            $error = 'Description too short.';
+        } elseif (DB::slugExists($slug)) {
+            $error = 'Slug already exists.';
         } else {
-            $error = implode(' ', $errors);
+            $data = [
+                'name' => $name,
+                'slug' => $slug,
+                'description' => $description
+            ];
+            
+            if (DB::addCategory($data)) {
+                $success = 'Category added successfully! Redirecting...';
+                header("refresh:2;url=list.php");
+            } else {
+                $error = 'Add failed.';
+            }
         }
     }
 }
+
+$pageTitle = 'Add New Category';
+require_once __DIR__ . '/../includes/admin-header.php';
 ?>
 
-<h2>Add New Category</h2>
+<div class="admin-wrapper">
+    <?php include __DIR__ . '/../includes/sidebar.php'; ?>
+    
+    <main class="admin-main">
+        <header class="admin-page-header">
+            <h1>Add New Category</h1>
+        </header>
 
-<?php if (!empty($error)): ?>
-    <div class="error-message"><?php echo escape($error); ?></div>
-<?php endif; ?>
+        <?php if (!empty($error)): ?>
+            <div class="error-message"><?php echo Helper::escape($error); ?></div>
+        <?php endif; ?>
 
-<?php if (!empty($success)): ?>
-    <div class="success-message"><?php echo escape($success); ?></div>
-<?php endif; ?>
+        <?php if (!empty($success)): ?>
+            <div class="success-message"><?php echo Helper::escape($success); ?></div>
+        <?php endif; ?>
 
-<form method="POST">
-    <?php echo csrfField(); ?>
-    
-    <label>Category Name *</label>
-    <input type="text" name="name" placeholder="e.g., Breaking News" required><br>
-    
-    <label>Slug *</label>
-    <input type="text" name="slug" placeholder="e.g., breaking-news" required><br>
-    
-    <label>Description *</label>
-    <textarea name="description" placeholder="Brief description of this category" required></textarea><br>
-    
-    <button type="submit">Add Category</button>
-    <a href="list.php">Cancel</a>
-</form>
+        <form method="POST" class="admin-form">
+            <?php echo Helper::csrfField(); ?>
+            
+            <div class="form-group">
+                <label for="name">Category Name *</label>
+                <input type="text" id="name" name="name" placeholder="e.g., Breaking News" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="slug">Slug *</label>
+                <input type="text" id="slug" name="slug" placeholder="e.g., breaking-news" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description *</label>
+                <textarea id="description" name="description" placeholder="Brief description of this category" required></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Add Category</button>
+                <a href="list.php" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </main>
+</div>
+
+<?php require_once __DIR__ . '/../includes/admin-footer.php'; ?>

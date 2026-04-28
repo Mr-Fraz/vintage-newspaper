@@ -1,95 +1,105 @@
+
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once __DIR__ . '/../includes/auth-check.php';
 require_once __DIR__ . '/../../functions/helpers.php';
+require_once __DIR__ . '/../../functions/db.php';
 
 $error = '';
 $success = '';
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die('Invalid category ID');
+    //die('Invalid category ID');
+    header('Location: list.php');
+    exit;
 }
 
 $id = (int)$_GET['id'];
 
-$stmt = $conn->prepare("SELECT id, name, slug, description FROM categories WHERE id = ?");
-if (!$stmt) die('Database error');
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$category = $stmt->get_result()->fetch_assoc();
-$stmt->close();
-
+$category = DB::getCategoryById($id);
 if (!$category) die('Category not found');
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+
+    if (!Helper::verifyCSRFToken($_POST['csrf_token'] ?? '')) {
         $error = 'Security error. Please try again.';
     } else {
-        $errors = validateRequired($_POST, ['name', 'slug', 'description']);
-        
-        if (empty($errors)) {
-            $name = sanitizeInput($_POST['name']);
-            $slug = sanitizeInput($_POST['slug']);
-            $description = sanitizeInput($_POST['description']);
-            
-            if (strlen($name) < 2) {
-                $error = 'Name must be at least 2 characters.';
-            } elseif (strlen($slug) < 2 || !preg_match('/^[a-z0-9-]+$/', $slug)) {
-                $error = 'Slug must be lowercase letters, numbers, and hyphens only.';
-            } elseif (strlen($description) < 5) {
-                $error = 'Description must be at least 5 characters.';
-            } else {
-                // Check if slug is unique (excluding current category)
-                $stmt = $conn->prepare("SELECT id FROM categories WHERE slug = ? AND id != ?");
-                $stmt->bind_param("si", $slug, $id);
-                $stmt->execute();
-                if ($stmt->get_result()->num_rows > 0) {
-                    $error = 'Slug already exists.';
-                    $stmt->close();
-                } else {
-                    $stmt->close();
-                    
-                    $stmt = $conn->prepare("UPDATE categories SET name = ?, slug = ?, description = ? WHERE id = ?");
-                    $stmt->bind_param("sssi", $name, $slug, $description, $id);
-                    if ($stmt->execute()) {
-                        $success = 'Category updated! Redirecting...';
-                        header("refresh:2;url=list.php?updated=1");
-                    } else {
-                        $error = 'Error: ' . $stmt->error;
-                    }
-                    $stmt->close();
-                }
-            }
+
+        $name = trim(htmlspecialchars($_POST['name'], ENT_QUOTES, 'UTF-8'));
+        $slug = trim(htmlspecialchars($_POST['slug'], ENT_QUOTES, 'UTF-8'));
+        $description = trim(htmlspecialchars($_POST['description'], ENT_QUOTES, 'UTF-8'));
+
+        if (strlen($name) < 2) {
+            $error = 'Name must be at least 2 characters.';
+        } elseif (!preg_match('/^[a-z0-9-]+$/', $slug)) {
+            $error = 'Invalid slug format.';
+        } elseif (strlen($description) < 5) {
+            $error = 'Description too short.';
+        } elseif (DB::slugExists($slug, $id)) {
+            $error = 'Slug already exists.';
         } else {
-            $error = implode(' ', $errors);
+
+            $data = [
+                'id' => $id,
+                'name' => $name,
+                'slug' => $slug,
+                'description' => $description
+            ];
+
+            if (DB::updateCategory($data)) {
+                $success = 'Category updated! Redirecting...';
+                header("refresh:2;url=list.php?updated=1");
+            } else {
+                $error = 'Update failed.';
+            }
         }
     }
 }
+
+$pageTitle = 'Edit Category';
+require_once __DIR__ . '/../includes/admin-header.php';
 ?>
 
-<h2>Edit Category</h2>
+<div class="admin-wrapper">
+    <?php include __DIR__ . '/../includes/sidebar.php'; ?>
+    
+    <main class="admin-main">
+        <header class="admin-page-header">
+            <h1>Edit Category</h1>
+        </header>
 
-<?php if (!empty($error)): ?>
-    <div class="error-message"><?php echo escape($error); ?></div>
-<?php endif; ?>
+        <?php if (!empty($error)): ?>
+            <div class="error-message"><?php echo Helper::escape($error); ?></div>
+        <?php endif; ?>
 
-<?php if (!empty($success)): ?>
-    <div class="success-message"><?php echo escape($success); ?></div>
-<?php endif; ?>
+        <?php if (!empty($success)): ?>
+            <div class="success-message"><?php echo Helper::escape($success); ?></div>
+        <?php endif; ?>
 
-<form method="POST">
-    <?php echo csrfField(); ?>
-    
-    <label>Category Name *</label>
-    <input type="text" name="name" value="<?php echo escape($category['name']); ?>" required><br>
-    
-    <label>Slug *</label>
-    <input type="text" name="slug" value="<?php echo escape($category['slug']); ?>" required><br>
-    
-    <label>Description *</label>
-    <textarea name="description" required><?php echo escape($category['description']); ?></textarea><br>
-    
-    <button type="submit">Update Category</button>
-    <a href="list.php">Cancel</a>
-</form>
+        <form method="POST" class="admin-form">
+            <?php echo Helper::csrfField(); ?>
+            
+            <div class="form-group">
+                <label for="name">Category Name *</label>
+                <input type="text" id="name" name="name" value="<?php echo Helper::escape($category['name']); ?>" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="slug">Slug *</label>
+                <input type="text" id="slug" name="slug" value="<?php echo Helper::escape($category['slug']); ?>" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description *</label>
+                <textarea id="description" name="description" required><?php echo Helper::escape($category['description']); ?></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Category</button>
+                <a href="list.php" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </main>
+</div>
+
+<?php require_once __DIR__ . '/../includes/admin-footer.php'; ?>

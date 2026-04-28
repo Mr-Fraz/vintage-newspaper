@@ -8,7 +8,66 @@ class DB {
         global $db;
         self::$conn = $db;
     }
+
+    // Check if slug exists (excluding current category if id provided)
+    public static function slugExists($slug, $id = 0) {
+    self::init();
+
+    if ($id > 0) {
+        $stmt = self::$conn->prepare(
+            "SELECT id FROM categories WHERE slug = :slug AND id != :id"
+        );
+        $stmt->execute([
+            'slug' => $slug,
+            'id' => $id
+        ]);
+    } else {
+        $stmt = self::$conn->prepare(
+            "SELECT id FROM categories WHERE slug = :slug"
+        );
+        $stmt->execute(['slug' => $slug]);
+    }
+
+    return $stmt->fetch() ? true : false;
+    }
     
+    //Get category by ID
+    public static function getCategoryById($id) 
+    {
+    self::init();
+
+    $sql = "SELECT * FROM categories WHERE id = :id";
+    $stmt = self::$conn->prepare($sql);
+    $stmt->execute(['id' => $id]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+    // Update category
+    public static function updateCategory($data) {
+    self::init();
+
+    $sql = "UPDATE categories 
+            SET name = :name,
+                slug = :slug,
+                description = :description
+            WHERE id = :id";
+
+    $stmt = self::$conn->prepare($sql);
+    return $stmt->execute($data);
+    }
+
+    // Add new category
+    public static function addCategory($data) {
+        self::init();
+
+        $sql = "INSERT INTO categories (name, slug, description) 
+                VALUES (:name, :slug, :description)";
+
+        $stmt = self::$conn->prepare($sql);
+        return $stmt->execute($data);
+    }
+
     // Get all articles with pagination
     public static function getArticles($page = 1, $limit = POSTS_PER_PAGE) {
         self::init();
@@ -39,6 +98,23 @@ class DB {
                 LEFT JOIN categories c ON a.category_id = c.id 
                 LEFT JOIN users u ON a.author_id = u.id 
                 WHERE a.id = :id AND a.status = 'published'";
+        
+        $stmt = self::$conn->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetch();
+    }
+    
+    // Get article for admin editing (any status)
+    public static function getArticleForEdit($id) {
+        self::init();
+        
+        $sql = "SELECT a.*, c.name as category_name, u.username as author 
+                FROM articles a 
+                LEFT JOIN categories c ON a.category_id = c.id 
+                LEFT JOIN users u ON a.author_id = u.id 
+                WHERE a.id = :id";
         
         $stmt = self::$conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -94,7 +170,8 @@ class DB {
         self::init();
         
         $sql = "SELECT * FROM categories ORDER BY name ASC";
-        $stmt = self::$conn->query($sql);
+        $stmt = self::$conn->prepare($sql);
+        $stmt->execute();
         
         return $stmt->fetchAll();
     }
@@ -141,10 +218,12 @@ class DB {
         self::init();
         
         $sql = "SELECT COUNT(*) as total FROM articles WHERE status = 'published'";
-        $stmt = self::$conn->query($sql);
+        $stmt = self::$conn->prepare($sql);
+        $stmt->execute();
         $result = $stmt->fetch();
         
         return $result['total'];
     }
 }
 ?>
+

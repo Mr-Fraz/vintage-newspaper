@@ -1,5 +1,31 @@
 <?php
 class Helper {
+    // Escape output
+    public static function escape($text) {
+    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+    }
+
+    // CSRF token field
+    public static function csrfField() {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    $token = bin2hex(random_bytes(32));
+    $_SESSION['csrf_token'] = $token;
+
+    return '<input type="hidden" name="csrf_token" value="' . $token . '">';
+    }
+    // Verify CSRF token
+    public static function verifyCSRFToken($token) {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    return isset($_SESSION['csrf_token']) &&
+           hash_equals($_SESSION['csrf_token'], $token);
+    }
+
     // Format date
     public static function formatDate($date, $format = 'F j, Y') {
         return date($format, strtotime($date));

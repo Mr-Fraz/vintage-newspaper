@@ -6,11 +6,13 @@ require_once __DIR__ . '/../../functions/helpers.php';
 $pageTitle = 'All Posts';
 
 global $db;
-$articles = $db->query("SELECT a.*, u.username, c.name as category_name 
+$articleStatement = $db->prepare("SELECT a.*, u.username, c.name as category_name 
                         FROM articles a 
                         LEFT JOIN users u ON a.author_id = u.id 
                         LEFT JOIN categories c ON a.category_id = c.id 
-                        ORDER BY a.created_at DESC")->fetchAll();
+                        ORDER BY a.created_at DESC");
+$articleStatement->execute();
+$articles = $articleStatement->fetchAll();
 
 include __DIR__ . '/../includes/admin-header.php';
 ?>

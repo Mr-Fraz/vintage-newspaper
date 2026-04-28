@@ -1,10 +1,13 @@
 <?php
 require_once __DIR__ . '/../includes/auth-check.php';
+require_once __DIR__ . '/../../functions/helpers.php';
 
 $pageTitle = 'Users';
 
 global $db;
-$users = $db->query("SELECT * FROM users ORDER BY created_at DESC")->fetchAll();
+$userStatement = $db->prepare("SELECT * FROM users ORDER BY created_at DESC");
+$userStatement->execute();
+$users = $userStatement->fetchAll();
 
 include __DIR__ . '/../includes/admin-header.php';
 ?>
@@ -46,5 +49,4 @@ include __DIR__ . '/../includes/admin-header.php';
     </main>
 </div>
 
-</body>
-</html>
+<?php require_once __DIR__ . '/../includes/admin-footer.php'; ?>

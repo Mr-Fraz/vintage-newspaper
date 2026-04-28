@@ -20,16 +20,19 @@ $statsQueries = [
 
 $stats = [];
 foreach ($statsQueries as $key => $query) {
-    $result = $db->query($query);
-    $stats[$key] = $result->fetch()['count'];
+    $result = $db->prepare($query);
+    $result->execute();
+    $stats[$key] = $result->fetchColumn();
 }
 
 // Recent articles
-$recentArticles = $db->query("SELECT a.*, u.username, c.name as category_name 
+$recentStatement = $db->prepare("SELECT a.*, u.username, c.name as category_name 
                                 FROM articles a 
                     	        LEFT JOIN users u ON a.author_id = u.id 
                                 LEFT JOIN categories c ON a.category_id = c.id 
-                                ORDER BY a.created_at DESC LIMIT 5")->fetchAll();
+                                ORDER BY a.created_at DESC LIMIT 5");
+$recentStatement->execute();
+$recentArticles = $recentStatement->fetchAll();
 
 include __DIR__ . '/includes/admin-header.php';
 ?>

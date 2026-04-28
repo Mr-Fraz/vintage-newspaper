@@ -11,7 +11,7 @@ $error = '';
 $success = '';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$article = DB::getArticle($id);
+$article = DB::getArticleForEdit($id);
 
 if (!$article) {
     header('Location: list.php');
@@ -101,8 +101,8 @@ include __DIR__ . '/../includes/admin-header.php';
             
             <div class="form-group">
                 <label for="image">Featured Image</label>
-                <?php if ($article['image']): ?>
-                    <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $article['image']; ?>" alt="Current" style="max-width: 200px; margin-bottom: 10px;">
+                <?php if ($article['featured_image']): ?>
+                    <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo htmlspecialchars($article['featured_image']); ?>" alt="Current" style="max-width: 200px; margin-bottom: 10px;">
                 <?php endif; ?>
                 <input type="file" id="image" name="image" accept="image/*">
             </div>
