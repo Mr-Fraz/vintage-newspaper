@@ -116,7 +116,7 @@ class DB {
         
         $sql = "UPDATE articles 
                 SET title = :title, slug = :slug, content = :content, 
-                    excerpt = :excerpt, image = :image, category_id = :category_id, 
+                    excerpt = :excerpt, featured_image = :featured_image, category_id = :category_id, 
                     status = :status, updated_at = NOW() 
                 WHERE id = :id";
         

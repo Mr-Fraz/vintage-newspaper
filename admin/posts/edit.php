@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once __DIR__ . '/../includes/auth-check.php';
 require_once __DIR__ . '/../../functions/db.php';
 require_once __DIR__ . '/../../functions/validation.php';
@@ -26,20 +28,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $category_id = (int)$_POST['category_id'];
     $status = Validate::sanitize($_POST['status']);
     
-    $imageName = $article['image'];
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-        $upload = Helper::uploadImage($_FILES['image']);
-        if ($upload['success']) {
-            $imageName = $upload['filename'];
-        }
+$imageName = $article['featured_image'];
+
+if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
+    $upload = Helper::uploadImage($_FILES['image']);
+
+    if ($upload['success']) {
+        $imageName = $upload['filename'];
     }
+}
     
     $data = [
         'title' => $title,
         'slug' => $slug,
         'content' => $content,
         'excerpt' => $excerpt,
-        'image' => $imageName,
+        'featured_image' => $imageName,
         'category_id' => $category_id,
         'status' => $status
     ];
