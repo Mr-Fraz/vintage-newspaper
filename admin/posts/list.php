@@ -47,7 +47,7 @@ include __DIR__ . '/../includes/admin-header.php';
                         <td><?php echo htmlspecialchars($article['category_name']); ?></td>
                         <td><?php echo htmlspecialchars($article['username']); ?></td>
                         <td><span class="badge badge-<?php echo $article['status']; ?>"><?php echo $article['status']; ?></span></td>
-                        <td><?php echo $article['views']; ?></td>
+                        <td><?php echo $article['views'] ?? 0; ?></td>
                         <td><?php echo Helper::formatDate($article['created_at'], 'M j, Y'); ?></td>
                         <td>
                             <a href="edit.php?id=<?php echo $article['id']; ?>" class="btn-sm">Edit</a>

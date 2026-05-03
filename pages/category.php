@@ -31,7 +31,7 @@ include __DIR__ . '/../includes/navbar.php';
             <div class="grid">
                 <?php foreach ($articles as $article): ?>
                     <article class="article-card">
-                        <?php if ($article['image']): ?>
+                        <?php if (!empty($article['image'])): ?>
                             <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $article['image']; ?>" alt="<?php echo htmlspecialchars($article['title']); ?>">
                         <?php endif; ?>
                         

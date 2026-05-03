@@ -21,7 +21,7 @@ include __DIR__ . '/includes/navbar.php';
         ?>
         <section class="hero">
             <div class="hero-content">
-                <?php if ($featured['image']): ?>
+                <?php if (!empty($featured['image'])): ?>
                     <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $featured['image']; ?>" alt="<?php echo htmlspecialchars($featured['title']); ?>">
                 <?php endif; ?>
                 
@@ -49,7 +49,7 @@ include __DIR__ . '/includes/navbar.php';
                     $article = $articles[$i];
                 ?>
                     <article class="article-card">
-                        <?php if ($article['image']): ?>
+                        <?php if (!empty($article['image'])): ?>
                             <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $article['image']; ?>" alt="<?php echo htmlspecialchars($article['title']); ?>">
                         <?php endif; ?>
                         

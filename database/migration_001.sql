@@ -36,6 +36,7 @@ ALTER TABLE articles
 ADD CONSTRAINT fk_articles_author 
 FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL;
 ALTER TABLE articles ADD excerpt TEXT;
+ALTER TABLE articles ADD views INT DEFAULT 0;
 
 -- Insert default categories
 INSERT IGNORE INTO categories (name, slug, description) VALUES
