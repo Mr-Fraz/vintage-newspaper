@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $category_id = (int)$_POST['category_id'];
     $status = Validate::sanitize($_POST['status']);
     
-$imageName = $article['featured_image'];
+$imageName = $article['image'];
 
 if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
     $upload = Helper::uploadImage($_FILES['image']);
@@ -43,7 +43,7 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
         'slug' => $slug,
         'content' => $content,
         'excerpt' => $excerpt,
-        'featured_image' => $imageName,
+        'image' => $imageName,
         'category_id' => $category_id,
         'status' => $status
     ];
@@ -101,8 +101,11 @@ include __DIR__ . '/../includes/admin-header.php';
             
             <div class="form-group">
                 <label for="image">Featured Image</label>
-                <?php if ($article['featured_image']): ?>
-                    <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo htmlspecialchars($article['featured_image']); ?>" alt="Current" style="max-width: 200px; margin-bottom: 10px;">
+                <?php if ($article['image']): ?>
+                    <div class="current-image-preview">
+                        <p class="preview-label">Current Image:</p>
+                        <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo htmlspecialchars($article['image']); ?>" alt="Current Image">
+                    </div>
                 <?php endif; ?>
                 <input type="file" id="image" name="image" accept="image/*">
             </div>

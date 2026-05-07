@@ -153,18 +153,22 @@ class DB {
                 FROM articles a 
                 LEFT JOIN categories c ON a.category_id = c.id 
                 LEFT JOIN users u ON a.author_id = u.id 
-                WHERE (a.title LIKE :query OR a.content LIKE :query) 
+                WHERE (a.title LIKE :query OR a.content LIKE :query1 OR a.content LIKE :query2) 
                 AND a.status = 'published' 
                 ORDER BY a.created_at DESC";
         
         $stmt = self::$conn->prepare($sql);
         $searchTerm = "%{$query}%";
-        $stmt->bindParam(':query', $searchTerm, PDO::PARAM_STR);
+        $stmt->bindParam(':query1', $searchTerm, PDO::PARAM_STR);
+        $stmt->bindParam(':query2', $searchTerm, PDO::PARAM_STR);
         $stmt->execute();
         
         return $stmt->fetchAll();
     }
     
+
+
+
     // Get all categories
     public static function getCategories() {
         self::init();
@@ -193,7 +197,7 @@ class DB {
         
         $sql = "UPDATE articles 
                 SET title = :title, slug = :slug, content = :content, 
-                    excerpt = :excerpt, featured_image = :featured_image, category_id = :category_id, 
+                    excerpt = :excerpt, image = :image, category_id = :category_id, 
                     status = :status, updated_at = NOW() 
                 WHERE id = :id";
         

@@ -37,7 +37,7 @@ include __DIR__ . '/includes/navbar.php';
             </div>
         </section>
         <?php endif; ?>
-        
+
         <!-- Latest Articles -->
         <section class="articles-grid">
             <h2 class="section-title">Latest News</h2>

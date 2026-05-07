@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'excerpt' => $excerpt,
             'image' => $imageName,
             'category_id' => $category_id,
-            'user_id' => $_SESSION['user_id'],
+            'author_id' => $_SESSION['user_id'],
             'status' => $status
         ];
         
