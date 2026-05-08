@@ -4,28 +4,26 @@ require_once __DIR__ . '/../../functions/helpers.php';
 
 $error = '';
 
+// Use the PDO connection from config
+global $db;
+
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die('Invalid category ID');
 }
 
 $id = (int)$_GET['id'];
 
-// Check if category exists
-$stmt = $conn->prepare("SELECT id FROM categories WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-if ($stmt->get_result()->num_rows === 0) {
-    $stmt->close();
+// Check if category exists (PDO)
+$stmt = $db->prepare("SELECT id FROM categories WHERE id = ?");
+$stmt->execute([$id]);
+if ($stmt->rowCount() === 0) {
     die('Category not found');
 }
-$stmt->close();
 
-// Check if category has articles
-$stmt = $conn->prepare("SELECT COUNT(*) as count FROM articles WHERE category_id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$articleCount = $stmt->get_result()->fetch_assoc()['count'];
-$stmt->close();
+// Check if category has articles (PDO)
+$stmt = $db->prepare("SELECT COUNT(*) FROM articles WHERE category_id = ?");
+$stmt->execute([$id]);
+$articleCount = (int)$stmt->fetchColumn();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
@@ -33,41 +31,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (($_POST['confirm'] ?? '') !== 'yes') {
         $error = 'Please confirm deletion.';
     } else {
-        $stmt = $conn->prepare("DELETE FROM categories WHERE id = ?");
-        $stmt->bind_param("i", $id);
-        if ($stmt->execute()) {
+        $stmt = $db->prepare("DELETE FROM categories WHERE id = ?");
+        if ($stmt->execute([$id])) {
             header("Location: list.php?deleted=1");
             exit;
         } else {
-            $error = 'Error: ' . $stmt->error;
+            $error = 'Error deleting category';
         }
-        $stmt->close();
     }
 }
 ?>
 
-<h2>Delete Category</h2>
+<?php require_once __DIR__ . '/../includes/admin-header.php'; ?>
 
-<?php if (!empty($error)): ?>
-    <div class="error-message"><?php echo escape($error); ?></div>
-<?php endif; ?>
+<div class="admin-wrapper">
+    <?php include __DIR__ . '/../includes/sidebar.php'; ?>
+    <main class="admin-main">
+        <header class="admin-page-header">
+            <h1>Delete Category</h1>
+        </header>
 
-<div class="warning-message">
-    <p>Are you sure you want to delete this category?</p>
-    <?php if ($articleCount > 0): ?>
-        <p><strong>Warning:</strong> This category has <?php echo (int)$articleCount; ?> article(s) associated with it. Deleting this category will set those articles to no category.</p>
-    <?php endif; ?>
-    <p>This action cannot be undone.</p>
+        <?php if (!empty($error)): ?>
+            <div class="error-message"><?php echo escape($error); ?></div>
+        <?php endif; ?>
+
+        <div class="warning-message">
+            <p>Are you sure you want to delete this category?</p>
+            <?php if ($articleCount > 0): ?>
+                <p><strong>Warning:</strong> This category has <?php echo (int)$articleCount; ?> article(s) associated with it. Deleting this category will set those articles to no category.</p>
+            <?php endif; ?>
+            <p>This action cannot be undone.</p>
+        </div>
+
+        <form method="POST">
+            <?php echo csrfField(); ?>
+
+            <label>
+                <input type="checkbox" name="confirm" value="yes" required>
+                Yes, I confirm deletion
+            </label><br><br>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">Delete Category</button>
+                <a href="list.php" class="btn">Cancel</a>
+            </div>
+        </form>
+    </main>
 </div>
 
-<form method="POST">
-    <?php echo csrfField(); ?>
-    
-    <label>
-        <input type="checkbox" name="confirm" value="yes" required> 
-        Yes, I confirm deletion
-    </label><br><br>
-    
-    <button type="submit" class="delete-btn">Delete Category</button>
-    <a href="list.php">Cancel</a>
-</form>
+<?php require_once __DIR__ . '/../includes/admin-footer.php'; ?>

@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 data[key] = value;
             });
             localStorage.setItem('post_draft', JSON.stringify(data));
-            console.log('Draft auto-saved');
+            if (window.DEBUG) console.log('Draft auto-saved');
         }
         
         // Load draft on page load
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Quick stats refresh
 function refreshStats() {
     // Can implement AJAX to refresh dashboard stats
-    console.log('Refreshing stats...');
+    if (window.DEBUG) console.log('Refreshing stats...');
 }
 
 // Bulk actions
@@ -127,6 +127,6 @@ function handleBulkAction(action) {
     }
     
     const ids = Array.from(checkboxes).map(cb => cb.value);
-    console.log(`Bulk ${action}:`, ids);
+    if (window.DEBUG) console.log(`Bulk ${action}:`, ids);
     // Implement bulk action logic
 }

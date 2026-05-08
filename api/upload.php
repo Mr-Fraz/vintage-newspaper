@@ -2,6 +2,13 @@
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../functions/helpers.php';
 
+// Basic rate limiting: 10 uploads per hour per IP
+if (Helper::rateLimitExceeded('api_upload', 10, 3600)) {
+    http_response_code(429);
+    echo json_encode(['error' => 'Too many upload requests, try again later']);
+    exit;
+}
+
 header('Content-Type: application/json');
 
 // Verify CSRF token

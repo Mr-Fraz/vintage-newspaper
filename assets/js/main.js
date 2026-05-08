@@ -59,7 +59,7 @@ if (searchInput) {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             // Can implement AJAX search here
-            console.log('Search:', e.target.value);
+            if (window.DEBUG) console.log('Search:', e.target.value);
         }, 500);
     });
 }

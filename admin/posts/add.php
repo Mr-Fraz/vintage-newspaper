@@ -11,6 +11,11 @@ $success = '';
 $categories = DB::getCategories();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF protection
+    if (empty($_POST['csrf_token']) || !verifyCSRFToken($_POST['csrf_token'])) {
+        $error = 'Invalid CSRF token. Please try again.';
+    }
+    
     $title = Validate::sanitize($_POST['title']);
     $slug = Validate::slug($title);
     $content = $_POST['content']; // Keep HTML
@@ -66,6 +71,7 @@ include __DIR__ . '/../includes/admin-header.php';
         <?php endif; ?>
         
         <form method="POST" enctype="multipart/form-data" class="admin-form">
+            <?php echo csrfField(); ?>
             <div class="form-group">
                 <label for="title">Title *</label>
                 <input type="text" id="title" name="title" required>

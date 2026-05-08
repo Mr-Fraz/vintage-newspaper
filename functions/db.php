@@ -159,6 +159,7 @@ class DB {
         
         $stmt = self::$conn->prepare($sql);
         $searchTerm = "%{$query}%";
+        $stmt->bindParam(':query', $searchTerm, PDO::PARAM_STR);
         $stmt->bindParam(':query1', $searchTerm, PDO::PARAM_STR);
         $stmt->bindParam(':query2', $searchTerm, PDO::PARAM_STR);
         $stmt->execute();

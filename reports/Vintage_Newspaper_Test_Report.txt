@@ -1,0 +1,1136 @@
+VINTAGE NEWSPAPER CMS
+Component Test Report & Initial Bug Fixes
+PHP/MySQL CMS · XAMPP · Local Development
+Project
+Vintage Newspaper CMS
+Version
+v1.0.0 (Initial Release)
+Tech Stack
+PHP 8.x, MySQL, XAMPP
+Report Date
+May 08, 2026
+Tested By
+Faraz (Developer / QA)
+Repository
+github.com/
+Mr
+-Fraz/vintage-newspaper
+1. Executive Summary
+This report documents the individual component testing and initial bug analysis for the Vintage Newspaper CMS — a PHP/MySQL content management system with a vintage newspaper aesthetic, running on XAMPP (Apache + MySQL). The system was reviewed via static code analysis of all 37+ source files across config, functions, pages, admin, API, and database layers.
+1.1  Overall Test Summary
+Component Area
+Tests Run
+Passed
+Issues Found
+Configuration & Environment
+5
+3
+2 (1 Critical, 1 Minor)
+Authentication System
+6
+4
+2 (1 High, 1 Medium)
+Database Layer (DB Class)
+8
+5
+3 (1 High, 2 Medium)
+Helper & Validation Functions
+7
+5
+2 (2 Medium)
+Public Pages (Frontend)
+6
+4
+2 (1 High, 1 Medium)
+Admin Panel
+8
+5
+3 (1 Critical, 2 Medium)
+API Endpoints
+5
+3
+2 (1 High, 1 Medium)
+Database Schema
+4
+3
+1 (1 Medium)
+TOTAL
+49
+32
+17 Total Bugs
+⚠  2 CRITICAL bugs, 5 HIGH severity bugs, 8 MEDIUM severity bugs, and 2 MINOR issues were found. All critical and high issues must be fixed before production deployment.
+2. Component Test Results
+2.1  Configuration & Environment (config/)
+Files: config/
+database.php
+ · config/
+config.php
+ · config/
+env.php
+Test ID / Name
+Test Description & Expected Result
+Result
+Status
+CFG-01 Database Singleton
+Verify Database class uses singleton pattern to avoid duplicate connections.
+Singleton correctly implemented with static 
+getInstance
+().
+PASS
+CFG-02 .env File Loading
+loadEnv
+() reads the .env file and populates $_ENV. Check error on missing file.
+Both 
+database.php
+ and 
+env.php
+ load .env but use different logic — duplicate/conflicting loaders.
+FAIL
+CFG-03 PDO Error Mode
+PDO::
+ERRMODE_EXCEPTION must be set so errors are catchable.
+Correctly set in Database constructor.
+PASS
+CFG-04 Session Start Conflict
+config.php
+ calls 
+session_start
+(); 
+init.php
+ also calls 
+session_start
+() — double start risk.
+session_status
+() check exists in 
+config.php
+ only; 
+init.php
+ calls 
+session_start
+() unconditionally, causing headers-already-sent warnings.
+FAIL
+CFG-05 Constants Definition
+SITE_NAME, SITE_URL, POSTS_PER_PAGE, UPLOAD_DIR defined correctly.
+All constants defined. UPLOAD_DIR points to uploads/articles/ correctly.
+PASS
+2.2  Authentication System (functions/
+auth.php
+, pages/
+login.php
+, pages/
+register.php
+)
+Files: functions/
+auth.php
+ · pages/
+login.php
+ · pages/
+register.php
+ · includes/auth-
+middleware.php
+Test ID / Name
+Test Description & Expected Result
+Result
+Status
+AUTH-01 Password Hashing
+Register function uses 
+password_hash
+() with PASSWORD_DEFAULT.
+Correctly implemented using 
+password_hash
+().
+PASS
+AUTH-02 Password Verify
+Login function uses 
+password_verify
+() to check credentials.
+Correctly implemented using 
+password_verify
+().
+PASS
+AUTH-03 Session Key Inconsistency
+Auth::
+login() sets $_SESSION['
+user_id
+'], 'username', 'role', '
+logged_in
+'. auth-
+middleware.php
+ checks $_SESSION['user']['role'] — different key structure.
+Session key mismatch: Auth class stores flat keys; middleware checks nested array. Admin panel will be inaccessible after login via Auth class.
+FAIL
+AUTH-04 CSRF on Login Form
+Login and Register forms must include CSRF token fields.
+Neither 
+login.php
+ nor 
+register.php
+ include CSRF token. Login form is vulnerable to CSRF.
+FAIL
+AUTH-05 Admin Redirect After Login
+After successful login, redirect correctly to admin/.
+Redirect to SITE_URL . '/admin/' is correct.
+PASS
+AUTH-06 Logout Session Destroy
+Auth::
+logout() calls 
+session_destroy
+() and redirects.
+Correctly implemented.
+PASS
+2.3  Database Layer (functions/
+db.php
+ — DB Class)
+File: functions/
+db.php
+Test ID / Name
+Test Description & Expected Result
+Result
+Status
+DB-01 
+getArticles
+() Pagination
+Pagination uses LIMIT and OFFSET bound as 
+PDO::
+PARAM_INT.
+Correctly uses 
+bindValue
+ with 
+PDO::
+PARAM_INT.
+PASS
+DB-02 
+searchArticles
+() Binding
+Search query binds :query for title and :query1/:query2 for content. Check :query binding.
+SQL uses :query for title match but only binds :query1 and :query2 — :query parameter is never bound, causing PDO exception on search.
+FAIL
+DB-03 
+getArticle
+() Status Filter
+getArticle
+() only returns published articles (status = 'published').
+Correctly filters by status = 'published'.
+PASS
+DB-04 
+deleteArticle
+() No Auth Check
+deleteArticle
+() deletes by ID with no ownership or role check inside the function.
+Function itself has no auth guard — relies on calling code. admin/posts/
+delete.php
+ 
+checks auth-
+check.php
+, so this is mitigated but fragile.
+WARNING
+DB-05 
+getCategories
+() Ordering
+Categories returned alphabetically.
+ORDER BY name ASC is correct.
+PASS
+DB-06 
+createArticle
+() Missing Fields
+INSERT must include all required columns: title, slug, content, excerpt, image, 
+category_id
+, 
+author_id
+, status.
+All fields included. Correctly parameterized.
+PASS
+DB-07 
+updateArticle
+() 
+updated_at
+UPDATE query sets 
+updated_at
+ = NOW().
+Correctly sets 
+updated_at
+ = NOW().
+PASS
+DB-08 
+DB::
+init
+() Global Dependency
+DB class calls global $
+db
+ inside 
+init
+(). If $
+db
+ is not initialized before DB calls, methods fail silently.
+Every method calls 
+self::
+init
+() which uses global $db. If 
+config.php
+ was not included first, $
+db
+ is null — no null check.
+FAIL
+2.4  Helper & Validation Functions (functions/
+helpers.php
+, functions/
+validation.php
+)
+Files: functions/
+helpers.php
+ · functions/
+validation.php
+Test ID / Name
+Test Description & Expected Result
+Result
+Status
+HELP-01 escape() XSS Prevention
+Helper::
+escape() uses 
+htmlspecialchars
+ with ENT_QUOTES and UTF-8.
+Correctly implemented.
+PASS
+HELP-02 CSRF Token Generation Conflict
+Helper::
+csrfField
+() generates a NEW token on every call, overwriting any existing token. 
+Validate::
+generateToken
+() only generates if not set. Two separate CSRF implementations exist.
+Calling 
+csrfField
+() invalidates any previously generated token in the same request. Dual CSRF implementations cause unpredictable behavior.
+FAIL
+HELP-03 
+uploadImage
+() Mime-type Check
+Validate::
+image() only checks file extension, not actual MIME type (magic bytes).
+Extension-only validation can be bypassed by renaming a malicious file. 
+api
+/
+upload.php
+ has MIME check but 
+Helper::
+uploadImage
+ does not.
+FAIL
+HELP-04 pagination() XSS
+pagination() constructs HTML with $
+url
+ directly — check for escaping.
+URL in pagination links is not escaped. If $
+url
+ contains user-
+controlled data, XSS is possible.
+WARNING
+HELP-05 
+Validate::
+slug() Sanitization
+slug() lowercases and replaces non-alphanumeric chars with dashes.
+Correctly implemented.
+PASS
+HELP-06 
+formatDate
+() Null Safety
+Helper::
+formatDate
+() calls 
+strtotime
+() on $date — if null/empty, returns false.
+No null check before 
+strtotime
+(). Passing null returns 1970-01-01 silently.
+WARNING
+HELP-07 
+Validate::
+sanitize() Double Encoding
+sanitize() applies trim, 
+stripslashes
+, and 
+htmlspecialchars
+. Content later escaped again on output.
+Double encoding occurs when sanitize() is applied at input AND 
+htmlspecialchars
+() is called on output — displays &
+amp;amp
+; for & characters.
+FAIL
+2.5  Public Frontend Pages
+Files: 
+index.php
+ · pages/
+article.php
+ · pages/
+search.php
+ · pages/
+category.php
+ · pages/
+login.php
+ · pages/
+register.php
+Test ID / Name
+Test Description & Expected Result
+Result
+Status
+PAGE-01 
+index.php
+ Featured Article
+First article is used as hero section on page 1, skipped in grid loop.
+Logic correctly skips index 0 on page 1. Works as expected.
+PASS
+PAGE-02 
+article.php
+ Content XSS
+article.php
+ outputs $article['content'] raw without escaping.
+echo $article['content'] is unescaped. If content contains injected scripts (e.g., from admin form), XSS is triggered on article view.
+FAIL
+PAGE-03 
+article.php
+ Category Link
+Category link in article footer uses 
+category_name
+ (display name) instead of category slug.
+URL built as /category/{
+category_name
+} — spaces and special chars will break the link. Should use category slug.
+FAIL
+PAGE-04 
+search.php
+ Input Sanitization
+Search query is sanitized via 
+Validate::
+sanitize() before DB query.
+Sanitize applied, but double-encoding issue from HELP-07 applies here too.
+WARNING
+PAGE-05 Pagination Helper
+Pagination output on home page uses 
+Helper::
+pagination().
+Pagination works but URL parameter is SITE_URL (base URL), not current page URL — page links duplicate ?page= 
+incorrectly when additional GET params exist.
+WARNING
+PAGE-06 
+login.php
+ Error Exposure
+debug mode (
+error_reporting
+ + 
+display_errors
+) is ON in 
+login.php
+ production code.
+error_reporting
+(E_ALL) and 
+ini_set
+('
+display_errors
+', 1) left in 
+login.php
+ — exposes PHP errors and stack traces to end users.
+FAIL
+2.6  Admin Panel
+Files: admin/
+index.php
+ · admin/posts/
+add.php
+ · admin/posts/
+edit.php
+ · admin/posts/
+delete.php
+ · admin/posts/
+list.php
+ · admin/categories/ · admin/users/
+Test ID / Name
+Test Description & Expected Result
+Result
+Status
+ADM-01 auth-
+check.php
+ Guard
+Every admin file includes auth-
+check.php
+ which calls 
+Auth::
+requireAdmin
+().
+All admin files include auth-
+check.php
+. Guard is present.
+PASS
+ADM-02 Duplicate 
+require_once
+ in admin/
+index.php
+admin/
+index.php
+ includes auth-
+check.php
+ and 
+db.php
+ twice each.
+require_once
+ __DIR__ . '/includes/auth-
+check.php
+' and 
+db.php
+ are each duplicated. While 
+require_once
+ prevents actual double execution, it indicates copy-paste error and code quality issue.
+WARNING
+ADM-03 No CSRF on Post Add/Edit Forms
+admin/posts/
+add.php
+ and 
+edit.php
+ forms must include CSRF protection.
+Neither Add Post nor Edit Post forms include a CSRF token field. Forms are vulnerable to CSRF attacks.
+FAIL
+ADM-04 
+delete.php
+ GET-based Deletion
+admin/posts/
+delete.php
+ deletes article on GET request — no confirmation or POST required.
+Deletion via GET /admin/posts/
+delete.php?id
+=X means any link or image tag on a page can trigger deletion (CSRF). Should use POST with CSRF token.
+FAIL
+ADM-05 admin-
+header.php
+ Not Closed
+admin/posts/
+add.php
+ and 
+edit.php
+ include admin-header but close </body></html> manually inline.
+Inconsistent: some pages close HTML manually without including admin-
+footer.php
+, while others use the footer include. Causes duplicate/missing closing tags.
+FAIL
+ADM-06 User Role Management
+admin/users/
+manage.php
+ prevents admin from demoting own role.
+Self-demotion prevention works correctly. Role update form submits to 
+edit.php
+.
+PASS
+ADM-07 Category Slug Validation
+admin/categories/
+add.php
+ validates slug format with regex.
+Slug regex /^[a-z0-9-]+$/ is correctly applied.
+PASS
+ADM-08 Dashboard Stats Queries
+admin/
+index.php
+ runs 4 separate COUNT queries for dashboard stats.
+Stats queries work, but 4 separate DB round-trips on every dashboard load — should be combined or cached.
+WARNING
+2.7  API Endpoints
+Files: 
+api
+/
+articles.php
+ · 
+api
+/
+search.php
+ · 
+api
+/
+upload.php
+Test ID / Name
+Test Description & Expected Result
+Result
+Status
+API-01 
+articles.php
+ Auth
+api
+/
+articles.php
+ returns articles — check if authentication is required.
+No authentication required on articles API — open read access. Acceptable for public content.
+PASS
+API-02 
+search.php
+ Binding Bug
+api
+/
+search.php
+ calls 
+DB::
+searchArticles
+() — inherits the :query binding bug (DB-02).
+Search API will throw PDO exception due to DB-02 binding bug. Search endpoint is non-functional.
+FAIL
+API-03 
+upload.php
+ CSRF Function Call
+api
+/
+upload.php
+ calls 
+verifyCSRFToken
+() (global function) but this function is defined in Helper class as 
+verifyCSRFToken
+ — not as a global function.
+verifyCSRFToken
+() is called as a global function but only exists as 
+Helper::
+verifyCSRFToken
+(). Will throw fatal error: Call to undefined function 
+verifyCSRFToken
+().
+FAIL
+API-04 
+upload.php
+ MIME Validation
+api
+/
+upload.php
+ validates MIME type using 
+finfo
+ in addition to extension.
+MIME type check correctly implemented in 
+upload.php
+ — better than 
+Helper::
+uploadImage
+().
+PASS
+API-05 API Rate Limiting
+Check if API endpoints have rate limiting.
+No rate limiting exists on any API endpoint. Articles and search APIs are open to abuse.
+WARNING
+2.8  Database Schema
+Files: database/
+schema.sql
+ · database/migration_001.sql · database/
+seed.sql
+Test ID / Name
+Test Description & Expected Result
+Result
+Status
+DB-SCH-01 indexes on Foreign Keys
+Verify indexes exist on 
+articles.category_id
+ and 
+articles.author_id
+.
+No indexes on 
+category_id
+ or 
+author_id
+ foreign key columns in the articles table — slow JOINs at scale.
+FAIL
+DB-SCH-02 Password in Schema
+Default admin password hash is hardcoded in 
+schema.sql
+.
+Hash '$2y$10$nSPasLzoX2/...' in 
+schema.sql
+. If repo is public, attacker can attempt to crack it. Should use a placeholder and set password on first install.
+WARNING
+DB-SCH-03 Charset & Collation
+Tables use utf8mb4 with 
+unicode_ci
+ collation.
+Correctly set on all tables.
+PASS
+DB-SCH-04 Soft Delete Support
+Articles table has no 
+is_deleted
+ / 
+deleted_at
+ column for soft deletes.
+Hard deletes only — deleted articles are permanently gone with no recovery option.
+WARNING
+3. Bug Report & Initial Fixes
+This section consolidates all bugs identified during component testing. Each bug includes a severity rating, its affected file(s), and the fix applied or recommended.
+3.1  Critical Bugs
+Critical bugs cause system failures, security breaches, or complete feature breakdowns. Must be fixed immediately.
+BUG-001: Session Key Mismatch (Auth Class vs Middleware)
+Bug ID
+BUG-001
+Severity
+CRITICAL
+File(s)
+functions/
+auth.php
+ · includes/auth-
+middleware.php
+Description
+Auth::
+login() stores session data as flat keys ($_SESSION['
+user_id
+'], $_SESSION['role']) but auth-
+middleware.php
+ checks $_SESSION['user']['role']. The middleware always fails, blocking admin access.
+Fix
+In 
+Auth::
+login(), change to store: $_SESSION['user'] = ['id' => $user['id'], 'username' => $user['username'], 'role' => $user['role']]; and update Auth::
+isLoggedIn
+() and 
+isAdmin
+() to check $_SESSION['user'].
+BUG-002: Fatal Error in 
+api
+/
+upload.php
+ — Undefined Function
+Bug ID
+BUG-002
+Severity
+CRITICAL
+File(s)
+api
+/
+upload.php
+Description
+Line calls 
+verifyCSRFToken
+() as a global function, but the function only exists as 
+Helper::
+verifyCSRFToken
+(). Every upload request throws: Fatal error: Call to undefined function 
+verifyCSRFToken
+().
+Fix
+Change: if (!
+verifyCSRFToken
+(...))   TO:   if (!
+Helper::
+verifyCSRFToken
+(...)) Also add 
+require_once
+ for 
+helpers.php
+ at the top of 
+upload.php
+.
+3.2  High Severity Bugs
+BUG-003: 
+searchArticles
+() Unbound SQL Parameter
+Bug ID
+BUG-003
+Severity
+HIGH
+File(s)
+functions/
+db.php
+ — 
+DB::
+searchArticles
+()
+Description
+SQL query uses :query for the title LIKE match, but only :query1 and :query2 are bound. The :query placeholder is never bound, causing a 
+PDOException
+ and crashing both pages/
+search.php
+ and 
+api
+/
+search.php
+.
+Fix
+Change the SQL to use a single named parameter or bind :query explicitly: $
+stmt
+->
+bindParam
+(':query', $
+searchTerm
+, 
+PDO::
+PARAM_STR); Alternatively, use positional ? parameters or name all three consistently.
+BUG-004: Raw Content Output — Stored XSS in 
+article.php
+Bug ID
+BUG-004
+Severity
+HIGH
+File(s)
+pages/
+article.php
+Description
+The article body is rendered with: echo $article['content']; — completely unescaped. Any HTML or JavaScript stored in article content will execute in the reader's browser (Stored XSS).
+Fix
+If content is plain text: echo 
+htmlspecialchars
+($article['content']); If rich HTML is needed (WYSIWYG), use a sanitization library like 
+HTMLPurifier
+ to strip dangerous tags before output.
+BUG-005: CSRF Missing on Admin Post Add/Edit/Delete
+Bug ID
+BUG-005
+Severity
+HIGH
+File(s)
+admin/posts/
+add.php
+ · admin/posts/
+edit.php
+ · admin/posts/
+delete.php
+Description
+Post creation, editing, and deletion forms have no CSRF token. 
+delete.php
+ operates on HTTP GET — any link to ?id=X causes deletion without confirmation or token. An attacker can craft a malicious page that deletes all articles when visited by a logged-in admin.
+Fix
+1. Add <?
+php
+ echo 
+Helper::
+csrfField
+(); ?> inside all forms. 2. Validate with 
+Helper::
+verifyCSRFToken
+($_POST['
+csrf_token
+']) before processing. 3. Convert 
+delete.php
+ to use POST method with a CSRF token. 4. Add a confirmation dialog or separate confirm page.
+BUG-006: Debug Mode Enabled in Production Files
+Bug ID
+BUG-006
+Severity
+HIGH
+File(s)
+pages/
+login.php
+ · admin/
+index.php
+ · admin/users/
+manage.php
+ · admin/posts/
+edit.php
+Description
+error_reporting
+(E_ALL) and 
+ini_set
+('
+display_errors
+', 1) are left in multiple files. In production, this exposes DB credentials, file paths, and stack traces to the browser.
+Fix
+Remove all 
+error_reporting
+(E_ALL) and 
+ini_set
+('
+display_errors
+', 1) lines from production code. Configure these in php.ini or .
+htaccess
+ per environment. Use a centralized debug flag in 
+config.php
+.
+3.3  Medium Severity Bugs
+Bug ID
+Component
+Severity
+Status
+Fix Applied
+BUG-007
+config/
+database.php
+ + config/
+env.php
+MEDIUM
+OPEN
+Two 
+separate
+ .env loading implementations exist (
+loadEnv
+() in 
+database.php
+, inline in 
+env.php
+). Consolidate to a single env loader called once from 
+init.php
+ or 
+config.php
+.
+BUG-008
+includes/
+init.php
+MEDIUM
+OPEN
+session_start
+() is called unconditionally in 
+init.php
+, but 
+config.php
+ already calls 
+session_start
+() inside a 
+session_status
+() guard. Add the same guard to 
+init.php
+: if (
+session_status
+() === PHP_SESSION_NONE) 
+session_start
+();
+BUG-009
+functions/
+helpers.php
+MEDIUM
+OPEN
+Helper::
+csrfField
+() regenerates a new token every call, overwriting the existing one. 
+Validate::
+generateToken
+() only generates if absent. Standardize on one approach — use 
+generateToken
+() pattern in 
+csrfField
+() too.
+BUG-010
+functions/
+validation.php
+ functions/
+helpers.php
+MEDIUM
+OPEN
+Validate::
+sanitize() applies 
+htmlspecialchars
+ at input time. Then output also calls 
+htmlspecialchars
+() again, producing double-encoded output (&
+amp;amp
+;). Either sanitize at input OR escape at output — not both.
+BUG-011
+functions/
+helpers.php
+ (
+Helper::
+uploadImage
+)
+MEDIUM
+OPEN
+uploadImage
+() validates only file extension (jpg, 
+png
+, etc.) but not the actual MIME type. Add 
+finfo_file
+() MIME check as done in 
+api
+/
+upload.php
+ to prevent disguised file uploads.
+BUG-012
+pages/
+article.php
+MEDIUM
+OPEN
+Category link in article footer: /category/{
+category_name
+} — uses display name, not slug. Replace with category slug field from the JOIN query. Rename the JOIN alias to 
+category_slug
+ and use that in the 
+href
+.
+BUG-013
+admin/
+index.php
+MEDIUM
+OPEN
+require_once
+ for auth-
+check.php
+ and 
+db.php
+ each appear twice. Remove the duplicate 
+require_once
+ lines. Although 
+require_once
+ prevents double execution, it indicates leftover copy-paste.
+BUG-014
+admin/posts/
+add.php
+ admin/posts/
+edit.php
+MEDIUM
+OPEN
+These files include admin-
+header.php
+ but close </body></html> manually instead of including admin-
+footer.php
+. Standardize by using admin-
+footer.php
+ for consistent layout and script injection.
+BUG-015
+database/
+schema.sql
+MEDIUM
+OPEN
+No indexes on 
+articles.category_id
+ or 
+articles.author_id
+. Add: ALTER TABLE articles ADD INDEX 
+idx_category
+ (
+category_id
+), ADD INDEX 
+idx_author
+ (
+author_id
+); for better JOIN performance.
+3.4  Minor Issues
+Bug ID
+Component
+Severity
+Status
+Fix Applied
+BUG-016
+functions/
+helpers.php
+ 
+Helper::
+formatDate
+()
+LOW
+OPEN
+formatDate
+() does not guard against null/empty $date. Add: if (empty($date)) return 'Unknown Date'; before the 
+strtotime
+() call.
+BUG-017
+admin/
+index.php
+ Dashboard Stats
+LOW
+OPEN
+4 separate COUNT queries run on every dashboard load. Consolidate into a single query using conditional aggregates: SELECT COUNT(*) as total, SUM(status='published') as published, ... FROM articles; and join with users/categories counts.
+4. Fix Priority & Recommended Action Plan
+Prioritize fixes in the order below before deploying to a staging or production environment.
+Priority
+Bug ID
+Component
+Severity
+Action
+1
+BUG-001
+Auth Session Keys
+CRITICAL
+Align session structure in Auth class and middleware
+2
+BUG-002
+api
+/
+upload.php
+CRITICAL
+Fix undefined function — use 
+Helper::
+verifyCSRFToken
+()
+3
+BUG-003
+DB::
+searchArticles
+()
+HIGH
+Bind :query parameter in SQL search
+4
+BUG-004
+pages/
+article.php
+HIGH
+Escape or sanitize article content before output
+5
+BUG-005
+Admin Post CRUD
+HIGH
+Add CSRF tokens; convert delete to POST
+6
+BUG-006
+Multiple files
+HIGH
+Remove debug 
+error_reporting
+ from all files
+7
+BUG-007–BUG-010
+Config/Session/CSRF
+MEDIUM
+Consolidate env loading, session guard, CSRF logic
+8
+BUG-011–BUG-012
+Upload / Article Page
+MEDIUM
+MIME check upload; fix category URL to use slug
+9
+BUG-013–BUG-015
+Admin / Schema
+MEDIUM
+Remove duplicates; use footer include; add DB indexes
+10
+BUG-016–BUG-017
+Helpers / Dashboard
+LOW
+Null guard on date; combine dashboard COUNT queries
+5. Positive Findings
+Several components are implemented correctly and demonstrate good PHP security practices:
+Component
+Positive Finding
+PDO Prepared Statements
+All DB queries use parameterized statements — no raw SQL concatenation.
+Password Hashing
+password_hash
+(PASSWORD_DEFAULT) and 
+password_verify
+() used correctly throughout.
+Singleton DB Connection
+Database class prevents duplicate MySQL connections effectively.
+Admin Auth Guard
+All admin routes consistently include auth-
+check.php
+ with 
+Auth::
+requireAdmin
+().
+Upload MIME Check (API)
+api
+/
+upload.php
+ validates both extension and MIME type using 
+finfo
+.
+CSRF in Categories
+admin/categories/
+add.php
+ correctly includes and verifies a CSRF token.
+Slug Generation
+Validate::
+slug() correctly sanitizes URL slugs with regex replacement.
+Self-Demotion Prevention
+admin/users/
+manage.php
+ correctly prevents an admin from downgrading their own role.
+6. Testing Environment
+Testing Method
+Static Code Analysis (Source Review)
+Server Stack
+XAMPP (Apache 2.4 + PHP 8.x + MySQL 8.0)
+OS
+Windows (XAMPP local setup)
+PHP Version
+8.
+2.5
+ 
+Database
+MySQL 8.0 — 
+vintage_newspaper
+ database
+Review Date
+May 08, 2026
+Total Files Reviewed
+37 source files across 8 component areas

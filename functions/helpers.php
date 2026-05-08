@@ -107,5 +107,54 @@ class Helper {
         $html .= '</div>';
         return $html;
     }
+
+    // Simple file-based rate limiter: returns true if the rate limit is exceeded
+    public static function rateLimitExceeded($key, $limit = 60, $window = 60) {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $hash = md5($key . '|' . $ip);
+        $file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'vintage_rate_' . $hash . '.json';
+        $now = time();
+
+        $data = ['count' => 0, 'start' => $now];
+        if (file_exists($file)) {
+            $json = @file_get_contents($file);
+            $d = @json_decode($json, true);
+            if (is_array($d) && isset($d['count']) && isset($d['start'])) {
+                $data = $d;
+            }
+        }
+
+        if ($now - $data['start'] > $window) {
+            $data = ['count' => 1, 'start' => $now];
+        } else {
+            $data['count'] = ($data['count'] ?? 0) + 1;
+        }
+
+        // best-effort write (no locking complexity)
+        @file_put_contents($file, json_encode($data));
+
+        return ($data['count'] > $limit);
+    }
 }
 ?>
+
+<?php
+// Global procedural wrappers for backward-compatible template calls
+if (!function_exists('escape')) {
+    function escape($text) {
+        return Helper::escape($text);
+    }
+}
+
+if (!function_exists('csrfField')) {
+    function csrfField() {
+        return Helper::csrfField();
+    }
+}
+
+if (!function_exists('verifyCSRFToken')) {
+    function verifyCSRFToken($token) {
+        return Helper::verifyCSRFToken($token);
+    }
+}
+
