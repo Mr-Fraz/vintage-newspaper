@@ -10,7 +10,8 @@ $error = '';
 $success = '';
 
 if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
-    die('Invalid user ID');
+    header('Location: list.php');
+    exit;
 }
 
 $id = (int)$_POST['id'];
@@ -20,15 +21,17 @@ global $db;
 $stmt = $db->prepare("SELECT id FROM users WHERE id = ?");
 $stmt->execute([$id]);
 if ($stmt->rowCount() === 0) {
-    die('User not found');
+    header('Location: list.php');
+    exit;
 }
 
 // Validate role
 $role = isset($_POST['role']) && in_array($_POST['role'], ['user', 'admin']) ? $_POST['role'] : 'user';
 
 // Cannot demote yourself
-if ($_SESSION['user_id'] == $id && $role != 'admin' && $_SESSION['role'] == 'admin') {
-    die('You cannot demote yourself');
+    if ($_SESSION['user_id'] == $id && $role != 'admin' && $_SESSION['role'] == 'admin') {
+    header('Location: manage.php?id=' . $id . '&error=demote');
+    exit;
 }
 
 $stmt = $db->prepare("UPDATE users SET role = ? WHERE id = ?");

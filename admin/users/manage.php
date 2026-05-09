@@ -23,7 +23,8 @@ $stmt->execute([$id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$user) {
-    die('User not found');
+    header('Location: list.php');
+    exit;
 }
 
 // Check if trying to demote self

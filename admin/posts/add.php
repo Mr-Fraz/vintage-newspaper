@@ -22,6 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $excerpt = Validate::sanitize($_POST['excerpt']);
     $category_id = (int)$_POST['category_id'];
     $status = Validate::sanitize($_POST['status']);
+    $tags = isset($_POST['tags']) ? trim($_POST['tags']) : '';
+    $seo_title = isset($_POST['seo_title']) ? Validate::sanitize($_POST['seo_title']) : null;
+    $meta_description = isset($_POST['meta_description']) ? Validate::sanitize($_POST['meta_description']) : null;
+    $publish_at = isset($_POST['publish_at']) && $_POST['publish_at'] !== '' ? $_POST['publish_at'] : null;
     
     $imageName = '';
     if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
@@ -42,10 +46,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'image' => $imageName,
             'category_id' => $category_id,
             'author_id' => $_SESSION['user_id'],
-            'status' => $status
+            'status' => $status,
+            'seo_title' => $seo_title,
+            'meta_description' => $meta_description,
+            'publish_at' => $publish_at,
+            'og_image' => null
         ];
-        
-        if (DB::createArticle($data)) {
+
+        $newId = DB::createArticle($data);
+        if ($newId) {
+            // Attach tags if provided (comma-separated)
+            if (!empty($tags)) {
+                $tagNames = array_filter(array_map('trim', explode(',', $tags)));
+                DB::attachTagsToArticle($newId, $tagNames);
+            }
+
             $success = 'Article created successfully!';
             header('Location: list.php');
             exit;
@@ -91,6 +106,26 @@ include __DIR__ . '/../includes/admin-header.php';
                 <label for="excerpt">Excerpt</label>
                 <textarea id="excerpt" name="excerpt" rows="3" placeholder="Short summary..."></textarea>
             </div>
+
+            <div class="form-group">
+                <label for="tags">Tags (comma-separated)</label>
+                <input type="text" id="tags" name="tags" placeholder="e.g. politics, local, opinion" value="<?php echo isset($tags) ? htmlspecialchars($tags, ENT_QUOTES) : ''; ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="seo_title">SEO Title</label>
+                <input type="text" id="seo_title" name="seo_title" placeholder="Optional SEO title">
+            </div>
+
+            <div class="form-group">
+                <label for="meta_description">Meta Description</label>
+                <textarea id="meta_description" name="meta_description" rows="2" placeholder="Optional meta description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="publish_at">Publish At (optional)</label>
+                <input type="datetime-local" id="publish_at" name="publish_at">
+            </div>
             
             <div class="form-group">
                 <label for="content">Content *</label>
@@ -105,8 +140,13 @@ include __DIR__ . '/../includes/admin-header.php';
             <div class="form-group">
                 <label for="status">Status</label>
                 <select id="status" name="status">
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
+                    <?php
+                        $statuses = ['draft','pending','scheduled','published','archived'];
+                        foreach ($statuses as $st) {
+                            $sel = (isset($status) && $status == $st) ? 'selected' : '';
+                            echo '<option value="' . $st . '" ' . $sel . '>' . ucfirst($st) . '</option>';
+                        }
+                    ?>
                 </select>
             </div>
             

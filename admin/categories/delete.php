@@ -8,7 +8,8 @@ $error = '';
 global $db;
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die('Invalid category ID');
+    header('Location: list.php');
+    exit;
 }
 
 $id = (int)$_GET['id'];
@@ -17,7 +18,8 @@ $id = (int)$_GET['id'];
 $stmt = $db->prepare("SELECT id FROM categories WHERE id = ?");
 $stmt->execute([$id]);
 if ($stmt->rowCount() === 0) {
-    die('Category not found');
+    header('Location: list.php');
+    exit;
 }
 
 // Check if category has articles (PDO)

@@ -60,6 +60,29 @@ class Auth {
         
         return ['success' => false, 'message' => 'Invalid credentials'];
     }
+
+    // Generate a simple JWT for API authentication (HS256)
+    public static function generateJwt($user, $ttl = 3600) {
+        if (!defined('JWT_SECRET')) return false;
+
+        $header = ['alg' => 'HS256', 'typ' => 'JWT'];
+        $now = time();
+        $payload = [
+            'iss' => SITE_URL,
+            'sub' => $user['id'],
+            'username' => $user['username'],
+            'role' => $user['role'],
+            'iat' => $now,
+            'exp' => $now + $ttl
+        ];
+
+        $b64h = rtrim(strtr(base64_encode(json_encode($header)), '+/', '-_'), '=');
+        $b64p = rtrim(strtr(base64_encode(json_encode($payload)), '+/', '-_'), '=');
+        $sig = hash_hmac('sha256', $b64h . '.' . $b64p, JWT_SECRET, true);
+        $b64s = rtrim(strtr(base64_encode($sig), '+/', '-_'), '=');
+
+        return $b64h . '.' . $b64p . '.' . $b64s;
+    }
     
     // Logout
     public static function logout() {

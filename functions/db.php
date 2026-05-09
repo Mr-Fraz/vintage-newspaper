@@ -185,11 +185,19 @@ class DB {
     public static function createArticle($data) {
         self::init();
         
-        $sql = "INSERT INTO articles (title, slug, content, excerpt, image, category_id, author_id, status) 
-                VALUES (:title, :slug, :content, :excerpt, :image, :category_id, :author_id, :status)";
-        
+        $sql = "INSERT INTO articles (title, slug, content, excerpt, image, category_id, author_id, status, seo_title, meta_description, publish_at, og_image)
+                VALUES (:title, :slug, :content, :excerpt, :image, :category_id, :author_id, :status, :seo_title, :meta_description, :publish_at, :og_image)";
+
         $stmt = self::$conn->prepare($sql);
-        return $stmt->execute($data);
+        $ok = $stmt->execute(array_merge([
+            'seo_title' => null,
+            'meta_description' => null,
+            'publish_at' => null,
+            'og_image' => null
+        ], $data));
+
+        if ($ok) return self::$conn->lastInsertId();
+        return false;
     }
     
     // Update article
@@ -199,12 +207,26 @@ class DB {
         $sql = "UPDATE articles 
                 SET title = :title, slug = :slug, content = :content, 
                     excerpt = :excerpt, image = :image, category_id = :category_id, 
-                    status = :status, updated_at = NOW() 
+                    status = :status, seo_title = :seo_title, meta_description = :meta_description, publish_at = :publish_at, og_image = :og_image, updated_at = NOW() 
                 WHERE id = :id";
-        
+
         $stmt = self::$conn->prepare($sql);
         $data['id'] = $id;
-        return $stmt->execute($data);
+        $defaults = [
+            'seo_title' => null,
+            'meta_description' => null,
+            'publish_at' => null,
+            'og_image' => null
+        ];
+        $params = array_merge($defaults, $data);
+        return $stmt->execute($params);
+    }
+
+    // Clear all tags for an article (helper)
+    public static function clearArticleTags($article_id) {
+        self::init();
+        $stmt = self::$conn->prepare("DELETE FROM article_tag WHERE article_id = :aid");
+        return $stmt->execute(['aid' => $article_id]);
     }
     
     // Delete article
@@ -228,6 +250,156 @@ class DB {
         $result = $stmt->fetch();
         
         return $result['total'];
+    }
+
+    // Create a revision entry from the current article state
+    public static function createRevision($article_id, $user_id = null) {
+        self::init();
+
+        $article = self::getArticleForEdit($article_id);
+        if (!$article) return false;
+
+        $sql = "INSERT INTO article_revisions (article_id, user_id, title, content, seo_title, meta_description, created_at)
+                VALUES (:article_id, :user_id, :title, :content, :seo_title, :meta_description, NOW())";
+
+        $stmt = self::$conn->prepare($sql);
+        return $stmt->execute([
+            'article_id' => $article_id,
+            'user_id' => $user_id,
+            'title' => $article['title'],
+            'content' => $article['content'],
+            'seo_title' => isset($article['seo_title']) ? $article['seo_title'] : null,
+            'meta_description' => isset($article['meta_description']) ? $article['meta_description'] : null
+        ]);
+    }
+
+    // Get revisions for an article
+    public static function getArticleRevisions($article_id) {
+        self::init();
+
+        $sql = "SELECT ar.*, u.username as author
+                FROM article_revisions ar
+                LEFT JOIN users u ON ar.user_id = u.id
+                WHERE ar.article_id = :article_id
+                ORDER BY ar.created_at DESC";
+
+        $stmt = self::$conn->prepare($sql);
+        $stmt->execute(['article_id' => $article_id]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Get tags attached to an article
+    public static function getArticleTags($article_id) {
+        self::init();
+        try {
+            $sql = "SELECT t.* FROM tags t
+                    JOIN article_tag at ON at.tag_id = t.id
+                    WHERE at.article_id = :article_id";
+
+            $stmt = self::$conn->prepare($sql);
+            $stmt->execute(['article_id' => $article_id]);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Table likely doesn't exist yet (migration not applied). Return empty set instead of fatal error.
+            return [];
+        }
+    }
+
+    // Attach tags (array of names) to an article. Accepts array of tag names.
+    public static function attachTagsToArticle($article_id, $tagNames = []) {
+        self::init();
+        if (empty($tagNames)) return true;
+
+        try {
+            foreach ($tagNames as $tagName) {
+                $name = trim($tagName);
+                if ($name === '') continue;
+                $slug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', trim($name)));
+
+                // find or create tag
+                $stmt = self::$conn->prepare("SELECT id FROM tags WHERE slug = :slug LIMIT 1");
+                $stmt->execute(['slug' => $slug]);
+                $tag = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($tag) {
+                    $tag_id = $tag['id'];
+                } else {
+                    $ins = self::$conn->prepare("INSERT INTO tags (name, slug, created_at) VALUES (:name, :slug, NOW())");
+                    $ins->execute(['name' => $name, 'slug' => $slug]);
+                    $tag_id = self::$conn->lastInsertId();
+                }
+
+                // attach if not exists
+                $chk = self::$conn->prepare("SELECT 1 FROM article_tag WHERE article_id = :aid AND tag_id = :tid LIMIT 1");
+                $chk->execute(['aid' => $article_id, 'tid' => $tag_id]);
+                if (!$chk->fetch()) {
+                    $attach = self::$conn->prepare("INSERT INTO article_tag (article_id, tag_id) VALUES (:aid, :tid)");
+                    $attach->execute(['aid' => $article_id, 'tid' => $tag_id]);
+                }
+            }
+        } catch (PDOException $e) {
+            // If tags tables are missing or other DB error occurs, fail gracefully.
+            return false;
+        }
+
+        return true;
+    }
+
+    // Log an activity
+    // NOTE: $action given a default to avoid PHP deprecation for optional-before-required parameters.
+    public static function logActivity($user_id = null, $action = null, $entity_type = null, $entity_id = null, $meta = null, $ip = null) {
+        self::init();
+
+        $sql = "INSERT INTO activity_log (user_id, action, entity_type, entity_id, meta, ip, created_at)
+                VALUES (:user_id, :action, :entity_type, :entity_id, :meta, :ip, NOW())";
+
+        $stmt = self::$conn->prepare($sql);
+        $metaJson = $meta ? json_encode($meta) : null;
+        return $stmt->execute([
+            'user_id' => $user_id,
+            'action' => $action,
+            'entity_type' => $entity_type,
+            'entity_id' => $entity_id,
+            'meta' => $metaJson,
+            'ip' => $ip
+        ]);
+    }
+
+    // Create a password reset token and return it
+    public static function createPasswordReset($email, $ttl_seconds = 3600) {
+        self::init();
+
+        $token = bin2hex(random_bytes(32));
+        $expires_at = date('Y-m-d H:i:s', time() + $ttl_seconds);
+
+        $sql = "INSERT INTO password_resets (email, token, expires_at, used, created_at)
+                VALUES (:email, :token, :expires_at, 0, NOW())";
+
+        $stmt = self::$conn->prepare($sql);
+        $ok = $stmt->execute(['email' => $email, 'token' => $token, 'expires_at' => $expires_at]);
+        if ($ok) return $token;
+        return false;
+    }
+
+    // Get a valid password reset row by token
+    public static function getPasswordReset($token) {
+        self::init();
+
+        $sql = "SELECT * FROM password_resets WHERE token = :token AND used = 0 AND expires_at >= NOW() LIMIT 1";
+        $stmt = self::$conn->prepare($sql);
+        $stmt->execute(['token' => $token]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Mark a token as used
+    public static function consumePasswordReset($token) {
+        self::init();
+
+        $sql = "UPDATE password_resets SET used = 1 WHERE token = :token";
+        $stmt = self::$conn->prepare($sql);
+        return $stmt->execute(['token' => $token]);
     }
 }
 ?>

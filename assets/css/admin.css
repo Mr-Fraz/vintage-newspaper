@@ -252,6 +252,26 @@
     margin-top: 30px;
 }
 
+/* Ensure buttons are visible and aligned */
+.form-actions {
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap; /* allow buttons to wrap on narrow screens */
+}
+
+.form-actions .btn,
+.form-actions button {
+    display: inline-block;
+    min-width: 110px;
+}
+
+.admin-main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 30px;
+    overflow: visible; /* ensure children are visible */
+}
+
 /* Buttons */
 .btn-sm {
     padding: 6px 12px;

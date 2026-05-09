@@ -14,6 +14,13 @@ define('UPLOAD_DIR', __DIR__ . '/../uploads/articles/');
 define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB
 define('ALLOWED_EXTENSIONS', ['jpg', 'jpeg', 'png', 'gif']);
 
+// JWT secret for API tokens (override via environment variable in production)
+if (isset($_ENV['JWT_SECRET']) && !empty($_ENV['JWT_SECRET'])) {
+    define('JWT_SECRET', $_ENV['JWT_SECRET']);
+} else {
+    define('JWT_SECRET', 'change-this-default-secret');
+}
+
 // Session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

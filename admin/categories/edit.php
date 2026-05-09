@@ -19,7 +19,10 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = (int)$_GET['id'];
 
 $category = DB::getCategoryById($id);
-if (!$category) die('Category not found');
+if (!$category) {
+    header('Location: list.php');
+    exit;
+}
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (!Helper::verifyCSRFToken($_POST['csrf_token'] ?? '')) {
