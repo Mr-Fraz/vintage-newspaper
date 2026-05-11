@@ -37,7 +37,7 @@ include __DIR__ . '/../includes/navbar.php';
                         
                         <div class="article-content">
                             <h3><a href="<?php echo SITE_URL; ?>/article/<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a></h3>
-                            <p><?php echo Helper::excerpt($article['content'], 120); ?></p>
+                            <p><?php echo htmlspecialchars($article['excerpt'] ?? ''); ?></p>
                             <div class="meta">
                                 <span><?php echo htmlspecialchars($article['author']); ?></span>
                                 <span><?php echo Helper::timeAgo($article['created_at']); ?></span>

@@ -28,7 +28,7 @@ include __DIR__ . '/includes/navbar.php';
                 <div class="hero-text">
                     <span class="category-badge"><?php echo $featured['category_name']; ?></span>
                     <h2><a href="<?php echo SITE_URL; ?>/article/<?php echo $featured['id']; ?>"><?php echo htmlspecialchars($featured['title']); ?></a></h2>
-                    <p><?php echo Helper::excerpt($featured['content']); ?></p>
+                    <p><?php echo htmlspecialchars($featured['excerpt'] ?? ''); ?></p>
                     <div class="meta">
                         <span>By <?php echo htmlspecialchars($featured['author']); ?></span>
                         <span><?php echo Helper::formatDate($featured['created_at']); ?></span>
@@ -56,7 +56,7 @@ include __DIR__ . '/includes/navbar.php';
                         <div class="article-content">
                             <span class="category-badge"><?php echo $article['category_name']; ?></span>
                             <h3><a href="<?php echo SITE_URL; ?>/article/<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a></h3>
-                            <p><?php echo Helper::excerpt($article['content'], 120); ?></p>
+                            <p><?php echo htmlspecialchars($article['excerpt'] ?? ''); ?></p>
                             <div class="meta">
                                 <span><?php echo htmlspecialchars($article['author']); ?></span>
                                 <span><?php echo Helper::timeAgo($article['created_at']); ?></span>

@@ -1,0 +1,268 @@
+/* =============================================
+   DARK MODE — Vintage Newspaper (Warm Charcoal)
+   Easy on eyes — warm dark, muted amber tones
+   ============================================= */
+
+body.dark-mode {
+  --bg: #2a2420; /* was #1e1a16 — lighter warm brown */
+  --paper: #322b24; /* was #252018 — lighter card bg */
+  --primary: #b8955a; /* was #c8a96e — less gold */
+  --accent: #b8955a; /* same */
+  --text: #ccc0a8; /* was #d4c9b5 — slightly dimmer */
+}
+
+body.dark-mode {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ── Navbar ── */
+body.dark-mode .navbar {
+  background: #221e1a; /* was #161210 — less black */
+}
+body.dark-mode .logo h1 {
+  color: #b8955a;
+} /* less gold */
+body.dark-mode footer {
+  background: #221e1a;
+}
+body.dark-mode .logo h1 {
+  color: #c8a96e;
+}
+body.dark-mode .logo a {
+  color: #c8a96e;
+  text-decoration: none;
+}
+body.dark-mode .logo .tagline {
+  color: #7a6a55;
+}
+body.dark-mode .nav-links a {
+  color: #bfb09a;
+}
+body.dark-mode .nav-links a:hover {
+  color: #c8a96e;
+}
+
+/* ── Hero ── */
+body.dark-mode .hero {
+  background: #161210;
+  border-color: var(--border);
+}
+body.dark-mode .hero h2,
+body.dark-mode .hero h3 {
+  color: #c8a96e;
+}
+
+/* ── Cards ── */
+body.dark-mode .article-card {
+  background: var(--paper);
+  border-color: var(--border);
+  box-shadow: none;
+}
+body.dark-mode .article-card:hover {
+  border-color: #a08050;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+body.dark-mode .article-card h3 a {
+  color: #d4c9b5;
+}
+body.dark-mode .article-card h3 a:hover {
+  color: #c8a96e;
+}
+body.dark-mode .article-meta,
+body.dark-mode .article-meta span {
+  color: #7a6a55;
+}
+
+/* ── Article Single ── */
+body.dark-mode .article-single {
+  background: var(--paper);
+  border-color: var(--border);
+}
+body.dark-mode .article-header h1 {
+  color: #d4c9b5;
+}
+body.dark-mode .article-content {
+  color: #c9bfad;
+}
+body.dark-mode .article-content h2,
+body.dark-mode .article-content h3,
+body.dark-mode .article-content h4 {
+  color: #d4c9b5;
+}
+body.dark-mode .article-content a {
+  color: #c8a96e;
+}
+body.dark-mode .article-content img {
+  border-color: var(--border);
+  opacity: 0.88;
+}
+body.dark-mode .article-content blockquote {
+  border-left-color: #a08050;
+  background: rgba(255, 255, 255, 0.03);
+  color: #a89880;
+}
+
+/* ── Category badge ── */
+body.dark-mode .category-badge {
+  background: #3d3228;
+  color: #c8a96e;
+  border-color: #4d4238;
+}
+
+/* ── Buttons ── */
+body.dark-mode .btn {
+  border-color: #5a4a38;
+  color: #bfb09a;
+  background: transparent;
+}
+body.dark-mode .btn:hover {
+  background: #3d3228;
+  color: #c8a96e;
+  border-color: #a08050;
+}
+body.dark-mode .btn-primary {
+  background: #5a4030;
+  color: #d4c9b5;
+  border-color: #7a5a40;
+}
+body.dark-mode .btn-primary:hover {
+  background: #6a5040;
+}
+
+/* ── Forms ── */
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+  background: #2a231a;
+  color: #d4c9b5;
+  border-color: #3d3228;
+}
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: #5a4a38;
+}
+body.dark-mode input:focus,
+body.dark-mode textarea:focus,
+body.dark-mode select:focus {
+  border-color: #a08050;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(160, 128, 80, 0.15);
+}
+body.dark-mode label {
+  color: #a89880;
+}
+
+/* ── Comments ── */
+body.dark-mode .comments-section {
+  background: var(--paper);
+  border-color: var(--border);
+}
+body.dark-mode .comments-section h2 {
+  color: #d4c9b5;
+  border-bottom-color: var(--border);
+}
+body.dark-mode .comment {
+  background: rgba(255, 255, 255, 0.02);
+  border-left-color: #5a4a38;
+}
+body.dark-mode .comment-meta strong {
+  color: #c8a96e;
+}
+body.dark-mode .comment-meta span {
+  color: #6a5a48;
+}
+body.dark-mode .comment p {
+  color: #bfb09a;
+}
+body.dark-mode .comment-form {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: var(--border);
+}
+body.dark-mode .no-comments {
+  color: #6a5a48;
+}
+
+/* ── Alerts ── */
+body.dark-mode .alert-error {
+  background: #2a1515;
+  border-color: #5a2a2a;
+  color: #c88080;
+}
+body.dark-mode .alert-success {
+  background: #152015;
+  border-color: #2a5a2a;
+  color: #80c880;
+}
+
+/* ── Footer ── */
+body.dark-mode footer {
+  background: #161210;
+  border-top-color: var(--border);
+  color: #6a5a48;
+}
+body.dark-mode footer a {
+  color: #a08050;
+}
+body.dark-mode footer a:hover {
+  color: #c8a96e;
+}
+
+/* ── Misc ── */
+body.dark-mode hr {
+  border-color: var(--border);
+}
+body.dark-mode ::selection {
+  background: #5a4030;
+  color: #d4c9b5;
+}
+
+/* ── Scrollbar ── */
+body.dark-mode ::-webkit-scrollbar {
+  width: 8px;
+}
+body.dark-mode ::-webkit-scrollbar-track {
+  background: #1e1a16;
+}
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: #3d3228;
+  border-radius: 4px;
+}
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #5a4a38;
+}
+
+/* ── Toggle Button ── */
+.dark-toggle {
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: #e0d5c5;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  font-family: Georgia, serif;
+}
+.dark-toggle:hover {
+  border-color: #c8a96e;
+  color: #c8a96e;
+  background: rgba(200, 169, 110, 0.08);
+}
+body.dark-mode .dark-toggle {
+  border-color: #5a4a38;
+  color: #a89880;
+}
+body.dark-mode .dark-toggle:hover {
+  border-color: #a08050;
+  color: #c8a96e;
+  background: rgba(160, 128, 80, 0.1);
+}
+.dark-toggle .toggle-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}

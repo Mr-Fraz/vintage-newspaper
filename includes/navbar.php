@@ -13,16 +13,16 @@ $categories = DB::getCategories();
                 <p class="tagline">Your Daily Source of Truth</p>
             </a>
         </div>
-        
+
         <ul class="nav-links">
             <li><a href="<?php echo SITE_URL; ?>">Home</a></li>
-            
+
             <?php foreach ($categories as $cat): ?>
                 <li><a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>"><?php echo $cat['name']; ?></a></li>
             <?php endforeach; ?>
-            
+
             <li><a href="<?php echo SITE_URL; ?>/pages/search.php">Search</a></li>
-            
+
             <?php if (Auth::isLoggedIn()): ?>
                 <li><a href="<?php echo SITE_URL; ?>/admin/">Dashboard</a></li>
                 <li><a href="<?php echo SITE_URL; ?>/admin/logout.php">Logout</a></li>
@@ -31,6 +31,12 @@ $categories = DB::getCategories();
             <?php endif; ?>
         </ul>
         
+        <!-- Dark Mode Toggle -->
+        <!-- <button class="dark-toggle" id="dark-toggle-btn" aria-label="Switch to dark mode" title="Switch to dark mode">
+            <span class="toggle-icon" id="toggle-icon">🌙</span>
+            <span class="toggle-label" id="toggle-label">Dark</span>
+        </button> -->
+
         <div class="hamburger">
             <span></span>
             <span></span>

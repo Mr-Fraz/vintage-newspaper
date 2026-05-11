@@ -5,11 +5,24 @@ if (!defined('SITE_NAME')) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?><?php echo SITE_NAME; ?></title>
+    <script>
+        if (localStorage.getItem('vn_dark_mode') === 'dark') {
+            document.documentElement.classList.add('dark-mode-preload');
+        }
+    </script>
+    <style>
+        .dark-mode-preload body {
+            background: #1a1410 !important;
+        }
+    </style>
     <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/style.css">
+    <!-- <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/dark-mode.css"> -->
     <?php if (isset($extraCSS)) echo $extraCSS; ?>
 </head>
+
 <body>

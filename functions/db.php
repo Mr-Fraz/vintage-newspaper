@@ -120,10 +120,7 @@ class DB
             $stmt = self::$conn->prepare(
                 "SELECT id FROM categories WHERE slug = :slug AND id != :id"
             );
-            $stmt->execute([
-                'slug' => $slug,
-                'id' => $id
-            ]);
+            $stmt->execute(['slug' => $slug, 'id' => $id]);
         } else {
             $stmt = self::$conn->prepare(
                 "SELECT id FROM categories WHERE slug = :slug"
@@ -134,15 +131,12 @@ class DB
         return $stmt->fetch() ? true : false;
     }
 
-    //Get category by ID
+    // Get category by ID
     public static function getCategoryById($id)
     {
         self::init();
-
-        $sql = "SELECT * FROM categories WHERE id = :id";
-        $stmt = self::$conn->prepare($sql);
+        $stmt = self::$conn->prepare("SELECT * FROM categories WHERE id = :id");
         $stmt->execute(['id' => $id]);
-
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -150,13 +144,11 @@ class DB
     public static function updateCategory($data)
     {
         self::init();
-
         $sql = "UPDATE categories 
             SET name = :name,
                 slug = :slug,
                 description = :description
             WHERE id = :id";
-
         $stmt = self::$conn->prepare($sql);
         return $stmt->execute($data);
     }
@@ -165,26 +157,27 @@ class DB
     public static function addCategory($data)
     {
         self::init();
-
         $sql = "INSERT INTO categories (name, slug, description) 
                 VALUES (:name, :slug, :description)";
-
         $stmt = self::$conn->prepare($sql);
         return $stmt->execute($data);
     }
 
-    // Get all articles with pagination
+    // Get all articles with pagination — optimized: no SELECT *
     public static function getArticles($page = 1, $limit = POSTS_PER_PAGE)
     {
         self::init();
         $offset = ($page - 1) * $limit;
 
-        $sql = "SELECT a.*, c.name as category_name, u.username as author 
-                FROM articles a 
-                LEFT JOIN categories c ON a.category_id = c.id 
-                LEFT JOIN users u ON a.author_id = u.id 
-                WHERE a.status = 'published' 
-                ORDER BY a.created_at DESC 
+        $sql = "SELECT a.id, a.title, a.slug, a.excerpt, a.image, a.image_alt,
+                       a.views, a.created_at, a.status,
+                       c.name as category_name, c.slug as category_slug,
+                       u.username as author
+                FROM articles a
+                LEFT JOIN categories c ON a.category_id = c.id
+                LEFT JOIN users u ON a.author_id = u.id
+                WHERE a.status = 'published'
+                ORDER BY a.created_at DESC
                 LIMIT :limit OFFSET :offset";
 
         $stmt = self::$conn->prepare($sql);
@@ -231,18 +224,20 @@ class DB
         return $stmt->fetch();
     }
 
-    // Get articles by category
+    // Get articles by category — optimized: INNER JOIN + specific columns
     public static function getArticlesByCategory($slug, $page = 1, $limit = POSTS_PER_PAGE)
     {
         self::init();
         $offset = ($page - 1) * $limit;
 
-        $sql = "SELECT a.*, c.name as category_name, u.username as author 
-                FROM articles a 
-                LEFT JOIN categories c ON a.category_id = c.id 
-                LEFT JOIN users u ON a.author_id = u.id 
-                WHERE c.slug = :slug AND a.status = 'published' 
-                ORDER BY a.created_at DESC 
+        $sql = "SELECT a.id, a.title, a.slug, a.excerpt, a.image, a.created_at,
+                       c.name as category_name, c.slug as category_slug,
+                       u.username as author
+                FROM articles a
+                INNER JOIN categories c ON a.category_id = c.id AND c.slug = :slug
+                LEFT JOIN users u ON a.author_id = u.id
+                WHERE a.status = 'published'
+                ORDER BY a.created_at DESC
                 LIMIT :limit OFFSET :offset";
 
         $stmt = self::$conn->prepare($sql);
@@ -254,42 +249,78 @@ class DB
         return $stmt->fetchAll();
     }
 
-    // Search articles
-    public static function searchArticles($query)
+    // Search articles — optimized: FULLTEXT index instead of LIKE scan
+    public static function searchArticles($query, $limit = 20)
     {
         self::init();
 
-        $sql = "SELECT a.*, c.name as category_name, u.username as author 
-                FROM articles a 
-                LEFT JOIN categories c ON a.category_id = c.id 
-                LEFT JOIN users u ON a.author_id = u.id 
-                WHERE (a.title LIKE :query OR a.content LIKE :query1 OR a.content LIKE :query2) 
-                AND a.status = 'published' 
-                ORDER BY a.created_at DESC";
+        if (strlen($query) < 3) return [];
+
+        $sql = "SELECT a.id, a.title, a.slug, a.excerpt, a.image, a.created_at,
+                       c.name as category_name, u.username as author,
+                       MATCH(a.title, a.content) AGAINST (:query IN BOOLEAN MODE) AS relevance
+                FROM articles a
+                LEFT JOIN categories c ON a.category_id = c.id
+                LEFT JOIN users u ON a.author_id = u.id
+                WHERE MATCH(a.title, a.content) AGAINST (:query2 IN BOOLEAN MODE)
+                AND a.status = 'published'
+                ORDER BY relevance DESC
+                LIMIT :limit";
 
         $stmt = self::$conn->prepare($sql);
-        $searchTerm = "%{$query}%";
-        $stmt->bindParam(':query', $searchTerm, PDO::PARAM_STR);
-        $stmt->bindParam(':query1', $searchTerm, PDO::PARAM_STR);
-        $stmt->bindParam(':query2', $searchTerm, PDO::PARAM_STR);
+        $stmt->bindValue(':query',  $query, PDO::PARAM_STR);
+        $stmt->bindValue(':query2', $query, PDO::PARAM_STR);
+        $stmt->bindValue(':limit',  $limit, PDO::PARAM_INT);
         $stmt->execute();
 
         return $stmt->fetchAll();
     }
 
-
-
-
     // Get all categories
     public static function getCategories()
     {
         self::init();
-
         $sql = "SELECT * FROM categories ORDER BY name ASC";
         $stmt = self::$conn->prepare($sql);
         $stmt->execute();
-
         return $stmt->fetchAll();
+    }
+
+    // Dashboard stats — single query instead of 4 round-trips
+    public static function getDashboardStats()
+    {
+        self::init();
+        $stmt = self::$conn->prepare("
+            SELECT
+                COUNT(*) as total_articles,
+                SUM(status = 'published') as published_articles,
+                SUM(status = 'draft') as draft_articles,
+                SUM(status = 'pending') as pending_articles,
+                (SELECT COUNT(*) FROM users) as total_users,
+                (SELECT COUNT(*) FROM categories) as total_categories,
+                (SELECT COUNT(*) FROM comments WHERE status = 'pending') as pending_comments
+            FROM articles
+        ");
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Recent articles for dashboard
+    public static function getRecentArticles($limit = 5)
+    {
+        self::init();
+        $stmt = self::$conn->prepare("
+            SELECT a.id, a.title, a.status, a.created_at,
+                   c.name as category_name, u.username
+            FROM articles a
+            LEFT JOIN users u ON a.author_id = u.id
+            LEFT JOIN categories c ON a.category_id = c.id
+            ORDER BY a.created_at DESC
+            LIMIT :limit
+        ");
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Create article
@@ -347,24 +378,20 @@ class DB
     public static function deleteArticle($id)
     {
         self::init();
-
         $sql = "DELETE FROM articles WHERE id = :id";
         $stmt = self::$conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-
         return $stmt->execute();
     }
 
-    // Count total articles
+    // Count total published articles
     public static function countArticles()
     {
         self::init();
-
         $sql = "SELECT COUNT(*) as total FROM articles WHERE status = 'published'";
         $stmt = self::$conn->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetch();
-
         return $result['total'];
     }
 
@@ -381,11 +408,11 @@ class DB
 
         $stmt = self::$conn->prepare($sql);
         return $stmt->execute([
-            'article_id' => $article_id,
-            'user_id' => $user_id,
-            'title' => $article['title'],
-            'content' => $article['content'],
-            'seo_title' => isset($article['seo_title']) ? $article['seo_title'] : null,
+            'article_id'       => $article_id,
+            'user_id'          => $user_id,
+            'title'            => $article['title'],
+            'content'          => $article['content'],
+            'seo_title'        => isset($article['seo_title']) ? $article['seo_title'] : null,
             'meta_description' => isset($article['meta_description']) ? $article['meta_description'] : null
         ]);
     }
@@ -403,7 +430,6 @@ class DB
 
         $stmt = self::$conn->prepare($sql);
         $stmt->execute(['article_id' => $article_id]);
-
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -418,15 +444,13 @@ class DB
 
             $stmt = self::$conn->prepare($sql);
             $stmt->execute(['article_id' => $article_id]);
-
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            // Table likely doesn't exist yet (migration not applied). Return empty set instead of fatal error.
             return [];
         }
     }
 
-    // Attach tags (array of names) to an article. Accepts array of tag names.
+    // Attach tags (array of names) to an article
     public static function attachTagsToArticle($article_id, $tagNames = [])
     {
         self::init();
@@ -438,7 +462,6 @@ class DB
                 if ($name === '') continue;
                 $slug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', trim($name)));
 
-                // find or create tag
                 $stmt = self::$conn->prepare("SELECT id FROM tags WHERE slug = :slug LIMIT 1");
                 $stmt->execute(['slug' => $slug]);
                 $tag = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -451,7 +474,6 @@ class DB
                     $tag_id = self::$conn->lastInsertId();
                 }
 
-                // attach if not exists
                 $chk = self::$conn->prepare("SELECT 1 FROM article_tag WHERE article_id = :aid AND tag_id = :tid LIMIT 1");
                 $chk->execute(['aid' => $article_id, 'tid' => $tag_id]);
                 if (!$chk->fetch()) {
@@ -460,7 +482,6 @@ class DB
                 }
             }
         } catch (PDOException $e) {
-            // If tags tables are missing or other DB error occurs, fail gracefully.
             return false;
         }
 
@@ -468,7 +489,6 @@ class DB
     }
 
     // Log an activity
-    // NOTE: $action given a default to avoid PHP deprecation for optional-before-required parameters.
     public static function logActivity($user_id = null, $action = null, $entity_type = null, $entity_id = null, $meta = null, $ip = null)
     {
         self::init();
@@ -479,12 +499,12 @@ class DB
         $stmt = self::$conn->prepare($sql);
         $metaJson = $meta ? json_encode($meta) : null;
         return $stmt->execute([
-            'user_id' => $user_id,
-            'action' => $action,
+            'user_id'     => $user_id,
+            'action'      => $action,
             'entity_type' => $entity_type,
-            'entity_id' => $entity_id,
-            'meta' => $metaJson,
-            'ip' => $ip
+            'entity_id'   => $entity_id,
+            'meta'        => $metaJson,
+            'ip'          => $ip
         ]);
     }
 

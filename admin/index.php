@@ -1,10 +1,4 @@
-<?php
-// Production: do not display errors to end users
-ini_set('display_errors', 0);
-error_reporting(E_ALL);
-
-require_once __DIR__ . '/includes/auth-check.php';
-require_once __DIR__ . '/../functions/db.php';
+ <?php
 require_once __DIR__ . '/includes/auth-check.php';
 require_once __DIR__ . '/../functions/db.php';
 
@@ -12,28 +6,8 @@ $pageTitle = 'Dashboard';
 
 // Get stats
 global $db;
-$statsQueries = [
-    'total_articles' => "SELECT COUNT(*) as count FROM articles",
-    'published_articles' => "SELECT COUNT(*) as count FROM articles WHERE status = 'published'",
-    'total_users' => "SELECT COUNT(*) as count FROM users",
-    'total_categories' => "SELECT COUNT(*) as count FROM categories"
-];
-
-$stats = [];
-foreach ($statsQueries as $key => $query) {
-    $result = $db->prepare($query);
-    $result->execute();
-    $stats[$key] = $result->fetchColumn();
-}
-
-// Recent articles
-$recentStatement = $db->prepare("SELECT a.*, u.username, c.name as category_name 
-                                FROM articles a 
-                    	        LEFT JOIN users u ON a.author_id = u.id 
-                                LEFT JOIN categories c ON a.category_id = c.id 
-                                ORDER BY a.created_at DESC LIMIT 5");
-$recentStatement->execute();
-$recentArticles = $recentStatement->fetchAll();
+$stats          = DB::getDashboardStats();
+$recentArticles = DB::getRecentArticles(5);
 
 include __DIR__ . '/includes/admin-header.php';
 ?>
@@ -105,4 +79,5 @@ include __DIR__ . '/includes/admin-header.php';
 </div>
 
 </body>
-</html>
+</html> 
+
