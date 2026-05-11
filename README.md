@@ -1,338 +1,87 @@
-# 📰 Vintage Newspaper CMS
+## Overview
 
-A vintage-themed newspaper Content Management System built with PHP, PDO, and MySQL. Features a beautiful retro newspaper design with modern functionality.
+Vintage Newspaper is a lightweight CMS with a retro design, built on PHP + PDO and MySQL. The repository currently contains Phase 1 functionality: DB migrations for revisions/tags, hardened uploads, JWT login + password-reset endpoints, cron scripts for scheduled publishing and cleanup, and admin UI updates (tags, SEO fields, revisions support).
 
-![Vintage Newspaper](https://img.shields.io/badge/Theme-Vintage-red?style=flat-square)
-![PHP](https://img.shields.io/badge/PHP-7.4+-blue?style=flat-square)
-![MySQL](https://img.shields.io/badge/MySQL-5.7+-orange?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+## Current Highlights
 
-## ✨ Features
+- **Authentication & API:** login with JWT generation (`api/login.php`) and password reset endpoints (`api/password-reset.php`, `api/password-reset-verify.php`).
+- **Articles:** full CRUD with support for `tags`, `article_revisions`, `status`, `publish_at`, `seo_title`, `meta_description`, and `og_image`.
+- **Upload hardening:** `api/upload.php` validates MIME types, strips EXIF, stores uploads under `uploads/articles/YYYY/MM/`, and creates a protective `.htaccess` to prevent execution.
+- **Migrations:** `database/migration_002.sql` adds tags, revisions, password resets and alters `articles` (idempotent checks present).
+- **Cron jobs:** `scripts/cron-publish.php` and `scripts/cron-cleanup.php` for scheduled publishing and cleanup; guidance in `docs/PHASE1_MIGRATION_AND_CRON.md`.
+- **Admin editor:** TinyMCE is included under `assets/js/tinymce/` and initialized in `admin/includes/admin-header.php` and `admin/posts/{add,edit}.php`. (If you prefer plain HTML textareas, TinyMCE can be removed by deleting the includes and init code.)
+- **Security & quality:** PDO prepared statements, password hashing, basic rate-limiting hooks, defensive DB helpers in `functions/db.php` to avoid fatal errors when migrations aren't applied.
 
-### 🎯 Core Features
-- ✅ **User Authentication** - Secure login/register system with password hashing
-- ✅ **Admin Dashboard** - Statistics overview and management interface
-- ✅ **Article Management** - Full CRUD operations for articles
-- ✅ **Category System** - Organize articles by categories
-- ✅ **User Management** - Admin panel for managing users and roles
-- ✅ **Search Functionality** - Full-text search across articles
-- ✅ **Image Upload** - Featured images for articles with validation
-- ✅ **Responsive Design** - Mobile-friendly vintage newspaper theme
+## Requirements
 
-### 🔒 Security Features
-- ✅ **Password Hashing** - bcrypt for secure password storage
-- ✅ **CSRF Protection** - Token-based CSRF prevention
-- ✅ **XSS Protection** - Input sanitization and output escaping
-- ✅ **SQL Injection Prevention** - PDO prepared statements
-- ✅ **File Upload Validation** - Secure image upload handling
-- ✅ **Session Management** - Secure session handling
+- PHP 8.0+ (project was developed on PHP 8.x)
+- MySQL 5.7+
+- GD extension (image processing)
+- PDO MySQL extension
+- Apache or Nginx; `mod_rewrite` recommended for pretty URLs
 
-### 🚀 Advanced Features
-- ✅ **REST API** - JSON API for articles and search
-- ✅ **Pagination** - Efficient article pagination
-- ✅ **Slug Generation** - SEO-friendly URLs
-- ✅ **Role-based Access** - Admin, Editor, and User roles
-- ✅ **Rich Text Content** - HTML content support
-- ✅ **Image Management** - Upload, display, and management
-- ✅ **Statistics Dashboard** - Admin analytics
+## Quick installation
 
-## 📋 Requirements
+1. Clone and place in your webroot.
+2. Create database and import `database/schema.sql`.
+3. Apply migrations: at minimum run `database/migration_001.sql` and `database/migration_002.sql`.
+4. Configure DB credentials in `config/database.php` or your environment loader (`config/env.php`).
+5. Ensure `uploads/articles/` is writable by the web server. The upload endpoint will create safe subfolders and a `.htaccess` file.
+6. Visit:
+   - Frontend: `http://localhost/vintage-newspaper/`
+   - Admin: `http://localhost/vintage-newspaper/admin/`
 
-- **PHP** 7.4 or higher
-- **MySQL** 5.7 or higher
-- **Apache/Nginx** with mod_rewrite
-- **GD Library** (for image handling)
-- **PDO Extension** (PHP Data Objects)
+Default seeded admin (see `database/seed.sql`): `admin@gmail.com` / `admin123`.
 
-## 🚀 Installation
+## API endpoints (summary)
 
-### 1. Environment Setup
+- `GET /api/articles.php` — list/filter articles (pagination)
+- `GET /api/search.php` — full-text search
+- `POST /api/upload.php` — secure image upload (session or Bearer JWT)
+- `POST /api/login.php` — login + JWT
+- `POST /api/password-reset.php` — request reset
+- `POST /api/password-reset-verify.php` — verify and update password
 
-Clone the repository:
-```bash
-git clone https://github.com/yourusername/vintage-newspaper.git
-cd vintage-newspaper
-```
+Inspect the `api/` folder for details and parameter examples.
 
-### 2. Database Setup
+## Editor
 
-Create database and import schema:
-```sql
-CREATE DATABASE vintage_newspaper CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-## Setup
-1. Import database/schema.sql
-2. Run migration_001.sql
-3. Run migration_002.sql
-4. Run migration_003.sql
+- TinyMCE is included (admin WYSIWYG). Files: `assets/js/tinymce/`.
+- Initialization happens in `admin/includes/admin-header.php` and `admin/posts/add.php` / `admin/posts/edit.php`.
+- To revert to native HTML editing: remove TinyMCE script tags and the `tinymce.init(...)` blocks, and use plain `<textarea>` elements. Server-side sanitization is recommended when allowing HTML.
 
-### 3. Environment Configuration
+## Migrations & cron
 
-Copy and configure environment file:
-```bash
-cp .env.example .env
-```
+- Migrations: see `database/` — `migration_002.sql` contains the Phase 1 changes (tags, revisions, password_resets, activity_log, article column additions).
+- Cron scripts: `scripts/cron-publish.php`, `scripts/cron-cleanup.php`.
 
-Update `.env` with your settings:
-```env
-# Database Configuration
-DB_HOST=localhost
-DB_NAME=vintage_newspaper
-DB_USER=root
-DB_PASS=your_password
+## Security notes
 
-# Site Configuration
-SITE_NAME=Vintage Newspaper
-SITE_URL=http://localhost/vintage-newspaper
-ADMIN_EMAIL=admin@vintagenews.com
+- Uploads: MIME & extension checks, EXIF removed, directories separated by date and protected with `.htaccess` to prevent execution.
+- DB access uses PDO with prepared statements.
+- Keep secrets out of VCS and use environment files or variables.
 
-# Security
-SESSION_SECRET=your_random_secret_key
-```
+## Developer pointers
 
-### 4. File Permissions
+- Admin UI helpers and editor integration: `admin/includes/admin-header.php`, `admin/posts/add.php`, `admin/posts/edit.php`.
+- DB helpers and new functions: `functions/db.php`.
+- Upload logic: `api/upload.php`.
+- Docs for migration and cron: `docs/PHASE1_MIGRATION_AND_CRON.md`.
 
-Set proper permissions for uploads:
-```bash
-chmod 755 uploads/
-chmod 755 uploads/articles/
-```
+## Testing checklist
 
-### 5. Access the Application
+1. Apply migrations.
+2. Login to admin and create a post (add image upload, tags, seo fields).
+3. Test password reset flow (inspect `password_resets` table).
+4. Run `php scripts/cron-publish.php` to validate scheduled publishing behavior.
 
-- **Frontend:** `http://localhost/vintage-newspaper/`
-- **Admin Panel:** `http://localhost/vintage-newspaper/admin/`
+## Contributing
 
-**Default Admin Credentials:**
-- Email: `admin@gmail.com`
-- Password: `admin123`
+Fork → branch → PR. Include migration SQL when altering schema. Keep changes focused.
 
-## 📁 Project Structure
+## License
 
-```
-vintage-newspaper/
-├── 📁 admin/                 # Admin panel
-│   ├── 📁 categories/        # Category management
-│   ├── 📁 posts/            # Article management
-│   ├── 📁 users/            # User management
-│   ├── 📁 includes/         # Admin templates
-│   └── index.php            # Admin dashboard
-├── 📁 api/                  # REST API endpoints
-│   ├── articles.php         # Articles API
-│   ├── search.php           # Search API
-│   └── upload.php           # File upload API
-├── 📁 assets/               # Static assets
-│   ├── 📁 css/              # Stylesheets
-│   ├── 📁 js/               # JavaScript files
-│   ├── 📁 images/           # Static images
-│   └── 📁 fonts/            # Custom fonts
-├── 📁 config/               # Configuration files
-│   ├── config.php           # Main configuration
-│   ├── database.php         # Database connection
-│   └── env.php              # Environment loader
-├── 📁 database/             # Database files
-│   ├── schema.sql           # Database schema
-│   ├── migration_001.sql    # Database migrations
-│   └── seed.sql             # Sample data
-├── 📁 functions/            # Core functions
-│   ├── auth.php             # Authentication functions
-│   ├── db.php               # Database operations
-│   ├── helpers.php          # Utility functions
-│   └── validation.php       # Input validation
-├── 📁 includes/             # Frontend templates
-│   ├── header.php           # Site header
-│   ├── navbar.php           # Navigation
-│   └── footer.php           # Site footer
-├── 📁 pages/                # Frontend pages
-│   ├── home.php             # Homepage
-│   ├── article.php          # Article view
-│   ├── category.php         # Category view
-│   ├── search.php           # Search results
-│   ├── login.php            # Login page
-│   └── register.php         # Registration page
-└── 📁 uploads/              # User uploads
-    └── 📁 articles/         # Article images
-```
-
-## 🎨 Usage Guide
-
-### For Content Authors
-
-#### Adding Articles
-1. Login to admin panel
-2. Navigate to **Posts → Add New Post**
-3. Fill in title, content, category, and excerpt
-4. Upload featured image (optional)
-5. Set status to "Published" or "Draft"
-6. Click "Create Post"
-
-#### Managing Categories
-1. Go to **Categories** in admin sidebar
-2. Click "Add New Category"
-3. Enter name, slug, and description
-4. Save category
-
-### For Administrators
-
-#### User Management
-1. Access **Users** section in admin
-2. Click "Manage" on any user
-3. Change user role (User/Admin)
-4. Delete users if needed
-
-#### Content Moderation
-- View all articles in **Posts → All Posts**
-- Edit or delete any article
-- Monitor user activity and content
-
-## 🌐 API Documentation
-
-The CMS provides RESTful API endpoints for integration:
-
-### Articles API
-```http
-GET /api/articles.php?page=1&limit=10
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "page": 1,
-  "limit": 10,
-  "total": 25,
-  "articles": [
-    {
-      "id": 1,
-      "title": "Article Title",
-      "slug": "article-title",
-      "content": "Article content...",
-      "excerpt": "Article excerpt...",
-      "featured_image": "image.jpg",
-      "category_name": "News",
-      "author": "John Doe",
-      "created_at": "2024-01-01 12:00:00",
-      "status": "published"
-    }
-  ]
-}
-```
-
-### Search API
-```http
-GET /api/search.php?q=keyword&page=1
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "count": 5,
-  "results": [
-    {
-      "id": 1,
-      "title": "Article Title",
-      "excerpt": "Matching excerpt...",
-      "category_name": "News",
-      "created_at": "2024-01-01"
-    }
-  ]
-}
-```
-
-### Upload API
-```http
-POST /api/upload.php
-Content-Type: multipart/form-data
-
-Form Data:
-- image: [file]
-```
-
-## 🔧 Configuration
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DB_HOST` | Database host | `localhost` |
-| `DB_NAME` | Database name | `vintage_newspaper` |
-| `DB_USER` | Database user | `root` |
-| `DB_PASS` | Database password | `""` |
-| `SITE_NAME` | Site title | `Vintage Newspaper` |
-| `SITE_URL` | Site URL | `http://localhost/vintage-newspaper` |
-| `ADMIN_EMAIL` | Admin email | `admin@vintagenews.com` |
-| `SESSION_SECRET` | Session encryption key | Random string |
-
-### Upload Settings
-
-Configure in `config/config.php`:
-```php
-define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB
-define('ALLOWED_EXTENSIONS', ['jpg', 'jpeg', 'png', 'gif']);
-define('UPLOAD_DIR', __DIR__ . '/../uploads/articles/');
-```
-
-## 🔒 Security Best Practices
-
-- **Never commit `.env` file** to version control
-- **Use strong passwords** for admin accounts
-- **Keep PHP and MySQL updated**
-- **Regular backup** of database
-- **Monitor file permissions** on upload directories
-- **Enable HTTPS** in production
-- **Use prepared statements** (already implemented with PDO)
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Database Connection Error:**
-- Verify `.env` credentials
-- Ensure MySQL service is running
-- Check database exists
-
-**File Upload Issues:**
-- Check upload directory permissions
-- Verify GD library is installed
-- Check file size limits in PHP config
-
-**Admin Login Issues:**
-- Use default credentials: `admin@gmail.com` / `admin123`
-- Check database seed data was imported
-
-**404 Errors:**
-- Ensure mod_rewrite is enabled
-- Check `.htaccess` file exists
-- Verify Apache configuration
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature-name`
-3. Commit changes: `git commit -am 'Add feature'`
-4. Push to branch: `git push origin feature-name`
-5. Submit pull request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Vintage newspaper design inspiration
-- PHP community for excellent documentation
-- Open source contributors
-
-## 📞 Support
-
-- 📧 **Email:** support@vintagenews.com
-- 🐛 **Issues:** [GitHub Issues](https://github.com/yourusername/vintage-newspaper/issues)
-- 📖 **Documentation:** [Wiki](https://github.com/yourusername/vintage-newspaper/wiki)
+MIT — see `LICENSE`.
 
 ---
-
-**Made with ❤️ for vintage newspaper enthusiasts**
-
----
-**University Major Project**
+If you want, I can remove TinyMCE and switch admin editor to default HTML now — say the word and I will update the admin files.
