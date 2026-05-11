@@ -28,8 +28,9 @@ body {
   padding: 0 20px;
 }
 
-  /* Utility Classes */
- html, body {
+/* Utility Classes */
+html,
+body {
   overflow-x: hidden;
   width: 100%;
 }
@@ -496,7 +497,6 @@ body {
   color: rgba(255, 255, 255, 0.7);
 }
 
-
 /* ============================================
    RESPONSIVE BREAKPOINTS
    ============================================ */
@@ -537,7 +537,6 @@ body {
   }
 }
 
-
 /* ---------- Tablet Portrait / Mobile Landscape (≤768px) ---------- */
 @media (max-width: 768px) {
   /* Show hamburger */
@@ -567,7 +566,9 @@ body {
     padding: 12px 20px;
     font-size: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    transition: background 0.2s ease, color 0.2s ease;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
   }
   .nav-links a:hover {
     background: rgba(255, 255, 255, 0.1);
@@ -687,7 +688,6 @@ body {
   }
 }
 
-
 /* ---------- Small Mobile (≤480px) ---------- */
 @media (max-width: 480px) {
   .container {
@@ -784,4 +784,50 @@ body {
   .section-title {
     font-size: 1.2rem;
   }
+}
+/* Comments section — separate from article box */
+.comments-section {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: var(--paper);
+  border: 2px solid var(--border);
+  box-sizing: border-box;
+}
+
+.comments-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.comments-list {
+  margin-bottom: 2rem;
+}
+
+.comment {
+  padding: 1rem;
+  border-left: 3px solid var(--secondary);
+  margin-bottom: 1rem;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.comment-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.comment-form {
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.no-comments {
+  color: #888;
+  font-style: italic;
+  margin-bottom: 1.5rem;
 }

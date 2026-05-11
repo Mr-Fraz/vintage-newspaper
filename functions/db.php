@@ -1,64 +1,123 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
 
-class DB {
+class DB
+{
     private static $conn;
-    
-    public static function init() {
+
+    public static function init()
+    {
         global $db;
         self::$conn = $db;
     }
+    // Get approved comments for article
+    public static function getComments($article_id)
+    {   self::init();
+        $stmt = self::$conn->prepare("
+        SELECT c.*, u.username 
+        FROM comments c
+        LEFT JOIN users u ON c.user_id = u.id
+        WHERE c.article_id = :aid AND c.status = 'approved'
+        ORDER BY c.created_at ASC
+    ");
+        $stmt->execute(['aid' => $article_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Submit comment
+    public static function addComment($data)
+    {   self::init();
+        $stmt = self::$conn->prepare("
+        INSERT INTO comments (article_id, user_id, guest_name, guest_email, body, status)
+        VALUES (:article_id, :user_id, :guest_name, :guest_email, :body, 'pending')
+    ");
+        return $stmt->execute($data);
+    }
+
+    // Admin: get all comments
+    public static function getAllComments($status = null)
+    {   self::init();
+        $where = $status ? "WHERE c.status = :status" : "";
+        $stmt = self::$conn->prepare("
+        SELECT c.*, a.title as article_title, u.username
+        FROM comments c
+        LEFT JOIN articles a ON c.article_id = a.id
+        LEFT JOIN users u ON c.user_id = u.id
+        $where
+        ORDER BY c.created_at DESC
+    ");
+        $params = $status ? ['status' => $status] : [];
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Admin: update comment status
+    public static function updateCommentStatus($id, $status)
+    {   self::init();
+        $stmt = self::$conn->prepare("UPDATE comments SET status = :status WHERE id = :id");
+        return $stmt->execute(['status' => $status, 'id' => $id]);
+    }
+
+    // Admin: delete comment
+    public static function deleteComment($id)
+    {   self::init();
+        $stmt = self::$conn->prepare("DELETE FROM comments WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
 
     // Check if slug exists (excluding current category if id provided)
-    public static function slugExists($slug, $id = 0) {
-    self::init();
-
-    if ($id > 0) {
-        $stmt = self::$conn->prepare(
-            "SELECT id FROM categories WHERE slug = :slug AND id != :id"
-        );
-        $stmt->execute([
-            'slug' => $slug,
-            'id' => $id
-        ]);
-    } else {
-        $stmt = self::$conn->prepare(
-            "SELECT id FROM categories WHERE slug = :slug"
-        );
-        $stmt->execute(['slug' => $slug]);
-    }
-
-    return $stmt->fetch() ? true : false;
-    }
-    
-    //Get category by ID
-    public static function getCategoryById($id) 
+    public static function slugExists($slug, $id = 0)
     {
-    self::init();
+        self::init();
 
-    $sql = "SELECT * FROM categories WHERE id = :id";
-    $stmt = self::$conn->prepare($sql);
-    $stmt->execute(['id' => $id]);
-
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($id > 0) {
+            $stmt = self::$conn->prepare(
+                "SELECT id FROM categories WHERE slug = :slug AND id != :id"
+            );
+            $stmt->execute([
+                'slug' => $slug,
+                'id' => $id
+            ]);
+        } else {
+            $stmt = self::$conn->prepare(
+                "SELECT id FROM categories WHERE slug = :slug"
+            );
+            $stmt->execute(['slug' => $slug]);
         }
 
-    // Update category
-    public static function updateCategory($data) {
-    self::init();
+        return $stmt->fetch() ? true : false;
+    }
 
-    $sql = "UPDATE categories 
+    //Get category by ID
+    public static function getCategoryById($id)
+    {
+        self::init();
+
+        $sql = "SELECT * FROM categories WHERE id = :id";
+        $stmt = self::$conn->prepare($sql);
+        $stmt->execute(['id' => $id]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Update category
+    public static function updateCategory($data)
+    {
+        self::init();
+
+        $sql = "UPDATE categories 
             SET name = :name,
                 slug = :slug,
                 description = :description
             WHERE id = :id";
 
-    $stmt = self::$conn->prepare($sql);
-    return $stmt->execute($data);
+        $stmt = self::$conn->prepare($sql);
+        return $stmt->execute($data);
     }
 
     // Add new category
-    public static function addCategory($data) {
+    public static function addCategory($data)
+    {
         self::init();
 
         $sql = "INSERT INTO categories (name, slug, description) 
@@ -69,10 +128,11 @@ class DB {
     }
 
     // Get all articles with pagination
-    public static function getArticles($page = 1, $limit = POSTS_PER_PAGE) {
+    public static function getArticles($page = 1, $limit = POSTS_PER_PAGE)
+    {
         self::init();
         $offset = ($page - 1) * $limit;
-        
+
         $sql = "SELECT a.*, c.name as category_name, u.username as author 
                 FROM articles a 
                 LEFT JOIN categories c ON a.category_id = c.id 
@@ -80,54 +140,57 @@ class DB {
                 WHERE a.status = 'published' 
                 ORDER BY a.created_at DESC 
                 LIMIT :limit OFFSET :offset";
-        
+
         $stmt = self::$conn->prepare($sql);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
-        
+
         return $stmt->fetchAll();
     }
-    
+
     // Get single article by ID
-    public static function getArticle($id) {
+    public static function getArticle($id)
+    {
         self::init();
-        
+
         $sql = "SELECT a.*, c.name as category_name, u.username as author 
                 FROM articles a 
                 LEFT JOIN categories c ON a.category_id = c.id 
                 LEFT JOIN users u ON a.author_id = u.id 
                 WHERE a.id = :id AND a.status = 'published'";
-        
+
         $stmt = self::$conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-        
+
         return $stmt->fetch();
     }
-    
+
     // Get article for admin editing (any status)
-    public static function getArticleForEdit($id) {
+    public static function getArticleForEdit($id)
+    {
         self::init();
-        
+
         $sql = "SELECT a.*, c.name as category_name, u.username as author 
                 FROM articles a 
                 LEFT JOIN categories c ON a.category_id = c.id 
                 LEFT JOIN users u ON a.author_id = u.id 
                 WHERE a.id = :id";
-        
+
         $stmt = self::$conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-        
+
         return $stmt->fetch();
     }
-    
+
     // Get articles by category
-    public static function getArticlesByCategory($slug, $page = 1, $limit = POSTS_PER_PAGE) {
+    public static function getArticlesByCategory($slug, $page = 1, $limit = POSTS_PER_PAGE)
+    {
         self::init();
         $offset = ($page - 1) * $limit;
-        
+
         $sql = "SELECT a.*, c.name as category_name, u.username as author 
                 FROM articles a 
                 LEFT JOIN categories c ON a.category_id = c.id 
@@ -135,20 +198,21 @@ class DB {
                 WHERE c.slug = :slug AND a.status = 'published' 
                 ORDER BY a.created_at DESC 
                 LIMIT :limit OFFSET :offset";
-        
+
         $stmt = self::$conn->prepare($sql);
         $stmt->bindValue(':slug', $slug, PDO::PARAM_STR);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
-        
+
         return $stmt->fetchAll();
     }
-    
+
     // Search articles
-    public static function searchArticles($query) {
+    public static function searchArticles($query)
+    {
         self::init();
-        
+
         $sql = "SELECT a.*, c.name as category_name, u.username as author 
                 FROM articles a 
                 LEFT JOIN categories c ON a.category_id = c.id 
@@ -156,35 +220,37 @@ class DB {
                 WHERE (a.title LIKE :query OR a.content LIKE :query1 OR a.content LIKE :query2) 
                 AND a.status = 'published' 
                 ORDER BY a.created_at DESC";
-        
+
         $stmt = self::$conn->prepare($sql);
         $searchTerm = "%{$query}%";
         $stmt->bindParam(':query', $searchTerm, PDO::PARAM_STR);
         $stmt->bindParam(':query1', $searchTerm, PDO::PARAM_STR);
         $stmt->bindParam(':query2', $searchTerm, PDO::PARAM_STR);
         $stmt->execute();
-        
+
         return $stmt->fetchAll();
     }
-    
+
 
 
 
     // Get all categories
-    public static function getCategories() {
+    public static function getCategories()
+    {
         self::init();
-        
+
         $sql = "SELECT * FROM categories ORDER BY name ASC";
         $stmt = self::$conn->prepare($sql);
         $stmt->execute();
-        
+
         return $stmt->fetchAll();
     }
-    
+
     // Create article
-    public static function createArticle($data) {
+    public static function createArticle($data)
+    {
         self::init();
-        
+
         $sql = "INSERT INTO articles (title, slug, content, excerpt, image, category_id, author_id, status, seo_title, meta_description, publish_at, og_image)
                 VALUES (:title, :slug, :content, :excerpt, :image, :category_id, :author_id, :status, :seo_title, :meta_description, :publish_at, :og_image)";
 
@@ -199,11 +265,12 @@ class DB {
         if ($ok) return self::$conn->lastInsertId();
         return false;
     }
-    
+
     // Update article
-    public static function updateArticle($id, $data) {
+    public static function updateArticle($id, $data)
+    {
         self::init();
-        
+
         $sql = "UPDATE articles 
                 SET title = :title, slug = :slug, content = :content, 
                     excerpt = :excerpt, image = :image, category_id = :category_id, 
@@ -223,37 +290,41 @@ class DB {
     }
 
     // Clear all tags for an article (helper)
-    public static function clearArticleTags($article_id) {
+    public static function clearArticleTags($article_id)
+    {
         self::init();
         $stmt = self::$conn->prepare("DELETE FROM article_tag WHERE article_id = :aid");
         return $stmt->execute(['aid' => $article_id]);
     }
-    
+
     // Delete article
-    public static function deleteArticle($id) {
+    public static function deleteArticle($id)
+    {
         self::init();
-        
+
         $sql = "DELETE FROM articles WHERE id = :id";
         $stmt = self::$conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        
+
         return $stmt->execute();
     }
-    
+
     // Count total articles
-    public static function countArticles() {
+    public static function countArticles()
+    {
         self::init();
-        
+
         $sql = "SELECT COUNT(*) as total FROM articles WHERE status = 'published'";
         $stmt = self::$conn->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetch();
-        
+
         return $result['total'];
     }
 
     // Create a revision entry from the current article state
-    public static function createRevision($article_id, $user_id = null) {
+    public static function createRevision($article_id, $user_id = null)
+    {
         self::init();
 
         $article = self::getArticleForEdit($article_id);
@@ -274,7 +345,8 @@ class DB {
     }
 
     // Get revisions for an article
-    public static function getArticleRevisions($article_id) {
+    public static function getArticleRevisions($article_id)
+    {
         self::init();
 
         $sql = "SELECT ar.*, u.username as author
@@ -290,7 +362,8 @@ class DB {
     }
 
     // Get tags attached to an article
-    public static function getArticleTags($article_id) {
+    public static function getArticleTags($article_id)
+    {
         self::init();
         try {
             $sql = "SELECT t.* FROM tags t
@@ -308,7 +381,8 @@ class DB {
     }
 
     // Attach tags (array of names) to an article. Accepts array of tag names.
-    public static function attachTagsToArticle($article_id, $tagNames = []) {
+    public static function attachTagsToArticle($article_id, $tagNames = [])
+    {
         self::init();
         if (empty($tagNames)) return true;
 
@@ -349,7 +423,8 @@ class DB {
 
     // Log an activity
     // NOTE: $action given a default to avoid PHP deprecation for optional-before-required parameters.
-    public static function logActivity($user_id = null, $action = null, $entity_type = null, $entity_id = null, $meta = null, $ip = null) {
+    public static function logActivity($user_id = null, $action = null, $entity_type = null, $entity_id = null, $meta = null, $ip = null)
+    {
         self::init();
 
         $sql = "INSERT INTO activity_log (user_id, action, entity_type, entity_id, meta, ip, created_at)
@@ -368,7 +443,8 @@ class DB {
     }
 
     // Create a password reset token and return it
-    public static function createPasswordReset($email, $ttl_seconds = 3600) {
+    public static function createPasswordReset($email, $ttl_seconds = 3600)
+    {
         self::init();
 
         $token = bin2hex(random_bytes(32));
@@ -384,7 +460,8 @@ class DB {
     }
 
     // Get a valid password reset row by token
-    public static function getPasswordReset($token) {
+    public static function getPasswordReset($token)
+    {
         self::init();
 
         $sql = "SELECT * FROM password_resets WHERE token = :token AND used = 0 AND expires_at >= NOW() LIMIT 1";
@@ -394,7 +471,8 @@ class DB {
     }
 
     // Mark a token as used
-    public static function consumePasswordReset($token) {
+    public static function consumePasswordReset($token)
+    {
         self::init();
 
         $sql = "UPDATE password_resets SET used = 1 WHERE token = :token";
@@ -402,5 +480,3 @@ class DB {
         return $stmt->execute(['token' => $token]);
     }
 }
-?>
-

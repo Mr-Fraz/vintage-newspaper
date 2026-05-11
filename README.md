@@ -60,16 +60,11 @@ Create database and import schema:
 ```sql
 CREATE DATABASE vintage_newspaper CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
-
-Import the database schema:
-```bash
-mysql -u root -p vintage_newspaper < database/schema.sql
-```
-
-Apply migrations (if needed):
-```bash
-mysql -u root -p vintage_newspaper < database/migration_001.sql
-```
+## Setup
+1. Import database/schema.sql
+2. Run migration_001.sql
+3. Run migration_002.sql
+4. Run migration_003.sql
 
 ### 3. Environment Configuration
 
