@@ -4,7 +4,7 @@ require_once __DIR__ . '/../functions/db.php';
 require_once __DIR__ . '/../functions/helpers.php';
 require_once __DIR__ . '/../functions/validation.php';
 
-$slug = isset($_GET['slug']) ? Validate::sanitize($_GET['slug']) : '';
+$slug = isset($_GET['slug']) ? Validate::sanitize(urldecode($_GET['slug'])) : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
 $articles = DB::getArticlesByCategory($slug, $page);

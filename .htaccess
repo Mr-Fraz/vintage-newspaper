@@ -1,6 +1,9 @@
 RewriteEngine On
 RewriteBase /vintage-newspaper/
 
+# Ensure MultiViews won't interfere with rewrites and allow symlinks
+Options +FollowSymLinks -MultiViews
+
 # Prevent directory listing
 Options -Indexes
 
@@ -13,6 +16,6 @@ Options -Indexes
 # Clean URLs
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^article/([0-9]+)/?$ pages/article.php?id=$1 [L,QSA]
-RewriteRule ^category/([a-zA-Z0-9-]+)/?$ pages/category.php?slug=$1 [L,QSA]
+RewriteRule ^article/([0-9]+)/?$ pages/article.php?id=$1 [L,QSA,B]
+RewriteRule ^category/([^/]+)/?$ pages/category.php?slug=$1 [L,QSA,B]
 RewriteRule ^search/?$ pages/search.php [L,QSA]

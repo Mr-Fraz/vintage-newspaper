@@ -99,7 +99,7 @@ include __DIR__ . '/../includes/admin-header.php';
             <div class="alert alert-error"><?php echo $error; ?></div>
         <?php endif; ?>
         
-        <form method="POST" enctype="multipart/form-data" class="admin-form">
+        <form method="POST" enctype="multipart/form-data" class="admin-form" onsubmit="tinymce.triggerSave()">
             <?php echo csrfField(); ?>
             <div class="form-group">
                 <label for="title">Title *</label>
@@ -144,8 +144,8 @@ include __DIR__ . '/../includes/admin-header.php';
             </div>
             
             <div class="form-group">
-                <label for="content">Content *</label>
-                <textarea id="content" name="content" rows="15" required><?php echo htmlspecialchars($article['content']); ?></textarea>
+                 <label for="content">Content *</label>
+                 <textarea id="content" name="content" rows="15"><?php echo $article['content']; ?></textarea>
             </div>
             
             <div class="form-group">
@@ -189,6 +189,18 @@ include __DIR__ . '/../includes/admin-header.php';
         </form>
     </main>
 </div>
-
+<script>
+tinymce.init({
+  selector: '#content',
+  plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+  toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+  height: 500,
+  menubar: true,
+  skin: 'oxide',        // dark skin — fits vintage dark admin
+  content_css: 'default',
+  branding: false,
+  promotion: false
+});
+</script>
 </body>
 </html>
