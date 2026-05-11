@@ -82,8 +82,7 @@ $maxSize = MAX_FILE_SIZE;
 
 $year = date('Y');
 $month = date('m');
-$targetDir = rtrim(UPLOAD_DIR, '/') . "/{$year}/{$month}/";
-
+$targetDir = rtrim(str_replace('\\', '/', UPLOAD_DIR), '/') . "/{$year}/{$month}/";
 // Ensure web-accessible uploads root has .htaccess to prevent script execution
 $uploadsRoot = dirname(UPLOAD_DIR) . '/';
 $htaccessPath = $uploadsRoot . '.htaccess';

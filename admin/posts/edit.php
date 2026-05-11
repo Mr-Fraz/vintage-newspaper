@@ -228,6 +228,9 @@ include __DIR__ . '/../includes/admin-header.php';
 <script>
     tinymce.init({
         selector: '#content',
+        convert_urls: false, // ← ADD THIS
+        relative_urls: false, // ← ADD THIS
+        remove_script_host: false, // ← ADD THIS
         plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
         toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
         height: 500,
