@@ -3,7 +3,7 @@ require_once __DIR__ . '/database.php';
 
 // Site settings
 define('SITE_NAME', $_ENV['SITE_NAME']);
-define('SITE_URL', $_ENV['SITE_URL']);
+define('SITE_URL', rtrim($_ENV['SITE_URL'], '/'));
 define('ADMIN_EMAIL', $_ENV['ADMIN_EMAIL']);
 
 // Pagination

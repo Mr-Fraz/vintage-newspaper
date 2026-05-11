@@ -62,7 +62,14 @@ include __DIR__ . '/../includes/navbar.php';
 
             <?php if (!empty($article['image'])): ?>
                 <div class="article-image">
-                    <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $article['image']; ?>" alt="<?php echo htmlspecialchars($article['title']); ?>">
+                    <?php
+                    // Use media_id to get optimized + alt, fallback to stored image
+                    $alt = htmlspecialchars($article['image_alt'] ?? $article['title']);
+                    $imgSrc = SITE_URL . $article['image'];
+                    ?>
+                    <img src="<?php echo $imgSrc; ?>"
+                        alt="<?php echo $alt; ?>"
+                        loading="lazy">
                 </div>
             <?php endif; ?>
 

@@ -10,9 +10,51 @@ class DB
         global $db;
         self::$conn = $db;
     }
+
+    // Insert media record, return new ID
+    public static function insertMedia($data)
+    {
+        self::init();
+        $stmt = self::$conn->prepare("
+        INSERT INTO media (filename, filename_thumb, filename_medium, alt_text, uploaded_by)
+        VALUES (:filename, :filename_thumb, :filename_medium, :alt_text, :uploaded_by)
+    ");
+        $stmt->execute($data);
+        return self::$conn->lastInsertId();
+    }
+
+    // Get all media (for library picker)
+    public static function getMediaLibrary()
+    {
+        self::init();
+        $stmt = self::$conn->prepare("
+        SELECT * FROM media ORDER BY created_at DESC
+    ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Get single media by ID
+    public static function getMedia($id)
+    {
+        self::init();
+        $stmt = self::$conn->prepare("SELECT * FROM media WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Update alt text
+    public static function updateMediaAlt($id, $alt)
+    {
+        self::init();
+        $stmt = self::$conn->prepare("UPDATE media SET alt_text = :alt WHERE id = :id");
+        return $stmt->execute(['alt' => $alt, 'id' => $id]);
+    }
+
     // Get approved comments for article
     public static function getComments($article_id)
-    {   self::init();
+    {
+        self::init();
         $stmt = self::$conn->prepare("
         SELECT c.*, u.username 
         FROM comments c
@@ -26,7 +68,8 @@ class DB
 
     // Submit comment
     public static function addComment($data)
-    {   self::init();
+    {
+        self::init();
         $stmt = self::$conn->prepare("
         INSERT INTO comments (article_id, user_id, guest_name, guest_email, body, status)
         VALUES (:article_id, :user_id, :guest_name, :guest_email, :body, 'pending')
@@ -36,7 +79,8 @@ class DB
 
     // Admin: get all comments
     public static function getAllComments($status = null)
-    {   self::init();
+    {
+        self::init();
         $where = $status ? "WHERE c.status = :status" : "";
         $stmt = self::$conn->prepare("
         SELECT c.*, a.title as article_title, u.username
@@ -53,14 +97,16 @@ class DB
 
     // Admin: update comment status
     public static function updateCommentStatus($id, $status)
-    {   self::init();
+    {
+        self::init();
         $stmt = self::$conn->prepare("UPDATE comments SET status = :status WHERE id = :id");
         return $stmt->execute(['status' => $status, 'id' => $id]);
     }
 
     // Admin: delete comment
     public static function deleteComment($id)
-    {   self::init();
+    {
+        self::init();
         $stmt = self::$conn->prepare("DELETE FROM comments WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
@@ -251,8 +297,8 @@ class DB
     {
         self::init();
 
-        $sql = "INSERT INTO articles (title, slug, content, excerpt, image, category_id, author_id, status, seo_title, meta_description, publish_at, og_image)
-                VALUES (:title, :slug, :content, :excerpt, :image, :category_id, :author_id, :status, :seo_title, :meta_description, :publish_at, :og_image)";
+        $sql = "INSERT INTO articles (title, slug, content, excerpt, image, media_id, image_alt, category_id, author_id, status, seo_title, meta_description, publish_at, og_image)
+                VALUES (:title, :slug, :content, :excerpt, :image, :media_id, :image_alt, :category_id, :author_id, :status, :seo_title, :meta_description, :publish_at, :og_image)";
 
         $stmt = self::$conn->prepare($sql);
         $ok = $stmt->execute(array_merge([
@@ -273,7 +319,7 @@ class DB
 
         $sql = "UPDATE articles 
                 SET title = :title, slug = :slug, content = :content, 
-                    excerpt = :excerpt, image = :image, category_id = :category_id, 
+                    excerpt = :excerpt, image = :image, media_id = :media_id, image_alt = :image_alt, category_id = :category_id, 
                     status = :status, seo_title = :seo_title, meta_description = :meta_description, publish_at = :publish_at, og_image = :og_image, updated_at = NOW() 
                 WHERE id = :id";
 

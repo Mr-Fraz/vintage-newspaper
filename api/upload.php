@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/config.php';   // starts session + loads DB
 require_once __DIR__ . '/../functions/helpers.php';
-require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../functions/db.php';
 
 // Simple JWT verification helper (HS256). Uses JWT_SECRET from config if available.
 function verify_jwt_token($jwt) {
@@ -58,13 +58,13 @@ if ($authHeader && stripos($authHeader, 'Bearer ') === 0) {
         exit;
     }
 } else {
-    session_start();
-    if (empty($_SESSION['user'])) {
+    // NO session_start() here — config.php already started it
+    if (empty($_SESSION['user_id'])) {
         http_response_code(401);
         echo json_encode(['error' => 'Unauthorized']);
         exit;
     }
-    $userId = $_SESSION['user']['id'] ?? null;
+    $userId = $_SESSION['user_id'];
 }
 
 // Validate file upload
@@ -105,7 +105,6 @@ if ($file['size'] > $maxSize) {
 }
 
 // Verify file is actually an image
-// Verify file content MIME
 $finfo = finfo_open(FILEINFO_MIME_TYPE);
 $mime = finfo_file($finfo, $file['tmp_name']);
 finfo_close($finfo);
@@ -159,8 +158,7 @@ try {
 }
 
 // Build public path
-$publicPath = '/uploads/articles/' . $year . '/' . $month . '/' . $fileName;
-
+$publicPath = SITE_URL . '/uploads/articles/' . $year . '/' . $month . '/' . $fileName;
 // Optionally log upload activity
 if (method_exists('DB', 'logActivity')) {
     DB::logActivity($userId, 'upload_image', 'upload', null, ['path' => $publicPath], $_SERVER['REMOTE_ADDR'] ?? null);
