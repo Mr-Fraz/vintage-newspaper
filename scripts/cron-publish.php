@@ -1,17 +1,8 @@
 <?php
 require_once __DIR__ . '/../includes/init.php';
+require_once __DIR__ . '/../functions/db.php'; 
 
-// Publish scheduled articles whose publish_at <= now
-$db = $db ?? null;
-if (!$db) {
-    // try to get from global in database.php
-    $db = $GLOBALS['db'] ?? null;
-}
-
-if (!$db) {
-    echo "Database connection not available\n";
-    exit(1);
-}
+$db = DB::getConnection();
 
 // Move scheduled or pending articles to published when publish_at has arrived
 $stmt = $db->prepare("SELECT id, title FROM articles WHERE status IN ('scheduled','pending') AND publish_at IS NOT NULL AND publish_at <= NOW()");

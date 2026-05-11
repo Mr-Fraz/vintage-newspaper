@@ -11,6 +11,12 @@ class DB
         self::$conn = $db;
     }
 
+    public static function getConnection()
+    {
+        self::init();
+        return self::$conn;
+    }
+
     // Insert media record, return new ID
     public static function insertMedia($data)
     {

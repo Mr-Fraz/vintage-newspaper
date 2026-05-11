@@ -25,8 +25,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tags = isset($_POST['tags']) ? trim($_POST['tags']) : '';
     $seo_title = isset($_POST['seo_title']) ? Validate::sanitize($_POST['seo_title']) : null;
     $meta_description = isset($_POST['meta_description']) ? Validate::sanitize($_POST['meta_description']) : null;
-    $publish_at = isset($_POST['publish_at']) && $_POST['publish_at'] !== '' ? $_POST['publish_at'] : null;
-
+    $publish_at = isset($_POST['publish_at']) && $_POST['publish_at'] !== ''
+        ? date('Y-m-d H:i:s', strtotime($_POST['publish_at']))
+        : null;
+    if ($publish_at && ($status === 'draft' || empty($status))) {
+        $status = 'scheduled';
+    }
+    if (empty($status)) {
+        $status = 'draft';
+    }
+    error_log("STATUS RECEIVED: " . $_POST['status'] ?? 'NOT SET');
     $imageName = '';
     $mediaId   = null;
     $imageAlt  = Validate::sanitize($_POST['image_alt'] ?? '');
