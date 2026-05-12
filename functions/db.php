@@ -520,15 +520,23 @@ class DB
         self::init();
 
         $token = bin2hex(random_bytes(32));
-        $expires_at = date('Y-m-d H:i:s', time() + $ttl_seconds);
 
         $sql = "INSERT INTO password_resets (email, token, expires_at, used, created_at)
-                VALUES (:email, :token, :expires_at, 0, NOW())";
+            VALUES (:email, :token, DATE_ADD(NOW(), INTERVAL :ttl SECOND), 0, NOW())";
 
-        $stmt = self::$conn->prepare($sql);
-        $ok = $stmt->execute(['email' => $email, 'token' => $token, 'expires_at' => $expires_at]);
-        if ($ok) return $token;
-        return false;
+        try {
+            $stmt = self::$conn->prepare($sql);
+            $ok = $stmt->execute([
+                'email' => $email,
+                'token' => $token,
+                'ttl'   => $ttl_seconds
+            ]);
+            if ($ok) return $token;
+            return false;
+        } catch (Exception $e) {
+            error_log('createPasswordReset error: ' . $e->getMessage());
+            return false;
+        }
     }
 
     // Get a valid password reset row by token

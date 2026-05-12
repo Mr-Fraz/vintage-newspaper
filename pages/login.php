@@ -18,9 +18,9 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = Validate::sanitize($_POST['email']);
     $password = $_POST['password'];
-    
+
     $result = Auth::login($email, $password);
-    
+
     if ($result['success']) {
         header('Location: ' . SITE_URL . '/admin/');
         exit;
@@ -39,29 +39,32 @@ include __DIR__ . '/../includes/navbar.php';
     <div class="container">
         <div class="auth-form">
             <h1>Login</h1>
-            
+
             <?php if ($error): ?>
                 <div class="alert alert-error"><?php echo $error; ?></div>
             <?php endif; ?>
-            
+
             <?php if ($success): ?>
                 <div class="alert alert-success"><?php echo $success; ?></div>
             <?php endif; ?>
-            
+
             <form method="POST" action="">
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
                 </div>
-                
+
                 <button type="submit" class="btn btn-primary">Login</button>
+                <p style="text-align:right; margin-top:0.5rem;">
+                    <a href="forgot-password.php">Forgot password?</a>
+                </p>
             </form>
-            
+
             <p class="auth-footer">
                 Don't have an account? <a href="register.php">Register here</a>
             </p>

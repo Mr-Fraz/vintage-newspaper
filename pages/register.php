@@ -18,10 +18,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirmPassword = $_POST['confirm_password'];
     
     if ($password !== $confirmPassword) {
-        $error = 'Passwords do not match';
+    $error = 'Passwords do not match';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $error = 'Invalid email format';
+    } else {
+    $domain = strtolower(substr(strrchr($email, "@"), 1));
+    $allowedDomains = [
+        'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
+        'live.com', 'icloud.com', 'protonmail.com', 'mail.com',
+        'ymail.com', 'googlemail.com'
+    ];
+    if (!in_array($domain, $allowedDomains)) {
+        $error = 'Please use a valid email provider (Gmail, Yahoo, Outlook etc)';
     } else {
         $result = Auth::register($username, $email, $password);
-        
         if ($result['success']) {
             $success = $result['message'] . ' You can now <a href="login.php">login</a>.';
         } else {

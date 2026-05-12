@@ -1,8 +1,11 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../functions/db.php';
 require_once __DIR__ . '/../functions/helpers.php';
 header('Content-Type: application/json');
 
+// TEMP DEBUG
+$reset = DB::getPasswordReset($_POST['token'] ?? '');
 $token = $_POST['token'] ?? '';
 $password = $_POST['password'] ?? '';
 $confirm = $_POST['confirm'] ?? '';
