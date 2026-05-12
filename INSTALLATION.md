@@ -1,230 +1,146 @@
-# Vintage Newspaper - Setup & Installation Guide
+# Installation Guide — Vintage Newspaper CMS
 
 ## Prerequisites
+
 - PHP 7.4+
 - MySQL 5.7+
-- XAMPP or similar local development environment
+- XAMPP (or any Apache + PHP + MySQL stack)
+- PHP extensions: `pdo`, `pdo_mysql`, `gd`, `mbstring`
 
-## Installation Steps
+---
 
-### 1. Database Setup
+## 1. Clone the Repository
 
-1. Open phpMyAdmin (usually at http://localhost/phpmyadmin)
-2. Create a new database or use the existing one
-3. Import the schema:
-   - Go to **Import** tab
-   - Select `database/schema.sql`
-   - Click **Import**
+```bash
+git clone https://github.com/Mr-Fraz/vintage-newspaper.git
+```
 
-4. Apply migrations (for new installations):
-   - Go to **Import** tab
-   - Select `database/migration_001.sql`
-   - Click **Import**
+Place the folder in your web root:
+- **Windows (XAMPP):** `C:\xampp\htdocs\vintage-newspaper`
+- **Linux/macOS:** `/var/www/html/vintage-newspaper`
 
-### 2. Environment Configuration
+---
 
-1. Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
+## 2. Configure Environment
 
-2. Update `.env` with your database credentials:
-   ```
-   DB_HOST=localhost
-   DB_USER=root
-   DB_PASSWORD=your_password
-   DB_NAME=vintage_news
-   ```
+```bash
+cp .env.example .env
+```
 
-3. **Important:** Never commit `.env` to version control - it contains sensitive data
+Edit `.env`:
 
-### 3. File Permissions
+```env
+DB_HOST=localhost
+DB_NAME=vintage_newspaper
+DB_USER=root
+DB_PASS=
 
-Ensure upload directory is writable:
+SITE_NAME=Vintage Newspaper
+SITE_URL=http://localhost/vintage-newspaper
+
+ADMIN_EMAIL=admin@gmail.com
+
+JWT_SECRET=replace-with-a-random-secret
+SESSION_SECRET=replace-with-another-random-secret
+```
+
+> ⚠️ Never commit `.env` to version control.
+
+---
+
+## 3. Database Setup
+
+### Option A — phpMyAdmin
+
+1. Open `http://localhost/phpmyadmin`
+2. Create database: `vintage_newspaper` (charset: `utf8mb4`)
+3. Import files **in this exact order** via the **Import** tab:
+
+| Order | File |
+|---|---|
+| 1 | `database/schema.sql` |
+| 2 | `database/migration_001.sql` |
+| 3 | `database/migration_002.sql` |
+| 4 | `database/migration_003.sql` |
+| 5 | `database/migration_004.sql` |
+| 6 | `database/migration_005.sql` |
+| 7 | `database/seed.sql` |
+
+### Option B — CLI
+
+```bash
+mysql -u root -p -e "CREATE DATABASE vintage_newspaper CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -p vintage_newspaper < database/schema.sql
+mysql -u root -p vintage_newspaper < database/migration_001.sql
+mysql -u root -p vintage_newspaper < database/migration_002.sql
+mysql -u root -p vintage_newspaper < database/migration_003.sql
+mysql -u root -p vintage_newspaper < database/migration_004.sql
+mysql -u root -p vintage_newspaper < database/migration_005.sql
+mysql -u root -p vintage_newspaper < database/seed.sql
+```
+
+---
+
+## 4. File Permissions (Linux/macOS only)
+
 ```bash
 chmod 755 uploads/
+chmod 755 uploads/articles/
 ```
 
-### 4. Access the Application
+---
 
-- **Public Site:** http://localhost/vintage-newspaper
-- **Admin Panel:** http://localhost/vintage-newspaper/admin
-- **Default Admin Credentials:**
-  - Email: admin@gmail.com
-  - Password: 123456
+## 5. Access the Application
 
-## Directory Structure
+| URL | Description |
+|---|---|
+| `http://localhost/vintage-newspaper/` | Public frontend |
+| `http://localhost/vintage-newspaper/admin/` | Admin panel |
+
+**Default admin credentials:**
 
 ```
-vintage-newspaper/
-├── admin/                    # Admin panel
-│   ├── categories/          # Category management
-│   ├── posts/              # Article management
-│   ├── users/              # User management
-│   ├── index.php           # Dashboard
-│   └── logout.php
-├── api/                     # API endpoints
-│   ├── search.php          # Article search
-│   └── upload.php          # File uploads
-├── assets/
-│   ├── css/
-│   │   └── vintage.css     # Styling
-│   ├── fonts/
-│   ├── images/
-│   └── js/
-│       └── search.js       # Search functionality
-├── config/
-│   ├── config.php          # Configuration (empty, use .env)
-│   ├── database.php        # Database connection
-│   └── env.php             # Environment loader
-├── database/
-│   ├── schema.sql          # Initial schema
-│   ├── seed.sql            # Seed data
-│   └── migration_001.sql   # Enhancements (categories, etc.)
-├── functions/
-│   ├── auth.php            # Authentication functions
-│   └── helpers.php         # Helper functions
-├── includes/
-│   ├── auth-middleware.php # Auth protection
-│   ├── footer.php
-│   ├── header.php          # Security headers
-│   ├── init.php            # Initialization
-│   └── navbar.php
-├── pages/
-│   ├── article.php         # Single article view
-│   ├── category.php        # Category view
-│   ├── home.php            # Homepage
-│   ├── login.php           # Login form
-│   ├── register.php        # Registration form
-│   └── search.php          # Search results
-├── uploads/                # User uploads
-├── .env                    # Environment variables (don't commit)
-├── .env.example            # Environment template
-├── .gitignore
-├── index.php               # Main entry point
-└── README.md
+Email:    admin@gmail.com
+Password: admin123
 ```
 
-## Security Features Implemented
+> ⚠️ Change the default password immediately after first login.
 
-✅ **Input Validation & Sanitization**
-- All user inputs are validated and sanitized
-- Prepared statements prevent SQL injection
-- Output is properly escaped to prevent XSS
+---
 
-✅ **CSRF Protection**
-- All forms include CSRF tokens
-- Tokens are verified on submission
-- Prevents cross-site request forgery attacks
+## 6. Cron Jobs (Optional)
 
-✅ **Authentication & Authorization**
-- Session-based authentication
-- Role-based access control (User/Admin)
-- Password hashing with password_hash()
-- Auth middleware protects admin pages
+For scheduled publishing and token cleanup, set up cron jobs:
 
-✅ **File Upload Security**
-- MIME type verification
-- File size limits (5MB)
-- Secure filename generation
-- Upload directory outside web root recommended
+```bash
+# Auto-publish scheduled articles — every 5 minutes
+*/5 * * * * php /path/to/vintage-newspaper/scripts/cron-publish.php
 
-✅ **Security Headers**
-- X-Frame-Options: SAMEORIGIN
-- X-Content-Type-Options: nosniff
-- X-XSS-Protection: 1; mode=block
-- Referrer-Policy: strict-origin-when-cross-origin
+# Purge expired password reset tokens — daily
+0 3 * * * php /path/to/vintage-newspaper/scripts/cron-cleanup.php
+```
 
-## Features
+On Windows (XAMPP), use Windows Task Scheduler to run these scripts.
 
-### Content Management
-- **Articles:** Create, read, update, delete with categories and authors
-- **Categories:** Organize articles into categories with URLs
-- **Search:** Real-time article search functionality
+---
 
-### User Management
-- User registration and login
-- Role-based access (User/Admin)
-- Admin dashboard with statistics
-- User management interface
+## Verify Installation
 
-### Admin Features
-- Complete article CRUD
-- Category management
-- User role management
-- Dashboard with statistics
-- Comprehensive article filtering
+- [ ] Homepage loads at `SITE_URL`
+- [ ] Admin login works at `SITE_URL/admin/`
+- [ ] Can create and publish an article
+- [ ] Image upload works (check `uploads/articles/` is writable)
+- [ ] Search returns results (confirms migration_005 FULLTEXT index applied)
 
-## Usage
-
-### Creating an Article
-1. Go to Admin → Manage Articles
-2. Click "Add New Article"
-3. Fill in title, content, and category
-4. Click "Add Article"
-
-### Managing Categories
-1. Go to Admin → Manage Categories
-2. Add, edit, or delete categories
-3. Categories appear on article pages
-
-### Managing Users
-1. Go to Admin → Manage Users
-2. View all users
-3. Change user roles (User/Admin)
-4. Delete users (cannot delete yourself)
+---
 
 ## Troubleshooting
 
-### Database Connection Error
-- Check `.env` file has correct credentials
-- Ensure MySQL server is running
-- Verify database name exists
-
-### Permission Denied on Uploads
-```bash
-chmod 755 uploads/
-chmod 755 admin/
-```
-
-### Session Errors
-- Clear browser cookies and cache
-- Ensure PHP sessions are enabled
-- Check `php.ini` session settings
-
-## Database Tables
-
-### articles
-- id, title, content, category_id, author_id, status, featured_image, created_at
-
-### categories
-- id, name, slug, description, created_at
-
-### users
-- id, name, email, password, role, created_at
-
-## API Endpoints
-
-### Search Articles
-```
-GET /api/search.php?q=search_term
-```
-
-### Upload File
-```
-POST /api/upload.php
-```
-Requires CSRF token and authentication
-
-## Support & Maintenance
-
-For issues or improvements:
-1. Check the `.github/copilot-instructions.md` for project guidelines
-2. Review security notes in code comments
-3. Keep database backups regularly
-4. Monitor logs for errors
-
-## Version History
-
-- **v2.0** - Added categories, user management, enhanced security
-- **v1.0** - Initial release with basic CRUD operations
+| Problem | Fix |
+|---|---|
+| Blank page or PHP errors | Enable `display_errors` in `php.ini` during dev |
+| DB connection failed | Verify `.env` credentials; ensure MySQL is running |
+| `uploads/` permission denied | `chmod 755 uploads/articles/` |
+| 404 on all pages | Check `SITE_URL` has no trailing slash; Apache mod_rewrite enabled |
+| Search returns nothing | Confirm migration_005.sql was imported |
+| TinyMCE license warning | Must use TinyMCE 6 — not v7 |
