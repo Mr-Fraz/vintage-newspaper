@@ -1,8 +1,8 @@
 -- Migration: Add categories and enhance schema
 -- Created: 2024
 -- Purpose: Add category support and additional article fields
-CREATE DATABASE IF NOT EXISTS vintage_newspaper;
-USE vintage_newspaper;
+-- CREATE DATABASE IF NOT EXISTS vintage_newspaper;
+-- USE vintage_newspaper;
 -- Create categories table
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,

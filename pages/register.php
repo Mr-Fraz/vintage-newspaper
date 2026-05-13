@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../functions/auth.php';
 require_once __DIR__ . '/../functions/validation.php';
@@ -16,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = Validate::sanitize($_POST['email']);
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirm_password'];
-    
     if ($password !== $confirmPassword) {
     $error = 'Passwords do not match';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -28,6 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'live.com', 'icloud.com', 'protonmail.com', 'mail.com',
         'ymail.com', 'googlemail.com'
     ];
+	}
+   
     if (!in_array($domain, $allowedDomains)) {
         $error = 'Please use a valid email provider (Gmail, Yahoo, Outlook etc)';
     } else {

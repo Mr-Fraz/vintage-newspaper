@@ -1,7 +1,7 @@
 -- Create database
-CREATE DATABASE IF NOT EXISTS vintage_newspaper CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- CREATE DATABASE IF NOT EXISTS vintage_newspaper CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE vintage_newspaper;
+-- USE vintage_newspaper;
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (

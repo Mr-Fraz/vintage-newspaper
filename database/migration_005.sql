@@ -1,7 +1,7 @@
 -- Migration 005: Performance indexes
 -- Run after migrations 001-004
 
-USE vintage_newspaper;
+-- USE vintage_newspaper;
 
 -- Replace single status index with composite (status + date)
 ALTER TABLE articles DROP INDEX IF EXISTS idx_articles_status;

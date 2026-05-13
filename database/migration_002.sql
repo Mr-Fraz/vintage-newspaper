@@ -1,5 +1,4 @@
--- Migration 002: Add revisions, tags, article_tags, activity_log, password_resets
--- Also add seo fields and image column to articles
+-- Migration: Add article status, revisions, tags, and activity log
 
 -- Add article columns if they do not already exist
 ALTER TABLE articles ADD COLUMN IF NOT EXISTS status ENUM('draft','pending','scheduled','published','archived') NOT NULL DEFAULT 'draft';

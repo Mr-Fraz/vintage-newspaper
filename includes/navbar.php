@@ -18,13 +18,15 @@ $categories = DB::getCategories();
             <li><a href="<?php echo SITE_URL; ?>">Home</a></li>
 
             <?php foreach ($categories as $cat): ?>
-                <li><a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>"><?php echo $cat['name']; ?></a></li>
+                <li><a href="<?php echo SITE_URL; ?>/pages/category.php?slug=<?php echo $cat['slug']; ?>"><?php echo $cat['name']; ?></a></li>
             <?php endforeach; ?>
 
             <li><a href="<?php echo SITE_URL; ?>/pages/search.php">Search</a></li>
 
             <?php if (Auth::isLoggedIn()): ?>
+             	<?php if (in_array($_SESSION['role'], ['admin', 'editor'])): ?>
                 <li><a href="<?php echo SITE_URL; ?>/admin/">Dashboard</a></li>
+            <?php endif; ?>
                 <li><a href="<?php echo SITE_URL; ?>/admin/logout.php">Logout</a></li>
             <?php else: ?>
                 <li><a href="<?php echo SITE_URL; ?>/pages/login.php">Login</a></li>

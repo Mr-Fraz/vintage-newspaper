@@ -1,4 +1,4 @@
-USE vintage_newspaper;
+-- USE vintage_newspaper;
 
 -- Sample articles
 INSERT INTO articles (title, slug, content,excerpt,category_id, author_id , status) VALUES

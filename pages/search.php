@@ -39,7 +39,7 @@ include __DIR__ . '/../includes/navbar.php';
                         <article class="article-item">
                             <div class="article-info">
                                 <span class="category-badge"><?php echo $article['category_name']; ?></span>
-                                <h3><a href="<?php echo SITE_URL; ?>/article/<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a></h3>
+                                <h3><a href="<?php echo SITE_URL; ?>/pages/article.php?id=<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a></h3>
                                 <p><?php echo Helper::excerpt($article['content'], 150); ?></p>
                                 <div class="meta">
                                     <span><?php echo htmlspecialchars($article['author']); ?></span>

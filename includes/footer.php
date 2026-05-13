@@ -22,7 +22,7 @@
                         $categories = DB::getCategories();
                         foreach (array_slice($categories, 0, 4) as $cat):
                         ?>
-                            <li><a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>"><?php echo $cat['name']; ?></a></li>
+                            <li><a href="<?php echo SITE_URL; ?>/pages/category.php?slug=<?php echo $cat['slug']; ?>"><?php echo $cat['name']; ?></a></li>
                         <?php endforeach; ?>
                     </ul>
                 </div>

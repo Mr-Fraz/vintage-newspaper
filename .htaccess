@@ -1,24 +1,18 @@
+php_value display_errors On
+php_value mbstring.http_input auto
+php_value date.timezone America/New_York
 RewriteEngine On
 RewriteCond %{HTTP:Authorization} ^(.*)
 RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
-RewriteEngine On
-RewriteBase /vintage-newspaper/
-
-# Ensure MultiViews won't interfere with rewrites and allow symlinks
 Options +FollowSymLinks -MultiViews
-
-# Prevent directory listing
 Options -Indexes
-
-# Block access to sensitive files
-<FilesMatch "\.(env|sql|md)$">
+<FilesMatch ".(env|sql|md)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
-
-# Clean URLs
+RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^article/([0-9]+)/?$ pages/article.php?id=$1 [L,QSA,B]
-RewriteRule ^category/([^/]+)/?$ pages/category.php?slug=$1 [L,QSA,B]
+RewriteRule ^category/([^/]+)/?$ pages/category.php?slug=$1 [L,QSA]
 RewriteRule ^search/?$ pages/search.php [L,QSA]

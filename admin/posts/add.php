@@ -153,7 +153,7 @@ include __DIR__ . '/../includes/admin-header.php';
 
             <div class="form-group">
                 <label for="content">Content *</label>
-                <textarea id="content" name="content" rows="15" required></textarea>
+                <textarea id="content" name="content" rows="15" ></textarea>
             </div>
 
             <div class="form-group">

@@ -27,7 +27,7 @@ include __DIR__ . '/includes/navbar.php';
                 
                 <div class="hero-text">
                     <span class="category-badge"><?php echo $featured['category_name']; ?></span>
-                    <h2><a href="<?php echo SITE_URL; ?>/article/<?php echo $featured['id']; ?>"><?php echo htmlspecialchars($featured['title']); ?></a></h2>
+                    <h2><a href="<?php echo SITE_URL; ?>/pages/article.php?id=<?php echo $featured['id']; ?>"><?php echo htmlspecialchars($featured['title']); ?></a></h2>
                     <p><?php echo htmlspecialchars($featured['excerpt'] ?? ''); ?></p>
                     <div class="meta">
                         <span>By <?php echo htmlspecialchars($featured['author']); ?></span>
@@ -55,7 +55,7 @@ include __DIR__ . '/includes/navbar.php';
                         
                         <div class="article-content">
                             <span class="category-badge"><?php echo $article['category_name']; ?></span>
-                            <h3><a href="<?php echo SITE_URL; ?>/article/<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a></h3>
+                            <h3><a href="<?php echo SITE_URL; ?>/pages/article.php?id=<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a></h3>
                             <p><?php echo htmlspecialchars($article['excerpt'] ?? ''); ?></p>
                             <div class="meta">
                                 <span><?php echo htmlspecialchars($article['author']); ?></span>

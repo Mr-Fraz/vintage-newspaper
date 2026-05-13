@@ -28,4 +28,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Get database instance
 $db = Database::getInstance()->getConnection();
-?>
+if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'production') {
+    define('ARTICLE_URL', SITE_URL . '/pages/article.php?id=');
+    define('CATEGORY_URL', SITE_URL . '/pages/category.php?slug=');
+} else {
+    define('ARTICLE_URL', SITE_URL . '/article/');
+    define('CATEGORY_URL', SITE_URL . '/category/');
+}
