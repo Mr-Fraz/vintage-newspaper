@@ -228,7 +228,7 @@
 
             <div class="contact-method">
                 <span class="contact-label">World Wide Web Portfolio</span>
-                <span class="contact-value"><a href="http://yourportfolio.com" target="_blank">yourportfolio.com</a></span>
+                <span class="contact-value"><a href="https://yourportfolio.com" target="_blank">yourportfolio.com</a></span>
             </div>
 
             <div class="contact-method">
