@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{base_url}}/api/upload.php"
+method: POST
+body:
+  type: formdata
+  content:
+    - type: text
+      key: csrf_token
+      value: test
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('401 Unauthorized without token', () => {
+          pm.response.to.have.status(401);
+      });
+    language: text/javascript
+order: 5000

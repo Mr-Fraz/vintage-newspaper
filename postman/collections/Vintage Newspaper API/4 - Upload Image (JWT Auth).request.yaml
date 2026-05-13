@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{base_url}}/api/upload.php"
+method: POST
+headers:
+  Authorization: Bearer {{token}}
+body:
+  type: formdata
+  content:
+    - type: text
+      key: csrf_token
+      value: test
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Not 401 Unauthorized', () => {
+          pm.expect(pm.response.code).to.not.equal(401);
+      });
+      pm.test('Auth passed (403 CSRF or 200 success)', () => {
+          pm.expect([200, 403]).to.include(pm.response.code);
+      });
+    language: text/javascript
+order: 4000
