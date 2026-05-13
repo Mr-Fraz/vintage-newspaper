@@ -14,6 +14,12 @@ include __DIR__ . '/../includes/navbar.php';
             <?php if (!$token): ?>
                 <div class="alert alert-error">Invalid or missing token.</div>
             <?php else: ?>
+<<<<<<< HEAD
+=======
+
+                <div id="msg" class="alert" style="display:none"></div>
+
+>>>>>>> 183087cbeab0abd8496df8aa0ca913725a72bdca
                 <form id="resetForm">
                     <input type="hidden" name="token" value="<?= $token ?>">
                     <div class="form-group">
@@ -28,6 +34,7 @@ include __DIR__ . '/../includes/navbar.php';
                 </form>
 
                 <script>
+<<<<<<< HEAD
                     document.addEventListener('DOMContentLoaded', function() {
                         const form = document.getElementById('resetForm');
                         if (!form) return;
@@ -69,6 +76,31 @@ include __DIR__ . '/../includes/navbar.php';
                                 alert('Request failed: ' + err.message);
                             }
                         });
+=======
+                    document.getElementById('resetForm').addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        const btn = this.querySelector('button');
+                        btn.disabled = true;
+
+                        const data = new FormData(this);
+                        const res = await fetch('<?= SITE_URL ?>/api/password-reset-verify.php', {
+                            method: 'POST',
+                            body: data
+                        });
+                        const json = await res.json();
+
+                        const msg = document.getElementById('msg');
+                        msg.style.display = 'block';
+                        msg.className = 'alert ' + (json.success ? 'alert-success' : 'alert-error');
+                        msg.textContent = json.message || json.error;
+
+                        if (json.success) {
+                            this.style.display = 'none';
+                            setTimeout(() => window.location = '<?= SITE_URL ?>/pages/login.php', 2000);
+                        } else {
+                            btn.disabled = false;
+                        }
+>>>>>>> 183087cbeab0abd8496df8aa0ca913725a72bdca
                     });
                 </script>
 

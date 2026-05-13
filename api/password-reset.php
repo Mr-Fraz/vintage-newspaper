@@ -1,5 +1,8 @@
 <?php
+<<<<<<< HEAD
 
+=======
+>>>>>>> 183087cbeab0abd8496df8aa0ca913725a72bdca
 use PHPMailer\PHPMailer\PHPMailer;
 
 require_once __DIR__ . '/../config/config.php';
@@ -41,6 +44,7 @@ if (!$token) {
 }
 
 $resetLink = rtrim(SITE_URL, '/') . '/pages/password-reset.php?token=' . urlencode($token);
+<<<<<<< HEAD
 try {
     $mail = new PHPMailer(true);
     $mail->isSMTP();
@@ -58,8 +62,29 @@ try {
 } catch (Exception $e) {
     error_log('Mailer Error: ' . $e->getMessage());
 }
+=======
+
+$mail = new PHPMailer(true);
+$mail->isSMTP();
+$mail->Host       = $_ENV['MAIL_HOST'];
+$mail->SMTPAuth   = true;
+$mail->Username   = $_ENV['MAIL_USER'];
+$mail->Password   = $_ENV['MAIL_PASS'];
+$mail->SMTPSecure = 'tls';
+$mail->Port       = $_ENV['MAIL_PORT'];
+$mail->setFrom($_ENV['MAIL_FROM'], SITE_NAME);
+$mail->addAddress($email, $user['username']);
+$mail->Subject = 'Password Reset Request';
+$mail->Body    = "Hello {$user['username']},\n\nReset link (valid 1 hour):\n\n{$resetLink}\n\nIgnore if you didn't request this.";
+$mail->send();
+
+>>>>>>> 183087cbeab0abd8496df8aa0ca913725a72bdca
 if (method_exists('DB', 'logActivity')) {
     DB::logActivity($user['id'], 'password_reset_requested', 'user', $user['id'], null, $_SERVER['REMOTE_ADDR'] ?? null);
 }
 
+<<<<<<< HEAD
 echo json_encode(['success' => true, 'message' => 'If an account exists, a reset email has been sent']);
+=======
+echo json_encode(['success' => true, 'message' => 'If an account exists, a reset email has been sent']);
+>>>>>>> 183087cbeab0abd8496df8aa0ca913725a72bdca

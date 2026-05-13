@@ -11,6 +11,11 @@ include __DIR__ . '/../includes/navbar.php';
             <h1>Forgot Password</h1>
             <p>Enter your email and we'll send a reset link valid for 1 hour.</p>
 
+<<<<<<< HEAD
+=======
+            <div id="msg" class="alert" style="display:none"></div>
+
+>>>>>>> 183087cbeab0abd8496df8aa0ca913725a72bdca
             <form id="forgotForm">
                 <div class="form-group">
                     <label for="email">Email</label>
@@ -23,16 +28,23 @@ include __DIR__ . '/../includes/navbar.php';
         </div>
     </div>
 </main>
+<<<<<<< HEAD
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('forgotForm');
     
     form.addEventListener('submit', async function(e) {
+=======
+
+<script>
+    document.getElementById('forgotForm').addEventListener('submit', async function(e) {
+>>>>>>> 183087cbeab0abd8496df8aa0ca913725a72bdca
         e.preventDefault();
         const btn = this.querySelector('button');
         btn.disabled = true;
         btn.textContent = 'Sending...';
 
+<<<<<<< HEAD
         try {
             const res  = await fetch('<?= SITE_URL ?>/api/password-reset.php', {
                 method: 'POST',
@@ -65,6 +77,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+=======
+        const data = new FormData(this);
+        const res = await fetch('<?= SITE_URL ?>/api/password-reset.php', {
+            method: 'POST',
+            body: data
+        });
+        const json = await res.json();
+
+        const msg = document.getElementById('msg');
+        msg.style.display = 'block';
+        msg.className = 'alert ' + (json.success ? 'alert-success' : 'alert-error');
+        msg.textContent = json.message || json.error;
+
+        if (json.success) this.style.display = 'none';
+        else {
+            btn.disabled = false;
+            btn.textContent = 'Send Reset Link';
+        }
+    });
+>>>>>>> 183087cbeab0abd8496df8aa0ca913725a72bdca
 </script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>

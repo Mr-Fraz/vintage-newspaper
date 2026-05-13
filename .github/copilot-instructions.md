@@ -28,13 +28,20 @@
 
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 183087cbeab0abd8496df8aa0ca913725a72bdca
 <!-- github-copilot-toolbox:mcp-skills-awareness-begin -->
 
 ### MCP & Skills awareness (GitHub Copilot Toolbox)
 
+<<<<<<< HEAD
 _Last synced: 2026-05-13T05:12:12.256Z._
+=======
+_Last synced: 2026-05-12T17:17:56.483Z._
+>>>>>>> 183087cbeab0abd8496df8aa0ca913725a72bdca
 
 - **Full report:** `.github/copilot-toolbox-mcp-skills-awareness.md` in this workspace (auto-overwritten on each scan). Use it as ground truth for configured servers and skill folders.
 - **MCP:** For **live tools**, use **Copilot Chat → Agent** and **trust/start** the right servers in the MCP UI.
