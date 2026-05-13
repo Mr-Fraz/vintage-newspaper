@@ -1,4 +1,7 @@
 RewriteEngine On
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+RewriteEngine On
 RewriteBase /vintage-newspaper/
 
 # Ensure MultiViews won't interfere with rewrites and allow symlinks

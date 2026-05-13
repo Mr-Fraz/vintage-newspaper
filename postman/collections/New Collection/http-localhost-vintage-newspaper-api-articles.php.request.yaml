@@ -1,0 +1,13 @@
+$kind: http-request
+name: http://localhost/vintage-newspaper/api/articles.php
+url: http://localhost/vintage-newspaper/api/articles.php
+method: GET
+body:
+  type: formdata
+  content:
+    - type: text
+      key: csrf_token
+      value: test123
+      description: ""
+      disabled: true
+order: 1778651706171

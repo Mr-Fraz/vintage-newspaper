@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../functions/db.php';        // ← ADD
+require_once __DIR__ . '/../functions/auth.php'; 
 require_once __DIR__ . '/../functions/helpers.php';
 header('Content-Type: application/json');
 

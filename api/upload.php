@@ -2,28 +2,7 @@
 require_once __DIR__ . '/../config/config.php';   // starts session + loads DB
 require_once __DIR__ . '/../functions/helpers.php';
 require_once __DIR__ . '/../functions/db.php';
-
-// Simple JWT verification helper (HS256). Uses JWT_SECRET from config if available.
-function verify_jwt_token($jwt) {
-    if (empty($jwt)) return false;
-    if (!defined('JWT_SECRET')) return false;
-
-    $parts = explode('.', $jwt);
-    if (count($parts) !== 3) return false;
-
-    list($h64, $p64, $s64) = $parts;
-
-    $header = json_decode(base64_decode(strtr($h64, '-_', '+/')));
-    $payload = json_decode(base64_decode(strtr($p64, '-_', '+/')));
-    $sig = $s64;
-
-    $rawSig = hash_hmac('sha256', $h64 . '.' . $p64, JWT_SECRET, true);
-    $calcSig = rtrim(strtr(base64_encode($rawSig), '+/', '-_'), '=');
-
-    if (!hash_equals($calcSig, $sig)) return false;
-
-    return $payload;
-}
+require_once __DIR__ . '/../functions/auth.php';
 
 // Basic rate limiting: 10 uploads per hour per IP
 if (Helper::rateLimitExceeded('api_upload', 10, 3600)) {
@@ -34,13 +13,6 @@ if (Helper::rateLimitExceeded('api_upload', 10, 3600)) {
 
 header('Content-Type: application/json');
 
-// Verify CSRF token
-if (empty($_POST['csrf_token']) || !verifyCSRFToken($_POST['csrf_token'])) {
-    http_response_code(403);
-    echo json_encode(['error' => 'Invalid CSRF token']);
-    exit;
-}
-
 // Verify authentication: accept Bearer JWT or fallback to session-based auth
 $userId = null;
 $authHeader = '';
@@ -49,9 +21,9 @@ elseif (!empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) $authHeader = $_SERVER[
 
 if ($authHeader && stripos($authHeader, 'Bearer ') === 0) {
     $token = trim(str_ireplace('Bearer', '', $authHeader));
-    $payload = verify_jwt_token($token);
-    if ($payload && isset($payload->sub)) {
-        $userId = $payload->sub;
+    $payload = Auth::verifyJwt($token);
+    if ($payload && isset($payload['sub'])) {
+        $userId = $payload['sub'];
     } else {
         http_response_code(401);
         echo json_encode(['error' => 'Invalid token']);
@@ -65,6 +37,24 @@ if ($authHeader && stripos($authHeader, 'Bearer ') === 0) {
         exit;
     }
     $userId = $_SESSION['user_id'];
+}
+
+if ($authHeader && stripos($authHeader, 'Bearer ') === 0) {
+    $token = trim(str_ireplace('Bearer', '', $authHeader));
+    $payload = Auth::verifyJwt($token);  // use Auth class instead
+    if ($payload && isset($payload['sub'])) {
+        $userId = $payload['sub'];
+    } else {
+        http_response_code(401);
+        echo json_encode(['error' => 'Invalid token']);
+        exit;
+    }
+}
+// Verify CSRF token
+if (empty($_POST['csrf_token']) || !verifyCSRFToken($_POST['csrf_token'])) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Invalid CSRF token']);
+    exit;
 }
 
 // Validate file upload
