@@ -1,6 +1,6 @@
 # GitHub Copilot Toolbox — MCP & Skills awareness
 
-_Generated: 2026-05-14T08:23:44.375Z_
+_Generated: 2026-05-14T11:02:38.932Z_
 
 ## How to use this report
 
@@ -15,9 +15,11 @@ _Generated: 2026-05-14T08:23:44.375Z_
 
 Workspace `mcp.json` _(folder: vintage-newspaper)_
 
-- **c:\xampp\htdocs\vintage-newspaper\.vscode\mcp.json** — _File missing_
+- **c:\xampp\htdocs\vintage-newspaper\.vscode\mcp.json** — _File exists — servers defined_
 
-_No active workspace servers in mcp.json._
+| Server id | Kind | Detail |
+|-----------|------|--------|
+| code-review-graph | stdio | C:\Users\Microsoft\AppData\Local\Programs\Python\Python313\python.exe -m code_review_graph serve |
 
 ## MCP — user profile
 
@@ -29,7 +31,17 @@ _No active user-scoped servers in mcp.json._
 
 ### Project-scoped
 
-_None found (or no workspace open)._
+- **debug-issue** — `c:\xampp\htdocs\vintage-newspaper\.claude\skills\debug-issue`
+  - Systematically debug issues using graph-powered code navigation
+
+- **explore-codebase** — `c:\xampp\htdocs\vintage-newspaper\.claude\skills\explore-codebase`
+  - Navigate and understand codebase structure using the knowledge graph
+
+- **refactor-safely** — `c:\xampp\htdocs\vintage-newspaper\.claude\skills\refactor-safely`
+  - Plan and execute safe refactoring using dependency analysis
+
+- **review-changes** — `c:\xampp\htdocs\vintage-newspaper\.claude\skills\review-changes`
+  - Perform a structured code review using change detection and impact
 
 ### User-scoped
 
