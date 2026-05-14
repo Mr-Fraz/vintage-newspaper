@@ -25,16 +25,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tags = isset($_POST['tags']) ? trim($_POST['tags']) : '';
     $seo_title = isset($_POST['seo_title']) ? Validate::sanitize($_POST['seo_title']) : null;
     $meta_description = isset($_POST['meta_description']) ? Validate::sanitize($_POST['meta_description']) : null;
+    // Publish date handling
     $publish_at = isset($_POST['publish_at']) && $_POST['publish_at'] !== ''
         ? date('Y-m-d H:i:s', strtotime($_POST['publish_at']))
         : null;
-    if ($publish_at && ($status === 'draft' || empty($status))) {
+
+    if ($publish_at && strtotime($publish_at) > time()) {
+        // Future date hai — chahe koi bhi status select kiya ho
         $status = 'scheduled';
-    }
-    if (empty($status)) {
+    } elseif ($publish_at && strtotime($publish_at) <= time()) {
+        // Past/present date hai — seedha publish
+        $status = 'published';
+    } elseif (empty($status)) {
         $status = 'draft';
     }
-    error_log("STATUS RECEIVED: " . $_POST['status'] ?? 'NOT SET');
     $imageName = '';
     $mediaId   = null;
     $imageAlt  = Validate::sanitize($_POST['image_alt'] ?? '');
@@ -153,7 +157,7 @@ include __DIR__ . '/../includes/admin-header.php';
 
             <div class="form-group">
                 <label for="content">Content *</label>
-                <textarea id="content" name="content" rows="15" ></textarea>
+                <textarea id="content" name="content" rows="15"></textarea>
             </div>
 
             <div class="form-group">
