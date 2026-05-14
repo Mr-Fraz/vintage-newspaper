@@ -1,4 +1,9 @@
 <?php
+$secret = $_GET['secret'] ?? '';
+if ($secret !== 'Andkfe9sdf8sdf8sdf8sdf8sdf8') {
+    http_response_code(403);
+    die('Forbidden');
+}
 require_once __DIR__ . '/../includes/init.php';
 require_once __DIR__ . '/../functions/db.php'; 
 
