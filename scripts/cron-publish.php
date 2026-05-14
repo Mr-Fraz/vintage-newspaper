@@ -1,7 +1,8 @@
 <?php
 date_default_timezone_set('Asia/Karachi');
-$now = date('Y-m-d H:i:s');
+$now = date('Y-m-d H:i:s'); // Karachi time
 echo "PHP Now (Karachi): " . $now . "\n";
+
 $secret = $_GET['secret'] ?? '';
 if ($secret !== 'Andkfe9sdf8sdf8sdf8sdf8sdf8') {
     http_response_code(403);
@@ -12,11 +13,15 @@ require_once __DIR__ . '/../functions/db.php';
 
 $db = DB::getConnection();
 
-// Move scheduled or pending articles to published when publish_at has arrived
-$stmt = $db->prepare("SELECT id, title FROM articles WHERE status IN ('scheduled','pending') AND publish_at IS NOT NULL AND publish_at <= CONVERT_TZ(NOW(), 'America/New_York', 'Asia/Karachi')");
-$stmt->execute();
+// $now use karo — CONVERT_TZ nahi
+$stmt = $db->prepare("SELECT id, title FROM articles 
+    WHERE status IN ('scheduled','pending') 
+    AND publish_at IS NOT NULL 
+    AND publish_at <= :now");
+$stmt->execute([':now' => $now]);
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 echo "Rows found: " . count($rows) . "\n";
+
 if (!empty($rows)) {
     $ids = array_column($rows, 'id');
     $in = implode(',', array_map('intval', $ids));
