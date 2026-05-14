@@ -1,7 +1,6 @@
 <?php
 date_default_timezone_set('Asia/Karachi');
 $now = date('Y-m-d H:i:s'); // Karachi time
-echo "PHP Now (Karachi): " . $now . "\n";
 
 $secret = $_GET['secret'] ?? '';
 if ($secret !== 'Andkfe9sdf8sdf8sdf8sdf8sdf8') {
@@ -13,14 +12,13 @@ require_once __DIR__ . '/../functions/db.php';
 
 $db = DB::getConnection();
 
-// $now use karo — CONVERT_TZ nahi
+// Find articles that are scheduled to be published
 $stmt = $db->prepare("SELECT id, title FROM articles 
     WHERE status IN ('scheduled','pending') 
     AND publish_at IS NOT NULL 
     AND publish_at <= :now");
 $stmt->execute([':now' => $now]);
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-echo "Rows found: " . count($rows) . "\n";
 
 if (!empty($rows)) {
     $ids = array_column($rows, 'id');
