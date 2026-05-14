@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set('Asia/Karachi');
-$now = date('Y-m-d H:i:s'); // Karachi time
+$now = date('Y-m-d H:i:s', strtotime('now'));
 
 $secret = $_GET['secret'] ?? '';
 if ($secret !== 'Andkfe9sdf8sdf8sdf8sdf8sdf8') {
@@ -23,7 +23,7 @@ $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if (!empty($rows)) {
     $ids = array_column($rows, 'id');
     $in = implode(',', array_map('intval', $ids));
-    $upd = $db->prepare("UPDATE articles SET status = 'published', updated_at = NOW() WHERE id IN ($in)");
+    $upd = $db->prepare("UPDATE articles SET status = 'published', updated_at = :now WHERE id IN ($in)");
     $upd->execute();
 
     foreach ($rows as $r) {
