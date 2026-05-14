@@ -6,12 +6,12 @@ if ($secret !== 'Andkfe9sdf8sdf8sdf8sdf8sdf8') {
     die('Forbidden');
 }
 require_once __DIR__ . '/../includes/init.php';
-require_once __DIR__ . '/../functions/db.php'; 
+require_once __DIR__ . '/../functions/db.php';
 
 $db = DB::getConnection();
 
 // Move scheduled or pending articles to published when publish_at has arrived
-$stmt = $db->prepare("SELECT id, title FROM articles WHERE status IN ('scheduled','pending') AND publish_at IS NOT NULL AND publish_at <= NOW()");
+$stmt = $db->prepare("SELECT id, title FROM articles WHERE status IN ('scheduled','pending') AND publish_at IS NOT NULL AND publish_at <= CONVERT_TZ(NOW(), 'America/New_York', 'Asia/Karachi')");
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
