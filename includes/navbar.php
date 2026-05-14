@@ -33,11 +33,11 @@ $categories = DB::getCategories();
             <?php endif; ?>
         </ul>
         
-        <!-- Dark Mode Toggle -->
+        <!-- Dark Mode Toggle
         <button class="dark-toggle" id="dark-toggle-btn" aria-label="Switch to dark mode" title="Switch to dark mode">
             <span class="toggle-icon" id="toggle-icon">🌙</span>
             <span class="toggle-label" id="toggle-label">Dark</span>
-        </button> 
+        </button>  -->
 
         <div class="hamburger">
             <span></span>
