@@ -1,5 +1,7 @@
 <?php
 date_default_timezone_set('Asia/Karachi');
+$now = date('Y-m-d H:i:s');
+echo "PHP Now (Karachi): " . $now . "\n";
 $secret = $_GET['secret'] ?? '';
 if ($secret !== 'Andkfe9sdf8sdf8sdf8sdf8sdf8') {
     http_response_code(403);
@@ -14,7 +16,7 @@ $db = DB::getConnection();
 $stmt = $db->prepare("SELECT id, title FROM articles WHERE status IN ('scheduled','pending') AND publish_at IS NOT NULL AND publish_at <= CONVERT_TZ(NOW(), 'America/New_York', 'Asia/Karachi')");
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+echo "Rows found: " . count($rows) . "\n";
 if (!empty($rows)) {
     $ids = array_column($rows, 'id');
     $in = implode(',', array_map('intval', $ids));
