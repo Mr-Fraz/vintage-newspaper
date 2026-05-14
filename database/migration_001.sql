@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS articles (
     -- These columns are required BEFORE migration runs
     category_id INT DEFAULT NULL,
     author_id INT DEFAULT NULL,
-    status ENUM('draft', 'published', 'archived') DEFAULT 'published',
+    status ENUM('draft','pending','scheduled','published', 'archived') DEFAULT 'draft',
     featured_image VARCHAR(255) DEFAULT NULL,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
