@@ -21,7 +21,7 @@ if (!defined('SITE_NAME')) {
         }
     </style>
     <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/style.css">
-    <!-- <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/dark-mode.css"> -->
+    <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/dark-mode.css">
     <?php if (isset($extraCSS)) echo $extraCSS; ?>
 </head>
 
