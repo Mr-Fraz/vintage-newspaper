@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Karachi');
 $secret = $_GET['secret'] ?? '';
 if ($secret !== 'Andkfe9sdf8sdf8sdf8sdf8sdf8') {
     http_response_code(403);

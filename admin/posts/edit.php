@@ -3,6 +3,7 @@ require_once __DIR__ . '/../includes/auth-check.php';
 require_once __DIR__ . '/../../functions/db.php';
 require_once __DIR__ . '/../../functions/validation.php';
 require_once __DIR__ . '/../../functions/helpers.php';
+date_default_timezone_set('Asia/Karachi');
 
 $pageTitle = 'Edit Post';
 $error = '';

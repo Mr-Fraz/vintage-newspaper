@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/database.php';
-
+date_default_timezone_set('Asia/Karachi');
 // Site settings
 define('SITE_NAME', $_ENV['SITE_NAME']);
 define('SITE_URL', rtrim($_ENV['SITE_URL'], '/'));
