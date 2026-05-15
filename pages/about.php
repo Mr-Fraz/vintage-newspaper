@@ -167,7 +167,7 @@
         <aside class="sidebar">
             <h2>The Editor's Note</h2>
             <p>Welcome to our first edition. This project is a testament to the power of design to evoke nostalgia and tell a story beyond the text itself.</p>
-            <p><strong>Lead Designer:</strong> [Your Name]<br>
+            <p><strong>Lead Designer:</strong> Muhammad Faraz<br>
             <strong>Technology:</strong> PHP, CSS3, Apache</p>
         </aside>
     </div>
