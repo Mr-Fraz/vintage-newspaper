@@ -132,7 +132,9 @@ body::before {
   text-decoration: none;
 }
 .logo .tagline {
-  font-family: "Playfair Display",G serif;
+  font-family:
+    "Playfair Display",
+    G serif;
   font-size: 0.65rem;
   font-style: italic;
   color: var(--ink-faded);
@@ -645,25 +647,6 @@ figure figcaption,
   border-top: 1px solid var(--rule-thin);
   padding-top: 5px;
 }
-
-/* ================================================================
-   DROP CAP — First letter of articles
-   ================================================================ */
-article .article-content > p:first-of-type::first-letter,
-.article-single .article-content > p:first-of-type::first-letter,
-.hero-text > p:first-of-type::first-letter {
-  font-family: "Cinzel", serif;
-  font-size: 4.2em;
-  font-weight: 900;
-  color: var(--red-drop);
-  float: left;
-  line-height: 0.75;
-  margin: 4px 6px -4px 0;
-  padding: 4px 2px 0 0;
-  border-right: 2px solid var(--rule-thin);
-  padding-right: 8px;
-}
-
 /* ================================================================
    SINGLE ARTICLE PAGE
    ================================================================ */
@@ -868,7 +851,7 @@ article .article-content > p:first-of-type::first-letter,
 }
 
 .advert-box .advert-body {
-  font-family: "Playfair Display",Georgia, serif;
+  font-family: "Playfair Display", Georgia, serif;
   font-size: 0.78rem;
   line-height: 1.5;
   color: var(--ink-soft);
@@ -1309,85 +1292,119 @@ article .article-content > p:first-of-type::first-letter,
   font-style: italic;
   color: white;
 
-.footer-bottom {
-  text-align: center;
-  padding-top: 16px;
-  font-family: "IM Fell English", serif;
-  font-size: 0.92rem;
-  font-style: italic;
-  color: rgba(232, 222, 192, 0.35);
-  letter-spacing: 1px;
-}
+  .footer-bottom {
+    text-align: center;
+    padding-top: 16px;
+    font-family: "IM Fell English", serif;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: rgba(232, 222, 192, 0.35);
+    letter-spacing: 1px;
+  }
 
-/* Victorian footer ornament */
-.footer-bottom::before {
-  content: "✦  ✦  ✦";
-  display: block;
-  font-size: 0.6rem;
-  letter-spacing: 8px;
-  margin-bottom: 10px;
-  color: rgba(232, 222, 192, 0.25);
-}
+  /* Victorian footer ornament */
+  .footer-bottom::before {
+    content: "✦  ✦  ✦";
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 8px;
+    margin-bottom: 10px;
+    color: rgba(232, 222, 192, 0.25);
+  }
 
-/* ================================================================
+  /* ================================================================
    DARK MODE TOGGLE
    ================================================================ */
-.dark-toggle {
-  background: transparent;
-  border: 1px solid var(--rule-thin);
-  border-radius: 0;
-  padding: 4px 12px;
-  cursor: pointer;
-  font-family: "IM Fell English", serif;
-  font-size: 0.72rem;
-  color: var(--ink);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-.dark-toggle:hover {
-  background: var(--ink);
-  color: var(--parchment-lt);
-}
-.toggle-icon {
-  font-size: 0.85rem;
-}
+  .dark-toggle {
+    background: transparent;
+    border: 1px solid var(--rule-thin);
+    border-radius: 0;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-family: "IM Fell English", serif;
+    font-size: 0.72rem;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .dark-toggle:hover {
+    background: var(--ink);
+    color: var(--parchment-lt);
+  }
+  .toggle-icon {
+    font-size: 0.85rem;
+  }
 
-/* ================================================================
+  /* ================================================================
    RESPONSIVE — Collapse to 1 column on mobile
    ================================================================ */
-@media (max-width: 1024px) {
-  .newspaper-grid {
-    grid-template-columns: 1fr 1fr;
+  @media (max-width: 1024px) {
+    .newspaper-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .col-main {
+      grid-column: 1 / -1;
+      border-right: none !important;
+      border-bottom: 3px double var(--rule-heavy);
+    }
+    .col-sidebar {
+      grid-column: 1 / 2;
+    }
+    .col-feature {
+      grid-column: 2 / 3;
+      border-right: none !important;
+    }
+    .advert-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .logo h1 {
+      font-size: 1.3rem;
+    }
+    .masthead-title {
+      font-size: clamp(2.8rem, 7vw, 5rem);
+    }
   }
-  .col-main {
-    grid-column: 1 / -1;
-    border-right: none !important;
-    border-bottom: 3px double var(--rule-heavy);
-  }
-  .col-sidebar {
-    grid-column: 1 / 2;
-  }
-  .col-feature {
-    grid-column: 2 / 3;
-    border-right: none !important;
-  }
-  .advert-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .logo h1 {
-    font-size: 1.3rem;
-  }
-  .masthead-title {
-    font-size: clamp(2.8rem, 7vw, 5rem);
-  }
-}
 
-@media (max-width: 768px) {
-  .hamburger {
-    display: flex;
+  @media (max-width: 768px) {
+    .hamburger {
+      display: flex;
+    }
+    .newspaper-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .col-main,
+    .col-sidebar,
+    .col-feature {
+      grid-column: 1 / -1 !important;
+      border-right: none !important;
+    }
+    .masthead-title {
+      font-size: clamp(1.6rem, 8vw, 2.8rem);
+    }
+    .masthead {
+      padding: 14px 0 0;
+    }
+    .masthead-pub-info {
+      font-size: 0.6rem;
+      padding: 0 12px 6px;
+    }
+    .footer {
+      padding: 20px 0 12px;
+    }
+    .footer-section h3,
+    .footer-section h4 {
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+    }
+    .footer-section a {
+      font-size: 0.82rem;
+    }
+    .footer-bottom {
+      font-size: 0.78rem;
+    }
   }
 
   .nav-links {
@@ -1506,7 +1523,7 @@ article .article-content > p:first-of-type::first-letter,
     padding: 0 12px;
   }
   .masthead-title {
-    font-size: clamp(2rem, 12vw, 3rem);
+    font-size: clamp(1.3rem, 9vw, 2rem);
   }
   .advert-grid {
     grid-template-columns: 1fr;
@@ -1531,5 +1548,4 @@ article .article-content > p:first-of-type::first-letter,
   .ornamental-rule .orn-line {
     width: 80px;
   }
-}
 }
