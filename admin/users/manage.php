@@ -54,7 +54,7 @@ require_once __DIR__ . '/../includes/admin-header.php';
             <div class="success-message"><?php echo Helper::escape($success); ?></div>
         <?php endif; ?>
 
-        <div class="user-details" style="background: #f9f9f9; padding: 20px; border-radius: 4px; margin-bottom: 30px;">
+        <div class="user-details" style="background: #f0e6d0; padding: 20px; border-radius: 4px; margin-bottom: 30px;">
             <h2><?php echo Helper::escape($user['username']); ?></h2>
             <p><strong>Email:</strong> <?php echo Helper::escape($user['email']); ?></p>
             <p><strong>Current Role:</strong> <span class="badge badge-<?php echo $user['role']; ?>"><?php echo $user['role']; ?></span></p>

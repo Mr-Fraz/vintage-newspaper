@@ -345,7 +345,7 @@
   border: 2px solid var(--a-border);
   font-size: 0.95rem;
   font-family: var(--ff-body);
-  background: var(--a-paper2);
+  background: #f0e6d0;
   color: var(--a-text);
   border-radius: 0;
   transition: border-color 0.2s ease, background 0.2s ease;
@@ -355,7 +355,7 @@
 .admin-form select:focus {
   outline: none;
   border-color: var(--a-secondary);
-  background: #fff;
+  background: #f0e6d0;
 }
 .admin-form textarea {
   min-height: 140px;

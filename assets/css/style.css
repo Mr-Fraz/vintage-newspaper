@@ -19,7 +19,7 @@ body {
 
 /* ── CSS Variables ── */
 :root {
-  --parchment: #e8dec0;
+  --parchment: #f0e6d0;
   --parchment-lt: #f2ead2;
   --parchment-dk: #d4c89a;
   --ink: #382912;
@@ -71,7 +71,7 @@ body::before {
    NAVBAR — Victorian Slim Navigation Strip
    ================================================================ */
 .navbar {
-  background: var(--parchment-lt);
+  background: #f0e6d0;
   background-image: var(--noise);
   border-bottom: 3px solid var(--rule-heavy);
   border-radius: 0 0 12px 12px;
@@ -221,7 +221,8 @@ body::before {
    MASTHEAD — Full-Width Gothic Banner
    ================================================================ */
 .masthead {
-  background: var(--parchment-lt);
+  /* background: var(--parchment-lt); */
+  background: #f0e6d0;
   background-image: var(--noise);
   text-align: center;
   padding: 28px 0 0;
