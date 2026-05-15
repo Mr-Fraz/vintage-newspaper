@@ -700,7 +700,6 @@ figure figcaption,
   display: block;
   margin: 20px auto;
   border: 1px solid var(--rule-heavy);
-  filter: grayscale(1) contrast(1.5) sepia(0.2);
 }
 .article-single .article-content figure {
   max-width: 100%;
