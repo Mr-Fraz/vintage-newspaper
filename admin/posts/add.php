@@ -25,18 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tags = isset($_POST['tags']) ? trim($_POST['tags']) : '';
     $seo_title = isset($_POST['seo_title']) ? Validate::sanitize($_POST['seo_title']) : null;
     $meta_description = isset($_POST['meta_description']) ? Validate::sanitize($_POST['meta_description']) : null;
-    // Publish date handling
-    $publish_at = isset($_POST['publish_at']) && $_POST['publish_at'] !== ''
-        ? date('Y-m-d H:i:s', strtotime($_POST['publish_at']))
-        : null;
-
-    if ($publish_at && strtotime($publish_at) > time()) {
-        // Future date hai — chahe koi bhi status select kiya ho
-        $status = 'scheduled';
-    } elseif ($publish_at && strtotime($publish_at) <= time()) {
-        // Past/present date hai — seedha publish
-        $status = 'published';
-    } elseif (empty($status)) {
+    if (empty($status)) {
         $status = 'draft';
     }
     $imageName = '';
@@ -77,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'status' => $status,
             'seo_title' => $seo_title,
             'meta_description' => $meta_description,
-            'publish_at' => $publish_at,
             'og_image' => null
         ];
 
@@ -151,11 +139,6 @@ include __DIR__ . '/../includes/admin-header.php';
             </div>
 
             <div class="form-group">
-                <label for="publish_at">Publish At (optional)</label>
-                <input type="datetime-local" id="publish_at" name="publish_at">
-            </div>
-
-            <div class="form-group">
                 <label for="content">Content *</label>
                 <textarea id="content" name="content" rows="15"></textarea>
             </div>
@@ -201,7 +184,7 @@ include __DIR__ . '/../includes/admin-header.php';
                 <label for="status">Status</label>
                 <select id="status" name="status">
                     <?php
-                    $statuses = ['draft', 'pending', 'scheduled', 'published', 'archived'];
+                    $statuses = ['draft', 'pending', 'published', 'archived'];
                     foreach ($statuses as $st) {
                         $sel = (isset($status) && $status == $st) ? 'selected' : '';
                         echo '<option value="' . $st . '" ' . $sel . '>' . ucfirst($st) . '</option>';
