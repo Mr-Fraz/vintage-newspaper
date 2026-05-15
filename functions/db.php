@@ -334,14 +334,13 @@ class DB
     {
         self::init();
 
-        $sql = "INSERT INTO articles (title, slug, content, excerpt, image, media_id, image_alt, category_id, author_id, status, seo_title, meta_description, publish_at, og_image)
-                VALUES (:title, :slug, :content, :excerpt, :image, :media_id, :image_alt, :category_id, :author_id, :status, :seo_title, :meta_description, :publish_at, :og_image)";
+        $sql = "INSERT INTO articles (title, slug, content, excerpt, image, media_id, image_alt, category_id, author_id, status, seo_title, meta_description, og_image)
+                VALUES (:title, :slug, :content, :excerpt, :image, :media_id, :image_alt, :category_id, :author_id, :status, :seo_title, :meta_description, :og_image)";
 
         $stmt = self::$conn->prepare($sql);
         $ok = $stmt->execute(array_merge([
             'seo_title' => null,
             'meta_description' => null,
-            'publish_at' => null,
             'og_image' => null
         ], $data));
 
@@ -357,7 +356,7 @@ class DB
         $sql = "UPDATE articles 
                 SET title = :title, slug = :slug, content = :content, 
                     excerpt = :excerpt, image = :image, media_id = :media_id, image_alt = :image_alt, category_id = :category_id, 
-                    status = :status, seo_title = :seo_title, meta_description = :meta_description, publish_at = :publish_at, og_image = :og_image, updated_at = NOW() 
+                    status = :status, seo_title = :seo_title, meta_description = :meta_description, og_image = :og_image, updated_at = NOW() 
                 WHERE id = :id";
 
         $stmt = self::$conn->prepare($sql);
@@ -365,7 +364,6 @@ class DB
         $defaults = [
             'seo_title' => null,
             'meta_description' => null,
-            'publish_at' => null,
             'og_image' => null
         ];
         $params = array_merge($defaults, $data);
