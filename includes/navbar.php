@@ -5,12 +5,42 @@ require_once __DIR__ . '/../functions/auth.php';
 $categories = DB::getCategories();
 ?>
 
+<!-- Victorian Masthead -->
+<header class="masthead">
+    <div class="masthead-pub-info">
+        <span>Est. <?php echo date('Y'); ?></span>
+        <span><?php echo strtoupper(date('l, F j, Y')); ?></span>
+        <span>Price: One Penny</span>
+    </div>
+
+    <h1 class="masthead-title"><?php echo SITE_NAME; ?></h1>
+    <p class="masthead-tagline">Your Most Faithful Daily Chronicle of Truth &amp; Intelligence</p>
+
+    <!-- Ornamental Rule -->
+    <div class="ornamental-rule">
+        <div class="orn-center">
+            <span class="orn-line"></span>
+            <span class="orn-line thin"></span>
+            <span class="orn-icon">❧</span>
+            <span class="orn-line thin"></span>
+            <span class="orn-line"></span>
+        </div>
+    </div>
+    <hr class="masthead-rule">
+</header>
+
+<div class="date-strip">
+    <?php
+    $cat_names = array_column($categories, 'name');
+    echo implode(' &nbsp;·&nbsp; ', array_map('strtoupper', array_slice($cat_names, 0, 5)));
+    ?>
+</div>
+
 <nav class="navbar">
     <div class="container">
         <div class="logo">
             <a href="<?php echo SITE_URL; ?>">
                 <h1><?php echo SITE_NAME; ?></h1>
-                <p class="tagline">Your Daily Source of Truth</p>
             </a>
         </div>
 

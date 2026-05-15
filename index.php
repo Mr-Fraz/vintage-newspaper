@@ -15,44 +15,43 @@ include __DIR__ . '/includes/navbar.php';
 
 <main class="main-content">
     <div class="container">
-        <!-- Hero Section -->
-        <?php if ($page == 1 && count($articles) > 0): 
-            $featured = $articles[0];
-        ?>
-        <section class="hero">
-            <div class="hero-content">
-                <?php if (!empty($featured['image'])): ?>
-                    <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $featured['image']; ?>" alt="<?php echo htmlspecialchars($featured['title']); ?>">
-                <?php endif; ?>
-                
-                <div class="hero-text">
-                    <span class="category-badge"><?php echo $featured['category_name']; ?></span>
-                    <h2><a href="<?php echo SITE_URL; ?>/pages/article.php?id=<?php echo $featured['id']; ?>"><?php echo htmlspecialchars($featured['title']); ?></a></h2>
-                    <p><?php echo htmlspecialchars($featured['excerpt'] ?? ''); ?></p>
-                    <div class="meta">
-                        <span>By <?php echo htmlspecialchars($featured['author']); ?></span>
-                        <span><?php echo Helper::formatDate($featured['created_at']); ?></span>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <?php endif; ?>
 
-        <!-- Latest Articles -->
-        <section class="articles-grid">
-            <h2 class="section-title">Latest News</h2>
-            
-            <div class="grid">
-                <?php 
-                $startIndex = ($page == 1) ? 1 : 0; // Skip first article on page 1 (featured)
-                for ($i = $startIndex; $i < count($articles); $i++): 
-                    $article = $articles[$i];
-                ?>
+        <!-- 4-Column Victorian Newspaper Grid -->
+        <div class="newspaper-grid">
+
+            <!-- COLS 1-2: Main Story -->
+            <div class="col-main">
+                <div class="col-section-head">Principal Intelligence</div>
+                <?php if ($page == 1 && count($articles) > 0):
+                    $featured = $articles[0]; ?>
+                <section class="hero">
+                    <?php if (!empty($featured['image'])): ?>
+                        <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $featured['image']; ?>"
+                             alt="<?php echo htmlspecialchars($featured['title']); ?>">
+                        <p class="hero-caption">Illustrated Correspondence &mdash; Our Special Artist on the Scene</p>
+                    <?php endif; ?>
+                    <div class="hero-text">
+                        <span class="category-badge"><?php echo $featured['category_name']; ?></span>
+                        <h2><a href="<?php echo SITE_URL; ?>/pages/article.php?id=<?php echo $featured['id']; ?>"><?php echo htmlspecialchars($featured['title']); ?></a></h2>
+                        <p><?php echo htmlspecialchars($featured['excerpt'] ?? ''); ?></p>
+                        <div class="meta">
+                            <span>By <?php echo htmlspecialchars($featured['author']); ?></span>
+                            <span><?php echo Helper::formatDate($featured['created_at']); ?></span>
+                        </div>
+                    </div>
+                </section>
+                <?php endif; ?>
+            </div>
+
+            <!-- COL 3: Latest Dispatches -->
+            <div class="col-sidebar">
+                <div class="col-section-head">Latest Dispatches</div>
+                <?php foreach (array_slice($articles, 1, 3) as $article): ?>
                     <article class="article-card">
                         <?php if (!empty($article['image'])): ?>
-                            <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $article['image']; ?>" alt="<?php echo htmlspecialchars($article['title']); ?>">
+                            <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $article['image']; ?>"
+                                 alt="<?php echo htmlspecialchars($article['title']); ?>">
                         <?php endif; ?>
-                        
                         <div class="article-content">
                             <span class="category-badge"><?php echo $article['category_name']; ?></span>
                             <h3><a href="<?php echo SITE_URL; ?>/pages/article.php?id=<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a></h3>
@@ -63,12 +62,83 @@ include __DIR__ . '/includes/navbar.php';
                             </div>
                         </div>
                     </article>
-                <?php endfor; ?>
+                <?php endforeach; ?>
             </div>
-        </section>
-        
+
+            <!-- COL 4: Special Features -->
+            <div class="col-feature">
+                <div class="col-section-head">Special Features</div>
+                <?php foreach (array_slice($articles, 4, 3) as $article): ?>
+                    <article class="article-card">
+                        <div class="article-content">
+                            <span class="category-badge"><?php echo $article['category_name']; ?></span>
+                            <h3><a href="<?php echo SITE_URL; ?>/pages/article.php?id=<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a></h3>
+                            <p><?php echo htmlspecialchars($article['excerpt'] ?? ''); ?></p>
+                            <div class="meta">
+                                <span><?php echo htmlspecialchars($article['author']); ?></span>
+                                <span><?php echo Helper::timeAgo($article['created_at']); ?></span>
+                            </div>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- FULL-WIDTH: Further Intelligence -->
+            <?php if (count($articles) > 7): ?>
+            <div class="col-full-row">
+                <div class="col-section-head">Further Intelligence from Our Correspondents</div>
+                <div class="grid">
+                    <?php for ($i = 7; $i < min(count($articles), 11); $i++):
+                        $article = $articles[$i]; ?>
+                        <article class="article-card">
+                            <?php if (!empty($article['image'])): ?>
+                                <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $article['image']; ?>"
+                                     alt="<?php echo htmlspecialchars($article['title']); ?>">
+                            <?php endif; ?>
+                            <div class="article-content">
+                                <span class="category-badge"><?php echo $article['category_name']; ?></span>
+                                <h3><a href="<?php echo SITE_URL; ?>/pages/article.php?id=<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a></h3>
+                                <p><?php echo htmlspecialchars($article['excerpt'] ?? ''); ?></p>
+                                <div class="meta">
+                                    <span><?php echo htmlspecialchars($article['author']); ?></span>
+                                    <span><?php echo Helper::timeAgo($article['created_at']); ?></span>
+                                </div>
+                            </div>
+                        </article>
+                    <?php endfor; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+        </div><!-- /.newspaper-grid -->
+
+        <!-- Victorian Advert Row -->
+        <div class="advert-grid">
+            <div class="advert-box">
+                <p class="advert-head">Wanted: Skilled Correspondents</p>
+                <p class="advert-body">Gentlemen of letters sought for foreign postings. Apply in writing to the Editor.</p>
+                <span class="advert-price">£2 per column</span>
+            </div>
+            <div class="advert-box">
+                <p class="advert-head">Scientific Wonders Exhibition</p>
+                <p class="advert-body">The marvels of the modern age on display at the Crystal Palace, open daily.</p>
+                <span class="advert-price">Admission: 6d.</span>
+            </div>
+            <div class="advert-box">
+                <p class="advert-head">Subscribe to Our Gazette</p>
+                <p class="advert-body">Receive the latest intelligence by post each morning without fail or delay.</p>
+                <span class="advert-price">Annual: 12 shillings</span>
+            </div>
+            <div class="advert-box">
+                <p class="advert-head">Telegraphic Correspondence</p>
+                <p class="advert-body">Dispatches received from every corner of the Empire within the hour.</p>
+                <span class="advert-price">Est. since 1842</span>
+            </div>
+        </div>
+
         <!-- Pagination -->
         <?php echo Helper::pagination($totalArticles, POSTS_PER_PAGE, $page, SITE_URL); ?>
+
     </div>
 </main>
 
