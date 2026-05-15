@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,8 @@
     <style>
         /* --- Shared Vintage Styles (Same as About Page) --- */
         body {
-            background-color: #f4ecd8; /* Aged paper */
+            background-color: #f4ecd8;
+            /* Aged paper */
             color: #2b2b2b;
             font-family: 'Times New Roman', serif;
             margin: 0;
@@ -20,8 +22,9 @@
             margin: auto;
             border: 2px solid #2b2b2b;
             padding: 20px;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
-            background-color: #fcf8ed; /* Slightly lighter inner paper */
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+            background-color: #fcf8ed;
+            /* Slightly lighter inner paper */
         }
 
         header {
@@ -116,7 +119,8 @@
 
         /* Call to Action Box */
         .cta-box {
-            grid-column: 1 / -1; /* Spans full width */
+            grid-column: 1 / -1;
+            /* Spans full width */
             text-align: center;
             border: 3px dashed #2b2b2b;
             padding: 30px;
@@ -126,7 +130,8 @@
         .cta-box h3 {
             font-size: 2rem;
             margin-top: 0;
-            font-family: 'Courier New', Courier, monospace; /* More 'typed' feel */
+            font-family: 'Courier New', Courier, monospace;
+            /* More 'typed' feel */
         }
 
         footer {
@@ -197,80 +202,101 @@
                 font-size: 1.2rem;
             }
         }
+
+        @keyframes fadeInPage {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+                /* Slight lift effect */
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeInPage 1.2s ease-out;
+            /* Ensuring the container stays visible after animation */
+            animation-fill-mode: both;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <header>
-        <h1>The Vintage Gazette</h1>
-        <div class="meta-data">
-            <span>Vol. I — No. 002</span>
-            <span><?php echo date("l, F j, Y"); ?></span>
-            <span>Classifieds Section</span>
-        </div>
-    </header>
+    <div class="container">
+        <header>
+            <h1>The Vintage Gazette</h1>
+            <div class="meta-data">
+                <span>Vol. I — No. 002</span>
+                <span><?php echo date("l, F j, Y"); ?></span>
+                <span>Classifieds Section</span>
+            </div>
+        </header>
 
-    <div class="contact-header">
-        <h1>Official Directory & Inquiries</h1>
-        <p>FOR THE ATTENTION OF THE EDITOR, DESIGNER, & PUBLISHER</p>
+        <div class="contact-header">
+            <h1>Official Directory & Inquiries</h1>
+            <p>FOR THE ATTENTION OF THE EDITOR, DESIGNER, & PUBLISHER</p>
+        </div>
+
+        <div class="contact-grid">
+
+            <div class="classified-section">
+                <h2>Digital Dispatches</h2>
+
+                <div class="contact-method">
+                    <span class="contact-label">Electronic Mail (Email)</span>
+                    <span class="contact-value"><a href="mailto:vintagepress@example.com">vintagepress@example.com</a></span>
+                </div>
+
+                <div class="contact-method">
+                    <span class="contact-label">World Wide Web Portfolio</span>
+                    <span class="contact-value"><a href="https://vintagenews.com" target="_blank">vintagenews.com</a></span>
+                </div>
+
+                <div class="contact-method">
+                    <span class="contact-label">Modern LinkedIn Profile</span>
+                    <span class="contact-value"><a href="https://linkedin.com/in/yourprofile" target="_blank">linkedin.com/vintagenews</a></span>
+                </div>
+            </div>
+
+            <div class="classified-section">
+                <h2>Post & Telegraph</h2>
+
+                <div class="contact-method">
+                    <span class="contact-label">Physical Press Office</span>
+                    <span class="contact-value">
+                        123 Press Pass Lane<br>
+                        Inkwell City, IC 54321
+                    </span>
+                </div>
+
+                <div class="contact-method">
+                    <span class="contact-label">Telephone Exchanges</span>
+                    <span class="contact-value">KLondike 5-0199</span>
+                </div>
+
+                <div class="contact-method">
+                    <span class="contact-label">Telegraph Code</span>
+                    <span class="contact-value">VINTAGEPRESS-XYZ</span>
+                </div>
+            </div>
+
+            <div class="cta-box">
+                <h3>"Stop the Presses!"</h3>
+                <p>Are you seeking a designer versed in the historical arts? Do you have an inquiry regarding a digital archive project? The Gazette is currently accepting new commissions and collaborations.</p>
+                <p><strong>Do not delay—dispatch your inquiry today via the electronic mail channel listed above.</strong></p>
+            </div>
+
+        </div>
+
+        <footer>
+            <p>&copy; <?php echo date("Y"); ?> The Vintage Newspaper Project | All Rights Reserved | Established for Design Research</p>
+        </footer>
     </div>
-
-    <div class="contact-grid">
-        
-        <div class="classified-section">
-            <h2>Digital Dispatches</h2>
-            
-            <div class="contact-method">
-                <span class="contact-label">Electronic Mail (Email)</span>
-                <span class="contact-value"><a href="mailto:vintagepress@example.com">vintagepress@example.com</a></span>
-            </div>
-
-            <div class="contact-method">
-                <span class="contact-label">World Wide Web Portfolio</span>
-                <span class="contact-value"><a href="https://vintagenews.com" target="_blank">vintagenews.com</a></span>
-            </div>
-
-            <div class="contact-method">
-                <span class="contact-label">Modern LinkedIn Profile</span>
-                <span class="contact-value"><a href="https://linkedin.com/in/yourprofile" target="_blank">linkedin.com/vintagenews</a></span>
-            </div>
-        </div>
-
-        <div class="classified-section">
-            <h2>Post & Telegraph</h2>
-            
-            <div class="contact-method">
-                <span class="contact-label">Physical Press Office</span>
-                <span class="contact-value">
-                    123 Press Pass Lane<br>
-                    Inkwell City, IC 54321
-                </span>
-            </div>
-
-            <div class="contact-method">
-                <span class="contact-label">Telephone Exchanges</span>
-                <span class="contact-value">KLondike 5-0199</span>
-            </div>
-            
-            <div class="contact-method">
-                <span class="contact-label">Telegraph Code</span>
-                <span class="contact-value">VINTAGEPRESS-XYZ</span>
-            </div>
-        </div>
-
-        <div class="cta-box">
-            <h3>"Stop the Presses!"</h3>
-            <p>Are you seeking a designer versed in the historical arts? Do you have an inquiry regarding a digital archive project? The Gazette is currently accepting new commissions and collaborations.</p>
-            <p><strong>Do not delay—dispatch your inquiry today via the electronic mail channel listed above.</strong></p>
-        </div>
-
-    </div>
-
-    <footer>
-        <p>&copy; <?php echo date("Y"); ?> The Vintage Newspaper Project | All Rights Reserved | Established for Design Research</p>
-    </footer>
-</div>
 
 </body>
+
 </html>
