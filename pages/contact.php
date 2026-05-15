@@ -228,12 +228,12 @@
 
             <div class="contact-method">
                 <span class="contact-label">World Wide Web Portfolio</span>
-                <span class="contact-value"><a href="https://yourportfolio.com" target="_blank">yourportfolio.com</a></span>
+                <span class="contact-value"><a href="https://vintagenews.com" target="_blank">vintagenews.com</a></span>
             </div>
 
             <div class="contact-method">
                 <span class="contact-label">Modern LinkedIn Profile</span>
-                <span class="contact-value"><a href="https://linkedin.com/in/yourprofile" target="_blank">linkedin.com/in/yourprofile</a></span>
+                <span class="contact-value"><a href="https://linkedin.com/in/yourprofile" target="_blank">linkedin.com/vintagenews</a></span>
             </div>
         </div>
 
