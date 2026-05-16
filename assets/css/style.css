@@ -1749,12 +1749,7 @@ figure figcaption,
   font-style: italic;
 }
 
-/* Hide old footer elements if they still render */
-.footer-content,
-.footer-section,
-.footer-bottom {
-  display: none !important;
-}
+/* footer display restored */
 
 @media (max-width: 600px) {
   .footer-bar {
