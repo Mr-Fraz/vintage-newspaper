@@ -737,3 +737,34 @@
     padding: 2px 7px;
   }
 }
+
+/* ================================================================
+   ADMIN MOBILE COMPACT FIXES
+   ================================================================ */
+@media (max-width: 768px) {
+  /* Compact sidebar header */
+  .sidebar-header {
+    padding: 12px 16px 10px;
+  }
+  .sidebar-header h2 {
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+  .sidebar-header p {
+    font-size: 0.65rem;
+  }
+  /* Hide Views column on mobile — not useful */
+  .admin-table th:nth-child(4),
+  .admin-table td:nth-child(4) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar-header {
+    padding: 10px 12px 8px;
+  }
+  .sidebar-header h2 {
+    font-size: 0.95rem;
+  }
+}
