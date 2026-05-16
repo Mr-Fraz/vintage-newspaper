@@ -1,205 +1,65 @@
 <?php
-echo "<h1>About Our Vintage Newspaper</h1>";
-echo "<p>Welcome to the archives.</p>";
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../functions/db.php';
+$pageTitle = 'About';
+$extraCSS = '<link rel="stylesheet" href="' . SITE_URL . '/assets/css/pages.css">';
+include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/navbar.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About | The Vintage Gazette</title>
-    <style>
-        body {
-            background-color: #f4ecd8;
-            /* Aged paper */
-            color: #2b2b2b;
-            font-family: 'Times New Roman', serif;
-            margin: 0;
-            padding: 40px;
-            line-height: 1.6;
-        }
+<main class="main-content">
+  <div class="container">
+    <div class="page-wrapper">
 
-        .container {
-            max-width: 900px;
-            margin: auto;
-            border: 2px solid #2b2b2b;
-            padding: 20px;
-            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
-        }
+      <a href="<?php echo SITE_URL; ?>" class="back-link">Return to Front Page</a>
 
-        header {
-            text-align: center;
-            border-bottom: 4px double #2b2b2b;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-        }
+      <div class="page-masthead">
+        <span class="site-name"><?php echo SITE_NAME; ?></span>
+        <div class="meta-bar">
+          <span>Vol. I — No. 001</span>
+          <span><?php echo strtoupper(date('l, F j, Y')); ?></span>
+          <span>Price: One Penny</span>
+        </div>
+      </div>
 
-        h1 {
-            font-size: 3.5rem;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: -2px;
-        }
+      <div class="section-head">About This Gazette</div>
 
-        .meta-data {
-            border-top: 1px solid #2b2b2b;
-            border-bottom: 1px solid #2b2b2b;
-            padding: 5px 0;
-            margin: 10px 0;
-            font-style: italic;
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-        }
-
-        .content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-        }
-
-        .main-article {
-            text-align: justify;
-            column-count: 2;
-            column-gap: 20px;
-        }
-
-        .main-article p::first-letter {
-            float: left;
-            font-size: 4rem;
-            line-height: 1;
-            padding-right: 8px;
-            font-weight: bold;
-        }
-
-        h2 {
-            border-bottom: 1px solid #2b2b2b;
-            text-transform: uppercase;
-            font-size: 1.2rem;
-            margin-top: 0;
-        }
-
-        .sidebar {
-            border-left: 1px solid #2b2b2b;
-            padding-left: 20px;
-        }
-
-        footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 0.8rem;
-            border-top: 1px solid #2b2b2b;
-            padding-top: 10px;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            body {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 2.2rem;
-                letter-spacing: -1px;
-            }
-
-            .meta-data {
-                flex-direction: column;
-                text-align: center;
-                gap: 5px;
-            }
-
-            .content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .main-article {
-                column-count: 1;
-            }
-
-            .sidebar {
-                border-left: none;
-                border-top: 1px solid #2b2b2b;
-                padding-left: 0;
-                padding-top: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            h1 {
-                font-size: 1.6rem;
-            }
-
-            .container {
-                padding: 15px;
-            }
-
-            .main-article p::first-letter {
-                font-size: 2.8rem;
-            }
-        }
-
-        @keyframes fadeInPage {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-                /* Slight lift effect */
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .container {
-            animation: fadeInPage 1.2s ease-out;
-            /* Ensuring the container stays visible after animation */
-            animation-fill-mode: both;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="container">
-        <header>
-            <h1>The Vintage Gazette</h1>
-            <div class="meta-data">
-                <span>Vol. I — No. 001</span>
-                <span><?php echo date("l, F j, Y"); ?></span>
-                <span>Price: Two Cents</span>
-            </div>
-        </header>
-
-        <div class="content">
-            <section class="main-article">
-                <h2>Our Mission: Preserving the Printed Word</h2>
-                <p>This digital design portfolio serves as a living archive of historical aesthetic. In an age of rapid pixels and fleeting data, the Vintage Gazette aims to bridge the gap between modern technology and the timeless beauty of 20th-century newsprint.
-
-                    Each layout, font choice, and digital "ink stain" is meticulously crafted to transport the viewer back to an era where information carried weight—literally and figuratively. Through this project, we explore the intersection of classical typography and modern PHP development, ensuring that the soul of the broadsheet remains alive in the digital frontier.</p>
-            </section>
-
-            <aside class="sidebar">
-                <h2>The Editor's Note</h2>
-                <p>Welcome to our first edition. This project is a testament to the power of design to evoke nostalgia and tell a story beyond the text itself.</p>
-                <p><strong>Lead Designer:</strong> Muhammad Faraz<br>
-                    <strong>Technology:</strong> PHP, CSS3, Apache
-                </p>
-            </aside>
+      <div class="content-grid">
+        <div class="content-main">
+          <div class="article-body">
+            <h2>Our Mission: Preserving the Printed Word</h2>
+            <p>This publication serves as a living archive of historical aesthetic. In an age of rapid pixels and fleeting data, the Vintage Gazette bridges the gap between modern technology and the timeless beauty of 19th-century newsprint. Each layout, font choice, and digital ink mark is meticulously crafted to transport the reader back to an era where information carried weight — literally and figuratively.</p>
+            <p>Through this project, we explore the intersection of classical typography and modern web development, ensuring that the soul of the broadsheet remains alive in the digital frontier. Our commitment to quality journalism mirrors the dedication of Victorian-era pressmen who set type by hand and pulled each impression with care.</p>
+            <p>The Vintage Gazette covers breaking news, business dispatches, entertainment chronicles, sporting results, and technological marvels — all presented with the gravitas befitting a publication of the highest order.</p>
+          </div>
         </div>
 
-        <footer>
-            <p>&copy; <?php echo date("Y"); ?> Vintage Newspaper Project | Built for Historical Perspective</p>
-        </footer>
+        <div class="content-sidebar">
+          <div class="sidebar-box">
+            <h3>The Editor's Note</h3>
+            <p>Welcome to our chronicle. This project is a testament to the power of design to evoke nostalgia and tell a story beyond the text itself.</p>
+            <p><strong>Lead Designer:</strong> Muhammad Faraz<br>
+               <strong>Technology:</strong> PHP, CSS3, Apache<br>
+               <strong>Est.</strong> <?php echo date('Y'); ?></p>
+          </div>
+          <div class="sidebar-box">
+            <h3>Our Principles</h3>
+            <ul>
+              <li>Truth in every dispatch</li>
+              <li>Clarity of expression</li>
+              <li>Fidelity to the reader</li>
+              <li>Excellence in craft</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-footer-note">
+        &copy; <?php echo date('Y'); ?> <?php echo SITE_NAME; ?> &mdash; All Rights Reserved
+      </div>
+
     </div>
+  </div>
+</main>
 
-</body>
-
-</html>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

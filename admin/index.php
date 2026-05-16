@@ -1,4 +1,4 @@
- <?php
+<?php
 require_once __DIR__ . '/includes/auth-check.php';
 require_once __DIR__ . '/../functions/db.php';
 
@@ -68,7 +68,7 @@ include __DIR__ . '/includes/admin-header.php';
                             <td><?php echo date('M j, Y', strtotime($article['created_at'])); ?></td>
                             <td>
                                 <a href="<?php echo SITE_URL; ?>/admin/posts/edit.php?id=<?php echo $article['id']; ?>" class="btn-sm">Edit</a>
-                                <a href="<?php echo SITE_URL; ?>/article/<?php echo $article['id']; ?>" class="btn-sm" target="_blank">View</a>
+                                <a href="<?php echo SITE_URL; ?>/pages/article.php?id=<?php echo $article['id']; ?>" class="btn-sm" target="_blank">View</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -79,5 +79,4 @@ include __DIR__ . '/includes/admin-header.php';
 </div>
 
 </body>
-</html> 
-
+</html>

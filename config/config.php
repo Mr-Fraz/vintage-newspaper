@@ -3,7 +3,12 @@ require_once __DIR__ . '/database.php';
 date_default_timezone_set('Asia/Karachi');
 // Site settings
 define('SITE_NAME', $_ENV['SITE_NAME']);
-define('SITE_URL', rtrim($_ENV['SITE_URL'], '/'));
+
+// Auto-detect HTTPS — fixes CSS mixed content block on HTTPS
+$_protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$_rawUrl    = rtrim($_ENV['SITE_URL'], '/');
+$_fixedUrl  = preg_replace('#^https?://#', $_protocol . '://', $_rawUrl);
+define('SITE_URL', $_fixedUrl);
 define('ADMIN_EMAIL', $_ENV['ADMIN_EMAIL']);
 
 // Pagination

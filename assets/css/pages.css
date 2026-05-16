@@ -1,0 +1,399 @@
+/* ================================================================
+   VINTAGE NEWSPAPER — ABOUT & CONTACT PAGES
+   Matches main site theme: parchment, ink, Cinzel, Playfair Display
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* ── Variables (mirror main site) ── */
+:root {
+  --parchment:    #f0e6d0;
+  --parchment-lt: #f2ead2;
+  --parchment-dk: #d4c89a;
+  --ink:          #382912;
+  --ink-soft:     #4a3c28;
+  --ink-faded:    #6b5a3e;
+  --rule-heavy:   #2a1e0e;
+  --rule-thin:    #8b7550;
+  --red-drop:     #7a1a1a;
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeBlend in='SourceGraphic' mode='multiply'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+}
+
+/* ── Reset ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+/* ── Body ── */
+body {
+  font-family: "Libre Baskerville", Georgia, serif;
+  background-color: var(--parchment);
+  background-image: var(--noise);
+  color: var(--ink);
+  line-height: 1.7;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Page wrapper ── */
+.page-wrapper {
+  flex: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 28px 48px;
+  width: 100%;
+  animation: pageReveal 0.55s ease-out both;
+}
+
+@keyframes pageReveal {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Page masthead (mini header matching site) ── */
+.page-masthead {
+  text-align: center;
+  border-bottom: 4px double var(--rule-heavy);
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  animation: mastheadReveal 0.6s ease-out 0.1s both;
+}
+
+@keyframes mastheadReveal {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.page-masthead .site-name {
+  font-family: "Cinzel", serif;
+  font-size: clamp(2rem, 6vw, 3.8rem);
+  font-weight: 900;
+  color: var(--ink);
+  letter-spacing: 2px;
+  line-height: 1;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.page-masthead .meta-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  letter-spacing: 1px;
+  border-top: 1px solid var(--rule-thin);
+  border-bottom: 1px solid var(--rule-thin);
+  padding: 5px 0;
+  margin-top: 10px;
+}
+
+/* ── Section heading ── */
+.section-head {
+  font-family: "Cinzel", serif;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-align: center;
+  border-top: 3px solid var(--rule-heavy);
+  border-bottom: 1px solid var(--rule-thin);
+  padding: 7px 4px;
+  margin-bottom: 24px;
+  color: var(--ink);
+}
+.section-head::after {
+  content: "";
+  display: block;
+  border-bottom: 1px solid var(--rule-thin);
+  margin-top: 3px;
+}
+
+/* ── Content grid ── */
+.content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 0;
+  border: 2px solid var(--rule-heavy);
+  border-top: 4px double var(--rule-heavy);
+  margin-bottom: 24px;
+}
+
+.content-main {
+  padding: 24px;
+  border-right: 3px double var(--rule-heavy);
+}
+
+.content-sidebar {
+  padding: 24px;
+  background: rgba(26,18,8,0.025);
+}
+
+/* ── Article text styling ── */
+.article-body {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--ink-soft);
+  text-align: justify;
+  hyphens: auto;
+  column-count: 2;
+  column-gap: 24px;
+}
+
+.article-body p { margin-bottom: 1em; }
+
+.article-body p:first-child::first-letter {
+  float: left;
+  font-family: "Cinzel", serif;
+  font-size: 3.8rem;
+  font-weight: 900;
+  line-height: 0.85;
+  padding-right: 8px;
+  color: var(--red-drop);
+}
+
+.article-body h2 {
+  font-family: "Cinzel", serif;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  border-top: 2px solid var(--rule-heavy);
+  border-bottom: 1px solid var(--rule-thin);
+  padding: 5px 0;
+  text-align: center;
+  margin: 1.4em 0 0.8em;
+  color: var(--ink);
+  column-span: all;
+}
+
+/* ── Sidebar boxes ── */
+.sidebar-box {
+  border: 1px solid var(--rule-thin);
+  padding: 16px;
+  margin-bottom: 18px;
+  position: relative;
+  background-image: repeating-linear-gradient(
+    0deg, transparent, transparent 26px,
+    rgba(26,18,8,0.03) 26px, rgba(26,18,8,0.03) 27px
+  );
+}
+.sidebar-box::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--parchment-dk);
+  pointer-events: none;
+}
+
+.sidebar-box h3 {
+  font-family: "Cinzel", serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--ink);
+  border-bottom: 2px solid var(--rule-heavy);
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+.sidebar-box p, .sidebar-box li {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+.sidebar-box ul { list-style: none; padding: 0; }
+.sidebar-box strong { font-style: normal; color: var(--ink); }
+
+/* ── Contact grid ── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 2px solid var(--rule-heavy);
+  border-top: 4px double var(--rule-heavy);
+  margin-bottom: 24px;
+}
+
+.contact-col {
+  padding: 24px;
+  border-right: 1px solid var(--rule-thin);
+  animation: cardReveal 0.5s ease-out both;
+}
+.contact-col:last-child { border-right: none; }
+
+@keyframes cardReveal {
+  from { opacity:0; transform: translateY(12px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+.contact-col:nth-child(1) { animation-delay: 0.1s; }
+.contact-col:nth-child(2) { animation-delay: 0.2s; }
+
+.contact-col h2 {
+  font-family: "Cinzel", serif;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  background: var(--ink);
+  color: var(--parchment-lt);
+  padding: 6px 10px;
+  margin: -24px -24px 16px;
+  text-align: center;
+}
+
+.contact-method {
+  border-bottom: 1px dashed var(--rule-thin);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+.contact-method:last-child { border-bottom: none; margin-bottom: 0; }
+
+.contact-label {
+  display: block;
+  font-family: "Cinzel", serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--ink-faded);
+  margin-bottom: 3px;
+}
+
+.contact-value {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.contact-value a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule-thin);
+  transition: color 0.2s, background 0.2s;
+}
+.contact-value a:hover {
+  color: var(--parchment-lt);
+  background: var(--ink);
+  padding: 0 3px;
+}
+
+/* ── CTA Box ── */
+.cta-box {
+  border: 3px double var(--rule-heavy);
+  padding: 24px;
+  text-align: center;
+  margin: 24px 0;
+  background-image: repeating-linear-gradient(
+    0deg, transparent, transparent 26px,
+    rgba(26,18,8,0.025) 26px, rgba(26,18,8,0.025) 27px
+  );
+  animation: pageReveal 0.6s ease-out 0.3s both;
+}
+
+.cta-box h3 {
+  font-family: "Cinzel Decorative", "Cinzel", serif;
+  font-size: clamp(1rem, 3vw, 1.6rem);
+  color: var(--ink);
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+
+.cta-box p {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 0.92rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  max-width: 640px;
+  margin: 0 auto 10px;
+  line-height: 1.7;
+}
+
+/* ── Page footer (inline, not site footer) ── */
+.page-footer-note {
+  text-align: center;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  border-top: 1px solid var(--rule-thin);
+  padding-top: 12px;
+  margin-top: 8px;
+}
+
+/* ── Back to site link ── */
+.back-link {
+  display: inline-block;
+  font-family: "Cinzel", serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--ink);
+  text-decoration: none;
+  border: 1px solid var(--rule-thin);
+  padding: 6px 16px;
+  margin-bottom: 20px;
+  transition: all 0.2s;
+}
+.back-link:hover {
+  background: var(--ink);
+  color: var(--parchment-lt);
+}
+.back-link::before { content: "← "; }
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 768px) {
+  .page-wrapper { padding: 20px 16px 36px; }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  .content-main {
+    border-right: none;
+    border-bottom: 3px double var(--rule-heavy);
+    padding: 18px 16px;
+  }
+  .content-sidebar { padding: 18px 16px; }
+
+  .article-body {
+    column-count: 1;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+  .contact-col {
+    border-right: none;
+    border-bottom: 1px solid var(--rule-thin);
+    padding: 18px 16px;
+  }
+  .contact-col:last-child { border-bottom: none; }
+  .contact-col h2 { margin: -18px -16px 16px; }
+
+  .page-masthead .meta-bar {
+    flex-direction: column;
+    gap: 3px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-wrapper { padding: 14px 12px 28px; }
+
+  .page-masthead .site-name { font-size: clamp(1.4rem, 8vw, 2rem); }
+
+  .article-body p:first-child::first-letter {
+    font-size: 2.8rem;
+  }
+
+  .cta-box { padding: 16px; }
+}

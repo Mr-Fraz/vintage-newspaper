@@ -1,10 +1,15 @@
 <aside class="admin-sidebar">
     <div class="sidebar-header">
-        <h2>Admin Panel</h2>
-        <p>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></p>
+        <div class="sidebar-brand">
+            <span class="sidebar-title">Admin Panel</span>
+            <span class="sidebar-user">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+        </div>
+        <button class="admin-hamburger" id="adminHamburger" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
     </div>
-    
-    <nav class="admin-nav">
+
+    <nav class="admin-nav" id="adminNav">
         <ul>
             <li><a href="<?php echo SITE_URL; ?>/admin/">📊 Dashboard</a></li>
             <li><a href="<?php echo SITE_URL; ?>/admin/posts/list.php">📝 All Posts</a></li>
@@ -17,3 +22,16 @@
         </ul>
     </nav>
 </aside>
+
+<script>
+(function() {
+    var btn = document.getElementById('adminHamburger');
+    var nav = document.getElementById('adminNav');
+    if (btn && nav) {
+        btn.addEventListener('click', function() {
+            nav.classList.toggle('open');
+            btn.classList.toggle('active');
+        });
+    }
+})();
+</script>
