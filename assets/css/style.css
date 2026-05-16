@@ -1847,3 +1847,60 @@ figure figcaption,
 .article-item:hover .article-thumb img {
   filter: grayscale(0.5) contrast(1.2) sepia(0.1) !important;
 }
+/* Comment button compact */
+.btn-sm-comment {
+  padding: 7px 18px;
+  font-size: 0.68rem;
+  letter-spacing: 2px;
+}
+
+@media (max-width: 768px) {
+  .btn-sm-comment {
+    padding: 6px 14px;
+    font-size: 0.65rem;
+    width: auto;
+  }
+}
+
+/* ================================================================
+   COMMENTS — COMPACT ON MOBILE
+   ================================================================ */
+@media (max-width: 768px) {
+  .comments-section {
+    margin-top: 1rem;
+    padding: 14px;
+  }
+  .comments-section h2 {
+    font-size: 0.78rem;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+  }
+  .comments-list {
+    margin-bottom: 1rem;
+  }
+  .comment {
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    font-size: 0.75rem;
+  }
+  .comment-form {
+    padding: 0;
+  }
+  .comment-form .form-group {
+    margin-bottom: 10px;
+  }
+  .comment-form label {
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+  }
+  .comment-form input,
+  .comment-form textarea {
+    padding: 7px 10px;
+    font-size: 0.82rem;
+  }
+  .no-comments {
+    margin-bottom: 1rem;
+    font-size: 0.82rem;
+  }
+}

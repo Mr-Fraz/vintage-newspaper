@@ -25,7 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tags = isset($_POST['tags']) ? trim($_POST['tags']) : '';
     $seo_title = isset($_POST['seo_title']) ? Validate::sanitize($_POST['seo_title']) : null;
     $meta_description = isset($_POST['meta_description']) ? Validate::sanitize($_POST['meta_description']) : null;
-    $lang = Validate::sanitize($_POST['lang'] ?? 'en');
+    // Auto-detect lang from title content
+    $lang = 'en';
+    if (preg_match('/[\x{0600}-\x{06FF}]/u', $title)) $lang = 'ur';
     if (empty($status)) {
         $status = 'draft';
     }
@@ -105,21 +107,7 @@ include __DIR__ . '/../includes/admin-header.php';
 
         <form method="POST" enctype="multipart/form-data" onsubmit="tinymce.triggerSave()">
             <?php echo csrfField(); ?>
-            <div class="form-group">
-                <label for="lang">Language (Original Article)</label>
-                <select id="lang" name="lang" onchange="updateTinyMCEDir(this.value)">
-                    <option value="en">English</option>
-                    <option value="ur">Urdu (اردو)</option>
-                    <option value="ar">Arabic (العربية)</option>
-                    <option value="fr">French</option>
-                    <option value="de">German</option>
-                    <option value="zh">Chinese</option>
-                    <option value="es">Spanish</option>
-                </select>
-                <small style="color:#888">Set the language of THIS version. Use "Add Translation" on the edit page for other languages.</small>
-            </div>
-
-            <div class="form-group">
+<div class="form-group">
                 <label for="title">Title *</label>
                 <input type="text" id="title" name="title" required>
             </div>

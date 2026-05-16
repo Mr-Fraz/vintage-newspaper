@@ -26,7 +26,7 @@ if ($stmt->rowCount() === 0) {
 }
 
 // Validate role
-$role = isset($_POST['role']) && in_array($_POST['role'], ['user', 'admin']) ? $_POST['role'] : 'user';
+$role = isset($_POST['role']) && in_array($_POST['role'], ['user', 'editor', 'admin']) ? $_POST['role'] : 'user';
 
 // Cannot demote yourself
     if ($_SESSION['user_id'] == $id && $role != 'admin' && $_SESSION['role'] == 'admin') {

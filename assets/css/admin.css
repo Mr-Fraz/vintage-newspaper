@@ -1053,3 +1053,8 @@
     gap: 4px;
   }
 }
+/* Editor role badge */
+.badge-editor {
+  background: #5a3e1b;
+  color: #f2ead2;
+}

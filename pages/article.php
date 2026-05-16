@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_body'])) {
     $body = trim($_POST['comment_body']);
     $userId = $_SESSION['user_id'] ?? null;
     $guestName = $userId ? null : Validate::sanitize($_POST['guest_name'] ?? '');
-    $guestEmail = $userId ? null : Validate::sanitize($_POST['guest_email'] ?? '');
+    $guestEmail = null; // email field removed
 
     if (empty($body)) {
         $commentError = 'Comment cannot be empty.';
@@ -286,16 +286,12 @@ if ($fontCfg): ?>
                         <label>Name *</label>
                         <input type="text" name="guest_name" required>
                     </div>
-                    <div class="form-group">
-                        <label>Email (optional)</label>
-                        <input type="email" name="guest_email">
-                    </div>
                 <?php endif; ?>
                 <div class="form-group">
                     <label>Comment *</label>
-                    <textarea name="comment_body" rows="5" required></textarea>
+                    <textarea name="comment_body" rows="3" required></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Post Comment</button>
+                <button type="submit" class="btn btn-primary btn-sm-comment">Post Comment</button>
             </form>
         </section>
     </div>

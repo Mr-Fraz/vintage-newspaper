@@ -111,8 +111,7 @@ include __DIR__ . '/../includes/admin-header.php';
     <main class="admin-main">
         <header class="admin-page-header">
             <h1>Edit Post</h1>
-            <a href="translate.php?article_id=<?php echo $article['id']; ?>&lang=ur"
-                class="btn" style="margin-left:1rem">🌐 Add / Edit Translation</a>
+            
         </header>
 
         <?php if ($error): ?>

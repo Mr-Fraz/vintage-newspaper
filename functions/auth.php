@@ -146,4 +146,19 @@ class Auth
             exit;
         }
     }
+
+    // Check if user is editor or admin
+    public static function isEditor()
+    {
+        return self::isLoggedIn() && in_array($_SESSION['role'], ['admin', 'editor']);
+    }
+
+    // Require editor or admin
+    public static function requireEditor()
+    {
+        if (!self::isEditor()) {
+            header('Location: ' . SITE_URL);
+            exit;
+        }
+    }
 }

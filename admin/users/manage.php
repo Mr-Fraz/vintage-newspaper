@@ -69,6 +69,7 @@ require_once __DIR__ . '/../includes/admin-header.php';
                     <label for="role">User Role *</label>
                     <select id="role" name="role" required>
                         <option value="user" <?php echo $user['role'] === 'user' ? 'selected' : ''; ?>>User</option>
+                        <option value="editor" <?php echo $user['role'] === 'editor' ? 'selected' : ''; ?>>Editor</option>
                         <option value="admin" <?php echo $user['role'] === 'admin' ? 'selected' : ''; ?>>Administrator</option>
                     </select>
                 </div>
