@@ -1,6 +1,6 @@
 # 📰 Vintage Newspaper CMS
 
-A full-featured, vintage-themed newspaper CMS built with **PHP**, **PDO**, and **MySQL**. Retro aesthetic, modern security practices.
+A full-featured, vintage-themed newspaper CMS built with **PHP**, **PDO**, and **MySQL**. 19th-century aesthetic, modern security practices, fully responsive on all devices.
 
 ![PHP](https://img.shields.io/badge/PHP-7.4+-777BB4?style=flat-square&logo=php&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-5.7+-4479A1?style=flat-square&logo=mysql&logoColor=white)
@@ -17,19 +17,20 @@ A full-featured, vintage-themed newspaper CMS built with **PHP**, **PDO**, and *
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Installation](#installation)
-- [Database Setup](#database-setup)
 - [Configuration](#configuration)
 - [Usage Guide](#usage-guide)
+- [Roles & Permissions](#roles--permissions)
 - [API Documentation](#api-documentation)
 - [Security](#security)
 - [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
 
 ---
 
 ## Overview
 
-Vintage Newspaper CMS is a fully functional content management system styled after classic print newspapers. Supports multi-role user management, rich-text article authoring, media library, comment moderation, SEO metadata, scheduled publishing, dark mode, and a REST API.
+Vintage Newspaper CMS is a fully functional content management system styled after classic Victorian-era print newspapers. It supports multi-role user management, rich-text article authoring with Urdu (RTL) support, media library, comment moderation, SEO metadata, scheduled publishing, dark mode, and a REST API.
+
+Live Demo: [vintagenews.infinityfreeapp.com](https://vintagenews.infinityfreeapp.com)
 
 ---
 
@@ -40,11 +41,11 @@ Vintage Newspaper CMS is a fully functional content management system styled aft
 |---|---|
 | Article CRUD | ✅ |
 | TinyMCE 6 Rich Text Editor (self-hosted) | ✅ |
+| Urdu / RTL article support (auto-detected) | ✅ |
 | Media Library with image variants (thumb / medium / full) | ✅ |
-| Featured Image Upload with alt-text | ✅ |
-| Article Revision History | ✅ |
+| Featured Image with grayscale vintage filter | ✅ |
 | Scheduled Publishing (`publish_at`) | ✅ |
-| Article Status (`draft`, `pending`, `scheduled`, `published`, `archived`) | ✅ |
+| Article Status (`draft`, `pending`, `published`, `archived`) | ✅ |
 | Category Management | ✅ |
 | Tag System (many-to-many) | ✅ |
 | SEO Title & Meta Description per Article | ✅ |
@@ -58,15 +59,14 @@ Vintage Newspaper CMS is a fully functional content management system styled aft
 | Role-based Access Control (`admin`, `editor`, `user`) | ✅ |
 | Password Hashing (bcrypt) | ✅ |
 | Token-based Password Reset | ✅ |
-| Session Management | ✅ |
 | CSRF Protection | ✅ |
 
 ### Comment System
 | Feature | Status |
 |---|---|
 | Guest & Registered User Comments | ✅ |
+| Name-only (no email required) | ✅ |
 | Comment Moderation (`pending`, `approved`, `spam`) | ✅ |
-| Admin Approve / Spam / Delete | ✅ |
 
 ### Admin Panel
 | Feature | Status |
@@ -74,16 +74,19 @@ Vintage Newspaper CMS is a fully functional content management system styled aft
 | Dashboard with Stats | ✅ |
 | Post Management | ✅ |
 | Category Management | ✅ |
-| User Management | ✅ |
+| User Management + Role Assignment | ✅ |
 | Comment Moderation | ✅ |
-| Activity Log | ✅ |
+| Mobile-responsive hamburger sidebar | ✅ |
 
-### UI
+### UI / Theme
 | Feature | Status |
 |---|---|
+| Victorian Newspaper Theme (parchment, Cinzel, Playfair Display) | ✅ |
 | Dark Mode (warm charcoal / amber) | ✅ |
-| Vintage Newspaper Theme | ✅ |
-| Responsive Layout | ✅ |
+| Fully Responsive (mobile, tablet, desktop) | ✅ |
+| 4-column grid on desktop, single column on mobile | ✅ |
+| Compact mobile footer (2-column) | ✅ |
+| About & Contact pages matching site theme | ✅ |
 
 ### API
 | Feature | Status |
@@ -100,10 +103,12 @@ Vintage Newspaper CMS is a fully functional content management system styled aft
 
 | Layer | Technology |
 |---|---|
-| Backend | PHP 7.4+ (procedural + static DB class) |
+| Backend | PHP 7.4+ (static DB class + helpers) |
 | Database | MySQL 5.7+ via PDO with prepared statements |
 | Rich Text Editor | TinyMCE 6 (self-hosted, no API key required) |
-| Frontend | Vanilla HTML/CSS/JS — vintage newspaper theme |
+| Mailer | PHPMailer (password reset emails) |
+| Frontend | Vanilla HTML / CSS / JS — Victorian newspaper theme |
+| Fonts | Cinzel, Playfair Display, Libre Baskerville, Gulzar (Urdu) |
 | Local Dev | XAMPP (Apache + PHP + MySQL) |
 | Auth | PHP Sessions + bcrypt |
 
@@ -116,78 +121,81 @@ vintage-newspaper/
 ├── admin/                        # Admin panel
 │   ├── categories/               # Category CRUD
 │   ├── comments/                 # Comment moderation
-│   ├── posts/                    # Article CRUD
+│   ├── posts/                    # Article CRUD (add, edit, list, delete)
 │   ├── users/                    # User management
-│   ├── includes/                 # Admin layout partials
+│   ├── includes/                 # Admin layout (header, sidebar, footer)
 │   ├── index.php                 # Dashboard
 │   └── logout.php
 │
 ├── api/                          # REST API endpoints
-│   ├── articles.php              # GET articles (paginated)
-│   ├── search.php                # GET search results
-│   ├── upload.php                # POST image upload
-│   ├── login.php                 # POST login
-│   ├── password-reset.php        # POST request reset
-│   └── password-reset-verify.php # POST verify token
+│   ├── articles.php
+│   ├── search.php
+│   ├── upload.php
+│   ├── login.php
+│   ├── password-reset.php
+│   └── password-reset-verify.php
 │
 ├── assets/
 │   ├── css/
-│   │   ├── style.css             # Main frontend styles
+│   │   ├── style.css             # Main frontend styles + responsive
 │   │   ├── admin.css             # Admin panel styles
-│   │   ├── vintage.css           # Vintage theme overrides
-│   │   └── dark-mode.css         # Dark mode (warm charcoal/amber)
+│   │   ├── pages.css             # About & Contact page styles
+│   │   └── vintage.css           # Theme overrides
 │   └── js/
-│       ├── main.js
+│       ├── main.js               # Navbar, hamburger, dark mode
 │       ├── admin.js
+│       ├── animation.js
 │       ├── search.js
-│       ├── dark-mode.js          # Dark mode toggle
 │       └── tinymce/              # Self-hosted TinyMCE 6
 │
 ├── config/
-│   ├── config.php                # App constants & session init
-│   ├── database.php              # PDO singleton connection
+│   ├── config.php                # App constants, HTTPS auto-detect
+│   ├── database.php              # PDO singleton
 │   └── env.php                   # .env loader
 │
 ├── database/
-│   ├── schema.sql                # Core tables (users, articles)
-│   ├── migration_001.sql         # Categories + article enhancements
-│   ├── migration_002.sql         # Revisions, tags, activity log, password resets
-│   ├── migration_003.sql         # Comments table
-│   ├── migration_004.sql         # Media library (variants + alt-text)
-│   ├── migration_005.sql         # Performance indexes + FULLTEXT search
+│   ├── schema.sql                # Core tables
+│   ├── migration_001.sql         # Categories
+│   ├── migration_002.sql         # Tags, revisions, activity log, password resets
+│   ├── migration_003.sql         # Comments
+│   ├── migration_004.sql         # Media library
+│   ├── migration_005.sql         # FULLTEXT indexes
 │   └── seed.sql                  # Default admin account + sample data
 │
 ├── functions/
-│   ├── auth.php                  # Auth helpers (requireAdmin, etc.)
-│   ├── db.php                    # DB static class (all queries)
+│   ├── auth.php                  # requireAdmin(), requireEditor(), isEditor()
+│   ├── db.php                    # All DB queries
 │   ├── helpers.php               # formatDate, uploadImage, etc.
-│   └── validation.php            # sanitize, slug, CSRF helpers
+│   └── validation.php            # sanitize, slug, CSRF
 │
 ├── includes/                     # Frontend layout partials
 │   ├── header.php
 │   ├── navbar.php
-│   ├── footer.php
-│   ├── init.php
-│   └── auth-middleware.php
+│   └── footer.php                # Desktop 3-section + mobile 2-column
 │
-├── pages/                        # Public-facing pages
-│   ├── article.php               # Single article + comments
-│   ├── category.php              # Category listing
-│   ├── search.php                # Search results
+├── libs/
+│   └── PHPMailer/                # Email library
+│
+├── pages/                        # Public pages
+│   ├── article.php               # Article + comments
+│   ├── category.php
+│   ├── search.php
 │   ├── login.php
 │   ├── register.php
-│   ├── about.php
-│   └── contact.php
+│   ├── about.php                 # Victorian-themed about page
+│   ├── contact.php               # Victorian-themed contact page
+│   ├── forgot-password.php
+│   └── password-reset.php
 │
 ├── scripts/
-│   ├── cron-cleanup.php          # Purge expired tokens
-│   └── cron-publish.php          # Auto-publish scheduled posts
+│   ├── cron-publish.php          # Auto-publish scheduled articles
+│   └── cron-cleanup.php          # Purge expired tokens
 │
-├── uploads/articles/             # Uploaded article images
-├── .env                          # Environment variables (do NOT commit)
-├── .env.example                  # Environment template
+├── uploads/articles/             # Uploaded images
+├── .env                          # Environment config (do NOT commit)
+├── .env.example                  # Template
 ├── .gitignore
-├── index.php                     # Homepage entry point
+├── index.php                     # Homepage
 ├── INSTALLATION.md
 └── README.md
 ```
@@ -196,73 +204,38 @@ vintage-newspaper/
 
 ## Installation
 
-See [INSTALLATION.md](INSTALLATION.md) for full setup instructions.
+See [INSTALLATION.md](INSTALLATION.md) for full step-by-step instructions.
 
-### Quick Start (XAMPP)
+### Quick Start
 
 ```bash
 git clone https://github.com/Mr-Fraz/vintage-newspaper.git
 cd vintage-newspaper
 cp .env.example .env
-# Edit .env with your DB credentials
+# Edit .env — set DB credentials and SITE_URL
 # Import database files in order (schema → migrations 001–005 → seed)
+# Open http://localhost/vintage-newspaper/
 ```
-
----
-
-## Database Setup
-
-Import files in this exact order:
-
-| Step | File | Purpose |
-|---|---|---|
-| 1 | `database/schema.sql` | Core tables (users, articles) |
-| 2 | `database/migration_001.sql` | Categories |
-| 3 | `database/migration_002.sql` | Tags, revisions, activity log, password resets |
-| 4 | `database/migration_003.sql` | Comments |
-| 5 | `database/migration_004.sql` | Media library (thumb/medium variants, alt-text) |
-| 6 | `database/migration_005.sql` | Performance indexes + FULLTEXT search |
-| 7 | `database/seed.sql` | Default admin account |
-
-### Tables Overview
-
-| Table | Description |
-|---|---|
-| `users` | Registered users with roles |
-| `articles` | Content with SEO, scheduling, media FK |
-| `categories` | Article categories |
-| `tags` + `article_tag` | Many-to-many tag system |
-| `media` | Media library (filename, thumb, medium, alt-text) |
-| `comments` | Guest & user comments with moderation status |
-| `article_revisions` | Auto-saved revision history |
-| `activity_log` | Admin action audit trail |
-| `password_resets` | Token-based password reset |
 
 ---
 
 ## Configuration
 
-### Environment Variables (`.env`)
+### `.env` Variables
 
-| Variable | Description | Default |
+| Variable | Description | Example |
 |---|---|---|
 | `DB_HOST` | Database host | `localhost` |
 | `DB_NAME` | Database name | `vintage_newspaper` |
 | `DB_USER` | Database username | `root` |
-| `DB_PASS` | Database password | _(empty)_ |
+| `DB_PASS` | Database password | _(empty for XAMPP)_ |
 | `SITE_NAME` | Site display name | `Vintage Newspaper` |
-| `SITE_URL` | Full base URL (no trailing slash) | `http://localhost/vintage-newspaper` |
-| `ADMIN_EMAIL` | Admin contact email | — |
-| `JWT_SECRET` | Secret for API tokens | _(must set)_ |
-| `SESSION_SECRET` | Session secret | _(must set)_ |
+| `SITE_URL` | Base URL — no trailing slash | `http://localhost/vintage-newspaper` |
+| `ADMIN_EMAIL` | Admin email | `admin@gmail.com` |
+| `JWT_SECRET` | API token secret | _(random string)_ |
+| `SESSION_SECRET` | Session secret | _(random string)_ |
 
-### Upload Settings (`config/config.php`)
-
-```php
-define('MAX_FILE_SIZE', 5 * 1024 * 1024);  // 5MB
-define('ALLOWED_EXTENSIONS', ['jpg', 'jpeg', 'png', 'gif']);
-define('UPLOAD_DIR', __DIR__ . '/../uploads/articles/');
-```
+> `SITE_URL` can use `http://` — the app auto-detects HTTPS and upgrades asset URLs automatically.
 
 ---
 
@@ -270,13 +243,14 @@ define('UPLOAD_DIR', __DIR__ . '/../uploads/articles/');
 
 ### Writing an Article
 
-1. Admin Panel → **Posts → Add New Post**
-2. Fill title, category, content (TinyMCE)
-3. Add tags (comma-separated), excerpt, SEO fields
-4. Select or upload featured image from Media Library
+1. Admin → **Posts → + New Post**
+2. Title, category, content (TinyMCE editor)
+3. Tags (comma-separated), excerpt, SEO fields
+4. Upload or select featured image from Media Library
 5. Set status: `draft` / `published` / `scheduled`
-6. For scheduled: set **Publish At** datetime → `cron-publish.php` auto-publishes
-7. **Create Post**
+6. Click **Publish**
+
+> Urdu titles are auto-detected — editor switches to RTL automatically.
 
 ### Moderating Comments
 
@@ -284,57 +258,43 @@ Admin → **Comments** → Approve / Spam / Delete
 
 ### Managing Users
 
-Admin → **Users** → assign roles (`user` / `editor` / `admin`) or delete
+Admin → **Users** → assign roles or delete accounts
+
+---
+
+## Roles & Permissions
+
+| Role | Access |
+|---|---|
+| `admin` | Full access — posts, categories, users, comments |
+| `editor` | Can create and edit posts, moderate comments — cannot manage users |
+| `user` | Public only — can post comments when logged in |
+
+To assign a role: Admin → Users → click user → change role dropdown.
 
 ---
 
 ## API Documentation
 
 ### GET Articles
-
 ```
 GET /api/articles.php?page=1&limit=10
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "page": 1,
-  "limit": 10,
-  "total": 42,
-  "articles": [
-    {
-      "id": 1,
-      "title": "Article Title",
-      "slug": "article-title",
-      "excerpt": "Short summary...",
-      "category_name": "Politics",
-      "author": "Admin",
-      "status": "published",
-      "created_at": "2025-01-01 12:00:00"
-    }
-  ]
-}
-```
-
 ### GET Search
-
 ```
 GET /api/search.php?q=keyword&page=1
 ```
 
 ### POST Upload Image
-
 ```
 POST /api/upload.php
 Content-Type: multipart/form-data
-Body: image=[file]
+Body: image=[file], csrf_token=[token]
 ```
-Requires active session + CSRF token.
+Requires active session.
 
 ### POST Login
-
 ```
 POST /api/login.php
 Content-Type: application/json
@@ -342,8 +302,7 @@ Content-Type: application/json
 { "email": "admin@gmail.com", "password": "admin123" }
 ```
 
-### POST Password Reset
-
+### POST Password Reset Request
 ```
 POST /api/password-reset.php
 Content-Type: application/json
@@ -357,21 +316,20 @@ Content-Type: application/json
 
 | Measure | Implementation |
 |---|---|
-| SQL Injection | PDO prepared statements throughout |
+| SQL Injection | PDO prepared statements |
 | XSS | `htmlspecialchars()` on all output |
-| CSRF | Token on every POST form, verified server-side |
-| Password Storage | `password_hash()` bcrypt |
+| CSRF | Token on every POST, verified server-side |
+| Passwords | `password_hash()` bcrypt |
 | File Uploads | MIME check + extension whitelist + random filename |
-| Session Security | Regenerated on login |
-| Auth Guards | `Auth::requireAdmin()` on all admin pages |
-| Security Headers | X-Frame-Options, X-Content-Type-Options, X-XSS-Protection |
+| HTTPS | Auto-detected — asset URLs upgrade automatically |
+| Auth Guards | `Auth::requireAdmin()` / `Auth::requireEditor()` |
 
 **Production checklist:**
 - Change default admin password immediately
-- Set strong `JWT_SECRET` and `SESSION_SECRET` in `.env`
-- Enable HTTPS and set `SESSION_COOKIE_SECURE`
-- Schedule `cron-cleanup.php` to purge expired tokens
-- Never commit `.env` (already in `.gitignore`)
+- Set strong `JWT_SECRET` and `SESSION_SECRET`
+- Enable HTTPS — `SITE_URL` will auto-upgrade
+- Schedule cron jobs for publishing and token cleanup
+- Never commit `.env`
 
 ---
 
@@ -379,24 +337,15 @@ Content-Type: application/json
 
 | Problem | Fix |
 |---|---|
-| `prepare() on null` | Wrong `.env` DB credentials, or `self::init()` missing |
-| TinyMCE shows plain HTML | Ensure TinyMCE script loads before `tinymce.init()`; no spaces before `</textarea>` |
+| Blank page / PHP errors | Enable `display_errors` in `php.ini` |
+| DB connection failed | Check `.env` credentials; ensure MySQL running |
+| CSS not loading on HTTPS | App auto-detects protocol — clear cache and retry |
+| 404 on pages | No trailing slash in `SITE_URL`; Apache running |
+| Image not showing | Check `uploads/articles/` is writable; verify `SITE_URL` |
 | TinyMCE license warning | Must use TinyMCE 6 (self-hosted) — not v7 |
-| Image not displaying | Check `uploads/articles/` is writable; verify `SITE_URL` in `.env` |
-| 404 on pages | No trailing slash in `SITE_URL`; verify Apache running |
-| DB connection error | Check MySQL service; verify `.env` credentials |
-| Comment not appearing | Status is `pending` by default — approve in Admin → Comments |
-| Search returns no results | migration_005.sql not imported (FULLTEXT index missing) |
-
----
-
-## Contributing
-
-1. Fork the repo
-2. `git checkout -b feature/your-feature`
-3. `git commit -m "Add: your feature"`
-4. `git push origin feature/your-feature`
-5. Open a Pull Request
+| Search returns nothing | Import `migration_005.sql` (FULLTEXT index) |
+| Comment not visible | Status is `pending` — approve in Admin → Comments |
+| Scheduled posts not publishing | Set up `cron-publish.php` cron job |
 
 ---
 
@@ -409,9 +358,10 @@ MIT License
 ## Acknowledgements
 
 - [TinyMCE](https://www.tiny.cloud/) — Rich text editor
-- Vintage newspaper typography inspiration
+- [PHPMailer](https://github.com/PHPMailer/PHPMailer) — Email handling
+- Victorian newspaper typography & design inspiration
 
 ---
 
-> **University Major Project** — Software Engineering & Computer Science  
-> Built with PHP · MySQL · Vanilla JS · TinyMCE 6
+> **University Major Project** — Software Engineering & Computer Science
+> Built with PHP · MySQL · Vanilla JS · TinyMCE 6 · PHPMailer
