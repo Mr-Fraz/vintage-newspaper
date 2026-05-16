@@ -291,7 +291,7 @@ if ($fontCfg): ?>
                     <label>Comment *</label>
                     <textarea name="comment_body" rows="3" required></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary btn-sm-comment">Post Comment</button>
+                <button type="submit" class="btn btn-primary btn-sm-comment">Comment</button>
             </form>
         </section>
     </div>

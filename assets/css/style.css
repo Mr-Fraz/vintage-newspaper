@@ -872,8 +872,8 @@ figure figcaption,
    COMMENTS
    ================================================================ */
 .comments-section {
-  margin-top: 2rem;
-  padding: 2rem;
+  margin-top: 1.2rem;
+  padding: 1rem;
   background: rgba(26, 18, 8, 0.02);
   border: 2px solid var(--rule-heavy);
   border-radius: 0;
@@ -890,7 +890,7 @@ figure figcaption,
   border-top: 3px solid var(--rule-heavy);
   border-bottom: 1px solid var(--rule-thin);
   padding: 6px 0;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   text-align: center;
 }
 .comments-section h2::after {
@@ -901,7 +901,7 @@ figure figcaption,
 }
 
 .comments-list {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .comment {
@@ -933,7 +933,15 @@ figure figcaption,
   }
 
 .comment-form {
-  padding: 1.5rem;
+  padding: 0;
+}
+.comment-form .form-group {
+  margin-bottom: 12px;
+}
+.comment-form input,
+.comment-form textarea {
+  padding: 8px 12px;
+  font-size: 0.88rem;
 }
 
 .no-comments {
