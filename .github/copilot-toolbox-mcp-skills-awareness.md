@@ -1,6 +1,6 @@
 # GitHub Copilot Toolbox — MCP & Skills awareness
 
-_Generated: 2026-05-16T05:29:28.133Z_
+_Generated: 2026-05-16T07:53:57.066Z_
 
 ## How to use this report
 
