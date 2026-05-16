@@ -3,7 +3,7 @@ require_once __DIR__ . '/../config/config.php';
 
 class DB
 {
-    private static $conn;
+    private static ?PDO $conn = null;
 
     public static function init()
     {
@@ -334,14 +334,15 @@ class DB
     {
         self::init();
 
-        $sql = "INSERT INTO articles (title, slug, content, excerpt, image, media_id, image_alt, category_id, author_id, status, seo_title, meta_description, og_image)
-                VALUES (:title, :slug, :content, :excerpt, :image, :media_id, :image_alt, :category_id, :author_id, :status, :seo_title, :meta_description, :og_image)";
+        $sql = "INSERT INTO articles (title, slug, lang, content, excerpt, image, media_id, image_alt, category_id, author_id, status, seo_title, meta_description, og_image)
+                VALUES (:title, :slug, :lang, :content, :excerpt, :image, :media_id, :image_alt, :category_id, :author_id, :status, :seo_title, :meta_description, :og_image)";
 
         $stmt = self::$conn->prepare($sql);
         $ok = $stmt->execute(array_merge([
-            'seo_title' => null,
+            'lang'             => 'en',
+            'seo_title'        => null,
             'meta_description' => null,
-            'og_image' => null
+            'og_image'         => null
         ], $data));
 
         if ($ok) return self::$conn->lastInsertId();
@@ -473,7 +474,7 @@ class DB
                 if ($tag) {
                     $tag_id = $tag['id'];
                 } else {
-                    $ins = self::$conn->prepare("INSERT INTO tags (name, slug, created_at) VALUES (:name, :slug, NOW())");
+                    $ins = self::$conn->prepare("INSERT INTO tags (name, slug, created_at) VALUES (:name, :slug,S NOW())");
                     $ins->execute(['name' => $name, 'slug' => $slug]);
                     $tag_id = self::$conn->lastInsertId();
                 }
@@ -556,5 +557,102 @@ class DB
         $sql = "UPDATE password_resets SET used = 1 WHERE token = :token";
         $stmt = self::$conn->prepare($sql);
         return $stmt->execute(['token' => $token]);
+    }
+
+    // ── MULTI-LANGUAGE TRANSLATION METHODS ──────────────────────────────────
+
+    /**
+     * Upsert a translation for an article.
+     * If lang record exists → update. Else → insert.
+     */
+    public static function upsertTranslation($article_id, $lang, $data)
+    {
+        self::init();
+        $existing = self::getTranslation($article_id, $lang);
+        if ($existing) {
+            $sql = "UPDATE article_translations
+                    SET title=:title, slug=:slug, content=:content, excerpt=:excerpt,
+                        seo_title=:seo_title, meta_description=:meta_description, status=:status,
+                        updated_at=NOW()
+                    WHERE article_id=:article_id AND lang=:lang";
+        } else {
+            $sql = "INSERT INTO article_translations
+                        (article_id, lang, title, slug, content, excerpt, seo_title, meta_description, status)
+                    VALUES
+                        (:article_id, :lang, :title, :slug, :content, :excerpt, :seo_title, :meta_description, :status)";
+        }
+        $stmt = self::$conn->prepare($sql);
+        return $stmt->execute(array_merge([
+            'article_id'       => $article_id,
+            'lang'             => $lang,
+            'seo_title'        => null,
+            'meta_description' => null,
+        ], $data));
+    }
+
+    /** Get one translation row */
+    public static function getTranslation($article_id, $lang)
+    {
+        self::init();
+        $stmt = self::$conn->prepare(
+            "SELECT * FROM article_translations WHERE article_id=:a AND lang=:l LIMIT 1"
+        );
+        $stmt->execute(['a' => $article_id, 'l' => $lang]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /** Get all translations for an article */
+    public static function getTranslations($article_id)
+    {
+        self::init();
+        $stmt = self::$conn->prepare(
+            "SELECT * FROM article_translations WHERE article_id=:a ORDER BY lang"
+        );
+        $stmt->execute(['a' => $article_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** Delete one translation */
+    public static function deleteTranslation($article_id, $lang)
+    {
+        self::init();
+        $stmt = self::$conn->prepare(
+            "DELETE FROM article_translations WHERE article_id=:a AND lang=:l"
+        );
+        return $stmt->execute(['a' => $article_id, 'l' => $lang]);
+    }
+
+    /**
+     * Fetch published article by slug — checks base articles table first,
+     * then article_translations. Returns merged row with lang flag.
+     */
+    public static function getArticleBySlugAndLang($slug, $lang = 'en')
+    {
+        self::init();
+        if ($lang === 'en') {
+            $stmt = self::$conn->prepare(
+                "SELECT a.*, u.username AS author_name, c.name AS category_name
+                 FROM articles a
+                 LEFT JOIN users u ON a.author_id = u.id
+                 LEFT JOIN categories c ON a.category_id = c.id
+                 WHERE a.slug=:slug AND a.status='published' LIMIT 1"
+            );
+            $stmt->execute(['slug' => $slug]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        // Join translation with original for image/category etc.
+        $stmt = self::$conn->prepare(
+            "SELECT t.*, a.image, a.image_alt, a.media_id, a.category_id,
+                    u.username AS author_name, c.name AS category_name
+             FROM article_translations t
+             JOIN articles a ON t.article_id = a.id
+             LEFT JOIN users u ON a.author_id = u.id
+             LEFT JOIN categories c ON a.category_id = c.id
+             WHERE t.slug=:slug AND t.lang=:lang AND t.status='published'
+             LIMIT 1"
+        );
+        $stmt->execute(['slug' => $slug, 'lang' => $lang]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

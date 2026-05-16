@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tags = isset($_POST['tags']) ? trim($_POST['tags']) : '';
     $seo_title = isset($_POST['seo_title']) ? Validate::sanitize($_POST['seo_title']) : null;
     $meta_description = isset($_POST['meta_description']) ? Validate::sanitize($_POST['meta_description']) : null;
+    $lang = Validate::sanitize($_POST['lang'] ?? 'en');
     if (empty($status)) {
         $status = 'draft';
     }
@@ -64,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'category_id' => $category_id,
             'author_id' => $_SESSION['user_id'],
             'status' => $status,
+            'lang' => $lang,
             'seo_title' => $seo_title,
             'meta_description' => $meta_description,
             'og_image' => null
@@ -103,6 +105,20 @@ include __DIR__ . '/../includes/admin-header.php';
 
         <form method="POST" enctype="multipart/form-data" onsubmit="tinymce.triggerSave()">
             <?php echo csrfField(); ?>
+            <div class="form-group">
+                <label for="lang">Language (Original Article)</label>
+                <select id="lang" name="lang" onchange="updateTinyMCEDir(this.value)">
+                    <option value="en">English</option>
+                    <option value="ur">Urdu (اردو)</option>
+                    <option value="ar">Arabic (العربية)</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                    <option value="zh">Chinese</option>
+                    <option value="es">Spanish</option>
+                </select>
+                <small style="color:#888">Set the language of THIS version. Use "Add Translation" on the edit page for other languages.</small>
+            </div>
+
             <div class="form-group">
                 <label for="title">Title *</label>
                 <input type="text" id="title" name="title" required>
@@ -203,11 +219,11 @@ include __DIR__ . '/../includes/admin-header.php';
 <script>
     tinymce.init({
         selector: '#content',
-        convert_urls: false, // ← ADD THIS
-        relative_urls: false, // ← ADD THIS
-        remove_script_host: false, // ← ADD THIS
-        plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        convert_urls: false,
+        relative_urls: false,
+        remove_script_host: false,
+        plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount directionality',
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | checklist numlist bullist indent outdent | ltr rtl | emoticons charmap | removeformat',
         height: 500,
         menubar: true,
         skin: 'oxide',
@@ -272,6 +288,16 @@ include __DIR__ . '/../includes/admin-header.php';
         document.getElementById('selected_media_id').value = id;
         document.querySelectorAll('.media-item').forEach(i => i.classList.remove('selected'));
         el.classList.add('selected');
+    }
+
+    // Switch TinyMCE text direction based on language
+    const RTL_LANGS = ['ar', 'ur', 'fa', 'he'];
+    function updateTinyMCEDir(lang) {
+        const editor = tinymce.get('content');
+        if (!editor) return;
+        const isRtl = RTL_LANGS.includes(lang);
+        editor.getBody().setAttribute('dir', isRtl ? 'rtl' : 'ltr');
+        editor.getBody().style.textAlign = isRtl ? 'right' : 'left';
     }
 </script>
 </body>
