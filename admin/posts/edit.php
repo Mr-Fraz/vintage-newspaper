@@ -216,7 +216,7 @@ include __DIR__ . '/../includes/admin-header.php';
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Update Post</button>
+                <button type="submit" class="btn btn-primary">Save</button>
                 <a href="list.php" class="btn">Cancel</a>
             </div>
         </form>

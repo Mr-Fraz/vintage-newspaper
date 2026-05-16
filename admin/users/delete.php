@@ -78,7 +78,7 @@ require_once __DIR__ . '/../includes/admin-header.php';
             </div>
             
             <div class="form-actions">
-                <button type="submit" class="btn btn-danger">Delete User</button>
+                <button type="submit" class="btn btn-danger">Delete</button>
                 <a href="manage.php?id=<?php echo (int)$user['id']; ?>" class="btn btn-secondary">Cancel</a>
             </div>
         </form>

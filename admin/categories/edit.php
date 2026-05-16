@@ -1,4 +1,3 @@
-
 <?php
 // Production: do not display errors to end users
 error_reporting(E_ALL);
@@ -99,7 +98,7 @@ require_once __DIR__ . '/../includes/admin-header.php';
             </div>
             
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Update Category</button>
+                <button type="submit" class="btn btn-primary">Save</button>
                 <a href="list.php" class="btn btn-secondary">Cancel</a>
             </div>
         </form>

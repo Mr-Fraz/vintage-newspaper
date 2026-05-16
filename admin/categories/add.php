@@ -78,7 +78,7 @@ require_once __DIR__ . '/../includes/admin-header.php';
             </div>
             
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Add Category</button>
+                <button type="submit" class="btn btn-primary">Add</button>
                 <a href="list.php" class="btn btn-secondary">Cancel</a>
             </div>
         </form>

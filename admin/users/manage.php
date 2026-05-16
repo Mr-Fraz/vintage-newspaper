@@ -1,7 +1,4 @@
 <?php
-// Production: do not display errors to end users
-error_reporting(E_ALL);
-ini_set('display_errors', 0);
 require_once __DIR__ . '/../includes/auth-check.php';
 require_once __DIR__ . '/../../functions/helpers.php';
 require_once __DIR__ . '/../../functions/db.php';
@@ -75,8 +72,8 @@ require_once __DIR__ . '/../includes/admin-header.php';
                 </div>
                 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Update Role</button>
-                    <a href="list.php" class="btn btn-secondary">Back to Users</a>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a href="list.php" class="btn btn-secondary">Users</a>
                 </div>
             </form>
         <?php else: ?>
@@ -84,7 +81,7 @@ require_once __DIR__ . '/../includes/admin-header.php';
                 <p><strong>Note:</strong> You cannot change your own role.</p>
             </div>
             <div class="form-actions">
-                <a href="list.php" class="btn btn-secondary">Back to Users</a>
+                <a href="list.php" class="btn btn-secondary">Users</a>
             </div>
         <?php endif; ?>
 
@@ -92,7 +89,7 @@ require_once __DIR__ . '/../includes/admin-header.php';
             <hr style="margin: 30px 0;">
             <div style="margin-top: 30px;">
                 <h3>Danger Zone</h3>
-                <a href="delete.php?id=<?php echo (int)$user['id']; ?>" class="btn btn-danger" onclick="return confirm('Delete this user? This action cannot be undone.')">Delete User</a>
+                <a href="delete.php?id=<?php echo (int)$user['id']; ?>" class="btn btn-danger" onclick="return confirm('Delete this user? This action cannot be undone.')">Delete</a>
             </div>
         <?php endif; ?>
     </main>

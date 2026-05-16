@@ -248,8 +248,8 @@ if ($fontCfg): ?>
             </div>
 
             <footer class="article-footer">
-                <a href="<?php echo SITE_URL; ?>" class="btn">← Back to Home</a>
-                <a href="<?php echo SITE_URL; ?>/pages/category.php?slug=<?php echo $article['category_name']; ?>" class="btn">More in <?php echo $article['category_name']; ?></a>
+                <a href="<?php echo SITE_URL; ?>" class="btn">← Home</a>
+                <a href="<?php echo SITE_URL; ?>/pages/category.php?slug=<?php echo $article['category_name']; ?>" class="btn">More <?php echo $article['category_name']; ?></a>
             </footer>
         </article>
         <!-- COMMENTS SECTION -->

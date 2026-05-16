@@ -15,7 +15,7 @@ include __DIR__ . '/../includes/admin-header.php';
     <main class="admin-main">
         <header class="admin-page-header">
             <h1>Categories</h1>
-            <a href="add.php" class="btn btn-primary">Add New Category</a>
+            <a href="add.php" class="btn btn-primary">+ New Category</a>
         </header>
         
         <table class="admin-table">

@@ -1047,7 +1047,7 @@ figure figcaption,
    BUTTONS
    ================================================================ */
 .btn {
-  padding: 10px 24px;
+  padding: 7px 16px;
   background: var(--ink);
   color: var(--parchment-lt);
   border: none;
@@ -1056,10 +1056,10 @@ figure figcaption,
   text-decoration: none;
   display: inline-block;
   font-family: "Playfair Display", Georgia, serif;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   transition:
     background 0.2s,
     transform 0.15s;

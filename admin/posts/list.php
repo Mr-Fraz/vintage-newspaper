@@ -23,7 +23,7 @@ include __DIR__ . '/../includes/admin-header.php';
     <main class="admin-main">
         <header class="admin-page-header">
             <h1>All Posts</h1>
-            <a href="add.php" class="btn btn-primary">Add New Post</a>
+            <a href="add.php" class="btn btn-primary">+ New Post</a>
         </header>
         
         <table class="admin-table">
