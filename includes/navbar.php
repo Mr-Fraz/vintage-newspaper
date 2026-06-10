@@ -57,6 +57,7 @@ $categories = DB::getCategories();
              	<?php if (in_array($_SESSION['role'], ['admin', 'editor'])): ?>
                 <li><a href="<?php echo SITE_URL; ?>/admin/">Dashboard</a></li>
             <?php endif; ?>
+                <li><a href="<?php echo SITE_URL; ?>/pages/profile.php">My Profile</a></li>
                 <li><a href="<?php echo SITE_URL; ?>/admin/logout.php">Logout</a></li>
             <?php else: ?>
                 <li><a href="<?php echo SITE_URL; ?>/pages/login.php">Login</a></li>
