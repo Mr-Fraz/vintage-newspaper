@@ -256,21 +256,100 @@ class DB
     }
 
     // Search articles — optimized: FULLTEXT index instead of LIKE scan
-    public static function searchArticles($query, $limit = 20)
+    /**
+     * Full-text search with optional filters.
+     *
+     * @param string $query     Search term (min 3 chars; pass '' to skip FT and use filters only)
+     * @param array  $filters   Keys: date_from, date_to, author, category_id, sort (relevance|date_desc|date_asc)
+     * @param int    $limit
+     */
+    public static function searchArticles($query, $filters = [], $limit = 20)
     {
         self::init();
 
-        if (strlen($query) < 3) return [];
+        $query = trim($query);
+        $useFullText = strlen($query) >= 3;
+
+        $conditions = ["a.status = 'published'"];
+        $binds      = [];
+
+        // Full-text condition
+        if ($useFullText) {
+            $conditions[] = "MATCH(a.title, a.content) AGAINST (:query2 IN BOOLEAN MODE)";
+            $binds[':query2'] = $query;
+        }
+
+        // --- Filters ---
+        if (!empty($filters['date_from'])) {
+            $conditions[] = "DATE(a.created_at) >= :date_from";
+            $binds[':date_from'] = $filters['date_from'];
+        }
+        if (!empty($filters['date_to'])) {
+            $conditions[] = "DATE(a.created_at) <= :date_to";
+            $binds[':date_to'] = $filters['date_to'];
+        }
+        if (!empty($filters['author'])) {
+            $conditions[] = "u.username = :author";
+            $binds[':author'] = $filters['author'];
+        }
+        if (!empty($filters['category_id'])) {
+            $conditions[] = "a.category_id = :category_id";
+            $binds[':category_id'] = (int)$filters['category_id'];
+        }
+
+        $where = implode(' AND ', $conditions);
+
+        // Relevance column (0 if no FT)
+        $relevanceCol = $useFullText
+            ? "MATCH(a.title, a.content) AGAINST (:query IN BOOLEAN MODE)"
+            : "0";
+
+        if ($useFullText) $binds[':query'] = $query;
+
+        // Sort
+        $sort = $filters['sort'] ?? 'relevance';
+        $orderBy = match($sort) {
+            'date_asc'  => 'a.created_at ASC',
+            'date_desc' => 'a.created_at DESC',
+            default     => ($useFullText ? 'relevance DESC' : 'a.created_at DESC'),
+        };
 
         $sql = "SELECT a.id, a.title, a.slug, a.excerpt, a.image, a.created_at,
                        c.name as category_name, u.username as author,
-                       MATCH(a.title, a.content) AGAINST (:query IN BOOLEAN MODE) AS relevance
+                       {$relevanceCol} AS relevance
                 FROM articles a
                 LEFT JOIN categories c ON a.category_id = c.id
                 LEFT JOIN users u ON a.author_id = u.id
-                WHERE MATCH(a.title, a.content) AGAINST (:query2 IN BOOLEAN MODE)
-                AND a.status = 'published'
-                ORDER BY relevance DESC
+                WHERE {$where}
+                ORDER BY {$orderBy}
+                LIMIT :limit";
+
+        $stmt = self::$conn->prepare($sql);
+        foreach ($binds as $k => $v) {
+            $stmt->bindValue($k, $v, PDO::PARAM_STR);
+        }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Autocomplete suggestions — title matches only, fast.
+     * Returns up to $limit lightweight rows.
+     */
+    public static function searchSuggestions($query, $limit = 6)
+    {
+        self::init();
+        if (strlen($query) < 2) return [];
+
+        $sql = "SELECT a.id, a.title, a.slug, u.username as author, c.name as category_name
+                FROM articles a
+                LEFT JOIN users u ON a.author_id = u.id
+                LEFT JOIN categories c ON a.category_id = c.id
+                WHERE MATCH(a.title, a.content) AGAINST (:query IN BOOLEAN MODE)
+                  AND a.status = 'published'
+                ORDER BY MATCH(a.title, a.content) AGAINST (:query2 IN BOOLEAN MODE) DESC
                 LIMIT :limit";
 
         $stmt = self::$conn->prepare($sql);
@@ -278,7 +357,20 @@ class DB
         $stmt->bindValue(':query2', $query, PDO::PARAM_STR);
         $stmt->bindValue(':limit',  $limit, PDO::PARAM_INT);
         $stmt->execute();
+        return $stmt->fetchAll();
+    }
 
+    /** Returns list of authors who have published articles. */
+    public static function getPublishedAuthors()
+    {
+        self::init();
+        $sql = "SELECT DISTINCT u.id, u.username
+                FROM users u
+                INNER JOIN articles a ON a.author_id = u.id
+                WHERE a.status = 'published'
+                ORDER BY u.username ASC";
+        $stmt = self::$conn->prepare($sql);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 
@@ -655,4 +747,4 @@ class DB
         $stmt->execute(['slug' => $slug, 'lang' => $lang]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-}
+}   
