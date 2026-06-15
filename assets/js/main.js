@@ -110,3 +110,37 @@ function validateForm(formId) {
 // Initialize
 validateForm('loginForm');
 validateForm('registerForm');
+
+// ── Categories Dropdown (click for mobile, hover CSS handles desktop) ──
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.has-dropdown').forEach(function (item) {
+    var toggle = item.querySelector('.dropdown-toggle');
+    if (!toggle) return;
+
+    toggle.addEventListener('click', function (e) {
+      // Only intercept on mobile (hamburger visible)
+      if (window.innerWidth <= 768) {
+        e.preventDefault();
+        item.classList.toggle('open');
+      } else {
+        // Desktop: prevent navigation on the "#" href
+        e.preventDefault();
+      }
+    });
+  });
+
+  // Close dropdown on outside click
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.has-dropdown')) {
+      document.querySelectorAll('.has-dropdown.open').forEach(function (el) {
+        el.classList.remove('open');
+      });
+    }
+  });
+});
+
+// Init Lucide icons
+if (typeof lucide !== "undefined") lucide.createIcons();
+document.addEventListener("DOMContentLoaded", function() {
+  if (typeof lucide !== "undefined") lucide.createIcons();
+});

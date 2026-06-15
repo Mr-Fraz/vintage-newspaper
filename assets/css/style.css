@@ -1,9 +1,3 @@
-/* ================================================================
-   VICTORIAN NEWSPAPER THEME — 19th Century Press Revival
-   Parchment · Blackletter · 4-Column Grid · Drop Caps · Ornaments
-   ================================================================ */
-
-/* ── Reset ── */
 *,
 *::before,
 *::after {
@@ -13,14 +7,13 @@
 }
 html {
   width: 100%;
-  /* Do NOT set overflow-x:hidden on html — breaks sticky + iOS scroll */
+  
 }
 body {
   overflow-x: hidden;
   width: 100%;
 }
 
-/* ── CSS Variables ── */
 :root {
   --parchment: #f0e6d0;
   --parchment-lt: #f2ead2;
@@ -36,13 +29,10 @@ body {
   --col-gap: 24px;
   --rule-w: 1px;
 
-  /* Noise texture SVG data URI */
+  
   --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeBlend in='SourceGraphic' mode='multiply'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
 }
 
-/* ================================================================
-   BASE — PARCHMENT BODY
-   ================================================================ */
 body {
   font-family: "Libre Baskerville", Georgia, serif;
   background-color: var(--parchment);
@@ -58,18 +48,12 @@ body {
   flex: 1;
 }
 
-/* Outer frame — classic newspaper border */
-/* border overlay removed */
-
 .container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 28px;
 }
 
-/* ================================================================
-   NAVBAR — Victorian Slim Navigation Strip
-   ================================================================ */
 .navbar {
   background: #f0e6d0;
   background-image: var(--noise);
@@ -118,7 +102,19 @@ body {
   gap: 8px;
 }
 
-/* Logo hidden in navbar — masthead handles it */
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: flex-start;
+}
+.nav-links .nav-login {
+  margin-left: auto;
+}
+
 .logo h1 {
   font-family: "UnifrakturMaguntia", cursive;
   font-size: 1.6rem;
@@ -143,19 +139,10 @@ body {
   text-transform: uppercase;
 }
 
-/* Nav Links — uppercase small caps style */
-.nav-links {
-  display: flex;
-  list-style: none;
-  gap: 0;
-  align-items: center;
-  flex-wrap: wrap;
-}
 .nav-links li {
   position: relative;
 }
 
-/* Bullet separators */
 .nav-links li:not(:last-child)::after {
   content: "✦";
   font-size: 0.5rem;
@@ -186,7 +173,6 @@ body {
   background: rgba(26, 18, 8, 0.05);
 }
 
-/* Hamburger */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -220,11 +206,8 @@ body {
   transform: translateY(-7.5px) rotate(-45deg);
 }
 
-/* ================================================================
-   MASTHEAD — Full-Width Gothic Banner
-   ================================================================ */
 .masthead {
-  /* background: var(--parchment-lt); */
+  
   background: #f0e6d0;
   background-image: var(--noise);
   text-align: center;
@@ -280,7 +263,6 @@ body {
   margin-bottom: 16px;
 }
 
-/* ── Victorian Ornamental Rule ── */
 .ornamental-rule {
   display: flex;
   align-items: center;
@@ -328,16 +310,12 @@ body {
   filter: drop-shadow(1px 1px 0 rgba(26, 18, 8, 0.2));
 }
 
-/* Full double-line rule below masthead */
 .masthead-rule {
   border: none;
   border-top: 4px double var(--rule-heavy);
   margin: 8px 0 0;
 }
 
-/* ================================================================
-   CATEGORY DATE STRIP
-   ================================================================ */
 .date-strip {
   background: var(--ink);
   color: var(--parchment-lt);
@@ -350,9 +328,6 @@ body {
   margin-bottom: 0;
 }
 
-/* ================================================================
-   MAIN CONTENT — 4-Column Victorian Grid
-   ================================================================ */
 .main-content {
   padding: 24px 0 40px;
   animation: pageReveal 0.5s ease-out 0.2s both;
@@ -370,7 +345,6 @@ body {
   }
 }
 
-/* 4-column newspaper grid */
 .newspaper-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -380,7 +354,6 @@ body {
   border-top: 4px double var(--rule-heavy);
 }
 
-/* Column separator borders */
 .newspaper-grid > * {
   border-right: 1px solid var(--rule-thin);
   padding: var(--col-gap);
@@ -390,7 +363,6 @@ body {
   border-right: none;
 }
 
-/* Thick outer left border for each section (thick-thin style) */
 .newspaper-grid > *::before {
   content: "";
   position: absolute;
@@ -402,25 +374,21 @@ body {
   opacity: 0;
 }
 
-/* Main story spans cols 1-2 */
 .col-main {
   grid-column: 1 / 3;
   border-right: 3px double var(--rule-heavy) !important;
 }
 
-/* Sidebar — col 3 */
 .col-sidebar {
   grid-column: 3 / 4;
 }
 
-/* Feature — col 4 */
 .col-feature {
   grid-column: 4 / 5;
   border-right: none !important;
   background: rgba(26, 18, 8, 0.025);
 }
 
-/* Bottom row — 4 equal advert/article columns */
 .col-full-row {
   grid-column: 1 / -1;
   border-top: 4px double var(--rule-heavy);
@@ -428,7 +396,6 @@ body {
   padding: var(--col-gap) var(--col-gap) 0;
 }
 
-/* ── Section Titles (ALL CAPS, Heavy Serif) ── */
 .section-title,
 .col-section-head {
   font-family: "Cinzel", serif;
@@ -451,9 +418,6 @@ body {
   margin-top: 3px;
 }
 
-/* ================================================================
-   HERO — Main Story Layout
-   ================================================================ */
 .hero {
   background: transparent;
   border: none;
@@ -467,7 +431,6 @@ body {
   display: block;
 }
 
-/* Hero headline — large blackletter-inspired */
 .hero-text {
   padding: 0;
 }
@@ -493,7 +456,6 @@ body {
   color: var(--red-drop);
 }
 
-/* Hero image — Victorian photo treatment */
 .hero-content > img,
 .hero-content img:first-child {
   width: 100%;
@@ -504,7 +466,6 @@ body {
   margin-bottom: 4px;
 }
 
-/* Image caption */
 .hero-caption,
 figure figcaption,
 .article-image-caption {
@@ -521,9 +482,6 @@ figure figcaption,
   margin-bottom: 14px;
 }
 
-/* ================================================================
-   ARTICLE CARDS — Column style
-   ================================================================ */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -620,7 +578,6 @@ figure figcaption,
   -webkit-hyphens: auto;
 }
 
-/* Category badge — small caps strip */
 .category-badge {
   font-family: "Cinzel", serif;
   font-size: 0.6rem;
@@ -636,22 +593,18 @@ figure figcaption,
   margin-bottom: 6px;
 }
 
-/* Meta */
 .meta {
   display: flex;
   gap: 12px;
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Source Serif 4", Georgia, serif;
   font-size: 0.72rem;
-  font-style: italic;
   color: var(--ink-faded);
   flex-wrap: wrap;
   margin-top: 6px;
   border-top: 1px solid var(--rule-thin);
   padding-top: 5px;
 }
-/* ================================================================
-   SINGLE ARTICLE PAGE
-   ================================================================ */
+
 .article-single {
   background: transparent;
   padding: 0;
@@ -701,6 +654,31 @@ figure figcaption,
   margin: 20px auto;
   border: 1px solid var(--rule-heavy);
 }
+.article-single .article-content img.alignleft,
+.article-single .article-content figure.alignleft {
+  float: left !important;
+  display: inline !important;
+  margin: 6px 20px 12px 0 !important;
+  max-width: 45% !important;
+}
+.article-single .article-content img.alignright,
+.article-single .article-content figure.alignright {
+  float: right !important;
+  display: inline !important;
+  margin: 6px 0 12px 20px !important;
+  max-width: 45% !important;
+}
+.article-single .article-content img.aligncenter,
+.article-single .article-content figure.aligncenter {
+  float: none !important;
+  display: block !important;
+  margin: 20px auto !important;
+}
+.article-single .article-content::after {
+  content: "";
+  display: table;
+  clear: both;
+}
 .article-single .article-content figure {
   max-width: 100%;
   margin: 20px 0;
@@ -719,7 +697,6 @@ figure figcaption,
   background: rgba(26, 18, 8, 0.04);
 }
 
-/* Article header */
 .article-header {
   text-align: center;
   margin-bottom: 28px;
@@ -742,15 +719,13 @@ figure figcaption,
   display: flex;
   justify-content: center;
   gap: 20px;
-  font-family: "Playfair Display", Georgia, serif;
-  font-style: italic;
+  font-family: "Source Serif 4", Georgia, serif;
   font-size: 0.85rem;
   color: var(--ink-faded);
   margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
-/* Article body */
 .article-content {
   font-family: "Playfair Display", Georgia, serif;
   font-size: 1rem;
@@ -796,9 +771,6 @@ figure figcaption,
   flex-wrap: wrap;
 }
 
-/* ================================================================
-   ADVERT BOXES — Victorian Scientific Wonders Style
-   ================================================================ */
 .advert-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -823,7 +795,6 @@ figure figcaption,
   border-right: none;
 }
 
-/* Double-line inner frame */
 .advert-box::before {
   content: "";
   position: absolute;
@@ -868,15 +839,15 @@ figure figcaption,
   display: block;
 }
 
-/* ================================================================
-   COMMENTS
-   ================================================================ */
 .comments-section {
   margin-top: 1.2rem;
-  padding: 1rem;
+  padding: 1.2rem 1.4rem;
+  width: 50%;
+  max-width: 50%;
+  box-sizing: border-box;
   background: rgba(26, 18, 8, 0.02);
   border: 2px solid var(--rule-heavy);
-  border-radius: 0;
+  border-radius: 12px;
   box-shadow: none;
   animation: articleReveal 0.5s ease-out 0.3s both;
 }
@@ -922,13 +893,13 @@ figure figcaption,
   margin-bottom: 0.4rem;
   font-variant: small-caps;
   font-size: 0.78rem;
-  /* color: var(--ink-faded); */
+  
   color: black;
   border-bottom: 1px solid var(--rule-thin);
   padding-bottom: 4px;
 }
 .comment-meta strong {
-    /* color: var(--ink); */
+    
     color: black;
   }
 
@@ -942,19 +913,18 @@ figure figcaption,
 .comment-form textarea {
   padding: 8px 12px;
   font-size: 0.88rem;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
 }
 
 .no-comments {
   color: var(--ink-faded);
-  font-style: italic;
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Source Serif 4", Georgia, serif;
   margin-bottom: 1.5rem;
   text-align: center;
 }
 
-/* ================================================================
-   FORMS & AUTH
-   ================================================================ */
 .auth-form {
   max-width: 480px;
   margin: 40px auto;
@@ -995,8 +965,7 @@ figure figcaption,
 .auth-footer {
   margin-top: 20px;
   text-align: center;
-  font-family: "Playfair Display", Georgia, serif;
-  font-style: italic;
+  font-family: "Source Serif 4", Georgia, serif;
   font-size: 0.85rem;
   color: var(--ink-faded);
   border-top: 1px solid var(--rule-thin);
@@ -1017,7 +986,7 @@ figure figcaption,
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 2px;
-  /* color: var(--ink); */
+  
   color: black;
 }
 .form-group input,
@@ -1043,49 +1012,64 @@ figure figcaption,
   box-shadow: 2px 2px 0 var(--rule-thin);
 }
 
-/* ================================================================
-   BUTTONS
-   ================================================================ */
 .btn {
-  padding: 7px 16px;
+  display: inline-block;
+  padding: 9px 24px;
   background: var(--ink);
   color: var(--parchment-lt);
-  border: none;
-  border-radius: 6px;
+  border: 2px solid var(--ink);
+  border-radius: 50px;
   cursor: pointer;
   text-decoration: none;
-  display: inline-block;
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Cinzel", serif;
   font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 2px;
-  transition:
-    background 0.2s,
-    transform 0.15s;
   position: relative;
-  overflow: hidden;
-  box-shadow: 2px 2px 0 var(--rule-thin);
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    transform 0.15s ease,
+    box-shadow 0.22s ease;
+  box-shadow: 0 2px 8px rgba(26,18,8,0.18);
 }
 .btn:hover {
   background: var(--red-drop);
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 var(--rule-thin);
+  border-color: var(--red-drop);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(26,18,8,0.22);
 }
 .btn:active {
-  transform: translate(0, 0);
-  box-shadow: 1px 1px 0 var(--rule-thin);
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(26,18,8,0.15);
 }
 .btn-primary {
   background: var(--red-drop);
+  border-color: var(--red-drop);
+  color: #fff;
 }
 .btn-primary:hover {
-  background: #5a1010;
+  background: #6b1212;
+  border-color: #6b1212;
+  color: #fff;
+}
+.btn:active {
+  transform: translate(0, 0);
+  box-shadow: 1px 1px 0 rgba(26,18,8,0.2);
+}
+.btn-primary {
+  background: var(--red-drop);
+  border-color: var(--red-drop);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: #6b1212;
+  border-color: #6b1212;
+  color: #fff;
 }
 
-/* ================================================================
-   SEARCH
-   ================================================================ */
 .search-form {
   display: flex;
   gap: 0;
@@ -1115,8 +1099,7 @@ figure figcaption,
 
 .search-info {
   margin: 16px 0;
-  font-family: "Playfair Display", Georgia, serif;
-  font-style: italic;
+  font-family: "Source Serif 4", Georgia, serif;
   font-size: 0.85rem;
   color: var(--ink-faded);
 }
@@ -1146,9 +1129,6 @@ figure figcaption,
   filter: grayscale(1) contrast(1.5) sepia(0.2);
 }
 
-/* ================================================================
-   ALERTS
-   ================================================================ */
 .alert {
   padding: 12px 16px;
   margin: 16px 0;
@@ -1190,14 +1170,10 @@ figure figcaption,
   text-align: center;
   padding: 40px 20px;
   color: var(--ink-faded);
-  font-style: italic;
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Source Serif 4", Georgia, serif;
   border: 2px dashed var(--rule-thin);
 }
 
-/* ================================================================
-   PAGINATION
-   ================================================================ */
 .pagination {
   display: flex;
   justify-content: center;
@@ -1232,9 +1208,6 @@ figure figcaption,
   color: var(--parchment-lt);
 }
 
-/* ================================================================
-   PAGE HEADER
-   ================================================================ */
 .page-header {
   margin-bottom: 28px;
   padding-bottom: 16px;
@@ -1249,9 +1222,6 @@ figure figcaption,
   color: var(--ink);
 }
 
-/* ================================================================
-   FOOTER
-   ================================================================ */
 .footer {
   background: var(--ink);
   background-image: var(--noise);
@@ -1288,34 +1258,31 @@ figure figcaption,
   margin-bottom: 7px;
 }
 .footer-section a {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Source Serif 4", Georgia, serif;
   font-size: 0.95rem;
   color: white;
   text-decoration: none;
-  font-style: italic;
   transition: color 0.2s;
 }
 .footer-section a:hover {
   color: var(--parchment-lt);
 }
 .footer-section p {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Source Serif 4", Georgia, serif;
   font-size: 0.92rem;
-  font-style: italic;
   color: white;
 }
 
 .footer-bottom {
     text-align: center;
     padding-top: 16px;
-    font-family: "Playfair Display", Georgia, serif;
+    font-family: "Source Serif 4", Georgia, serif;
     font-size: 0.92rem;
-    font-style: italic;
     color: rgba(232, 222, 192, 0.35);
     letter-spacing: 1px;
   }
 
-  /* Victorian footer ornament */
+  
   .footer-bottom::before {
     content: "✦  ✦  ✦";
     display: block;
@@ -1325,9 +1292,7 @@ figure figcaption,
     color: rgba(232, 222, 192, 0.25);
   }
 
-  /* ================================================================
-   DARK MODE TOGGLE
-   ================================================================ */
+  
   .dark-toggle {
     background: transparent;
     border: 1px solid var(--rule-thin);
@@ -1351,9 +1316,7 @@ figure figcaption,
     font-size: 0.85rem;
   }
 
-  /* ================================================================
-   RESPONSIVE — Collapse to 1 column on mobile
-   ================================================================ */
+  
   @media (max-width: 1024px) {
     .newspaper-grid {
       grid-template-columns: 1fr 1fr;
@@ -1548,11 +1511,6 @@ figure figcaption,
   }
 }
 
-/* ================================================================
-   MOBILE CARD + FOOTER COMPACT FIXES
-   ================================================================ */
-
-/* — Article cards: stop content cutting off — */
 .newspaper-grid .col-main,
 .newspaper-grid .col-sidebar,
 .newspaper-grid .col-feature {
@@ -1574,7 +1532,6 @@ figure figcaption,
   width: 100%;
 }
 
-/* Section headers that clip (PRINCIP, LATE, SPEC) */
 .col-section-head,
 .section-title {
   overflow: hidden;
@@ -1582,7 +1539,6 @@ figure figcaption,
   white-space: nowrap;
 }
 
-/* — Footer compact — */
 .footer {
   padding: 20px 0 10px;
 }
@@ -1619,7 +1575,7 @@ figure figcaption,
 }
 
 @media (max-width: 768px) {
-  /* Footer single column, horizontal links */
+  
   .footer {
     padding: 14px 0 8px;
   }
@@ -1654,9 +1610,6 @@ figure figcaption,
   }
 }
 
-/* ================================================================
-   HERO IMAGE FIX — direct img child of .hero
-   ================================================================ */
 .hero > img {
   width: 100%;
   max-width: 100%;
@@ -1667,7 +1620,6 @@ figure figcaption,
   margin-bottom: 4px;
 }
 
-/* On mobile: pull image edge-to-edge by negating column padding */
 @media (max-width: 768px) {
   .col-main {
     padding-left: 0 !important;
@@ -1677,7 +1629,7 @@ figure figcaption,
     width: 100%;
     max-height: 280px;
   }
-  /* Restore padding for text content inside col-main */
+  
   .col-main .hero-text,
   .col-main .col-section-head,
   .col-main .hero-caption,
@@ -1698,9 +1650,6 @@ figure figcaption,
   }
 }
 
-/* ================================================================
-   FOOTER — COMPACT SINGLE BAR (mobile only, desktop uses original)
-   ================================================================ */
 @media (min-width: 601px) {
   .footer-bar { display: none !important; }
 }
@@ -1730,9 +1679,8 @@ figure figcaption,
 }
 
 .footer-links a {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Source Serif 4", Georgia, serif;
   font-size: 0.75rem;
-  font-style: italic;
   color: rgba(232, 222, 192, 0.75);
   text-decoration: none;
   transition: color 0.2s;
@@ -1742,14 +1690,11 @@ figure figcaption,
 }
 
 .footer-copy {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Source Serif 4", Georgia, serif;
   font-size: 0.7rem;
   color: rgba(232, 222, 192, 0.4);
   white-space: nowrap;
-  font-style: italic;
 }
-
-/* footer display restored */
 
 @media (max-width: 600px) {
   .footer-bar {
@@ -1764,9 +1709,6 @@ figure figcaption,
   }
 }
 
-/* ================================================================
-   FOOTER — DESKTOP/MOBILE SWITCH
-   ================================================================ */
 .footer-mobile { display: none; }
 .footer-desktop { display: block; }
 .footer-content.footer-desktop {
@@ -1809,9 +1751,8 @@ figure figcaption,
   }
 
   .footer-mobile-col a {
-    font-family: "Playfair Display", Georgia, serif;
+    font-family: "Source Serif 4", Georgia, serif;
     font-size: 0.75rem;
-    font-style: italic;
     color: rgba(232,222,192,0.7);
     text-decoration: none;
     transition: color 0.2s;
@@ -1820,9 +1761,8 @@ figure figcaption,
 
   .footer-mobile-copy {
     text-align: center;
-    font-family: "Playfair Display", Georgia, serif;
+    font-family: "Source Serif 4", Georgia, serif;
     font-size: 0.65rem;
-    font-style: italic;
     color: rgba(232,222,192,0.35);
   }
 
@@ -1831,9 +1771,6 @@ figure figcaption,
   }
 }
 
-/* ================================================================
-   GRAYSCALE FILTER — ALL article + featured images
-   ================================================================ */
 .article-card img,
 .article-image img,
 .article-image > img,
@@ -1850,7 +1787,7 @@ figure figcaption,
 .article-item:hover .article-thumb img {
   filter: grayscale(0.5) contrast(1.2) sepia(0.1) !important;
 }
-/* Comment button compact */
+
 .btn-sm-comment {
   padding: 7px 18px;
   font-size: 0.68rem;
@@ -1865,13 +1802,13 @@ figure figcaption,
   }
 }
 
-/* ================================================================
-   COMMENTS — COMPACT ON MOBILE
-   ================================================================ */
 @media (max-width: 768px) {
   .comments-section {
     margin-top: 1rem;
     padding: 14px;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 10px;
   }
   .comments-section h2 {
     font-size: 0.78rem;
@@ -1907,3 +1844,237 @@ figure figcaption,
     font-size: 0.82rem;
   }
 }
+
+.masthead-search-wrap {
+  position: relative;
+}
+.masthead-search {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--rule-thin);
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(4px);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.masthead-search:focus-within {
+  border-color: var(--ink);
+  box-shadow: 0 2px 10px rgba(26,18,8,0.12);
+}
+.masthead-search input[type="text"] {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 4px 10px;
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 0.7rem;
+  color: var(--ink);
+  width: 130px;
+  transition: width 0.3s ease;
+}
+.masthead-search input[type="text"]:focus { width: 185px; }
+.masthead-search button {
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  padding: 4px 7px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+}
+.masthead-search button:hover { color: var(--red-drop); }
+.masthead-search button.active { color: var(--red-drop); }
+
+.masthead-search button#ms-filter-btn {
+  border-left: 1px solid var(--rule-thin);
+}
+
+.ms-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--parchment-lt);
+  border: 1.5px solid var(--ink);
+  border-radius: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  box-shadow: 0 8px 24px rgba(26,18,8,0.14);
+  z-index: 300;
+  overflow: hidden;
+  animation: dropIn 0.15s ease-out both;
+}
+.ms-suggestions li {
+  padding: 7px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--rule-thin);
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 0.78rem;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+.ms-suggestions li:last-child { border-bottom: none; }
+.ms-suggestions li:hover,
+.ms-suggestions li.active { background: rgba(26,18,8,0.06); }
+.ms-sug-title { color: var(--ink); }
+.ms-sug-cat {
+  font-size: 0.68rem;
+  color: var(--red-drop);
+  background: rgba(139,0,0,0.08);
+  padding: 1px 6px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.ms-filter-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--parchment-lt);
+  border: 1.5px solid var(--ink);
+  border-radius: 14px;
+  padding: 14px 16px;
+  min-width: 300px;
+  box-shadow: 0 8px 28px rgba(26,18,8,0.16);
+  z-index: 300;
+  animation: dropIn 0.15s ease-out both;
+}
+.ms-filter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 12px;
+}
+.ms-filter-grid label {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 0.72rem;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ms-filter-grid select,
+.ms-filter-grid input[type="date"] {
+  border: 1px solid var(--rule-thin);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  background: rgba(255,255,255,0.7);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.ms-filter-grid select:focus,
+.ms-filter-grid input[type="date"]:focus { border-color: var(--ink); }
+.ms-filter-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: flex-end;
+}
+
+.has-dropdown {
+  position: relative;
+}
+.dropdown-toggle {
+  cursor: pointer;
+  user-select: none;
+}
+.dropdown-arrow {
+  font-size: 0.6rem;
+  display: inline-block;
+  transition: transform 0.2s ease;
+  margin-left: 2px;
+}
+.has-dropdown:hover .dropdown-arrow,
+.has-dropdown.open .dropdown-arrow {
+  transform: rotate(180deg);
+}
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  padding-top: 8px;
+  background: transparent;
+  z-index: 200;
+  min-width: 200px;
+}
+.dropdown-menu-inner {
+  background: var(--parchment-lt);
+  border: 1.5px solid rgba(26,18,8,0.15);
+  border-radius: 14px;
+  list-style: none;
+  padding: 6px;
+  box-shadow: 0 8px 28px rgba(26,18,8,0.14), 0 2px 8px rgba(26,18,8,0.08);
+  animation: dropIn 0.18s ease-out both;
+  overflow: hidden;
+}
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.has-dropdown:hover .dropdown-menu,
+.has-dropdown.open .dropdown-menu {
+  display: block;
+}
+.dropdown-menu li { list-style: none; }
+.dropdown-menu a {
+  display: block;
+  padding: 9px 14px !important;
+  font-family: "Source Serif 4", Georgia, serif !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0.3px !important;
+  color: var(--ink) !important;
+  text-decoration: none;
+  border-radius: 8px !important;
+  transition: background 0.14s, color 0.14s;
+}
+.dropdown-menu a:hover {
+  background: rgba(26,18,8,0.07) !important;
+  color: var(--red-drop) !important;
+}
+
+@media (max-width: 768px) {
+  .dropdown-menu {
+    position: static;
+    padding-top: 0;
+    min-width: 100%;
+  }
+  .dropdown-menu-inner {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    animation: none;
+    background: rgba(26,18,8,0.04);
+    padding: 2px 0;
+  }
+  .ms-filter-panel {
+    right: auto;
+    left: 0;
+    min-width: 260px;
+    border-radius: 12px;
+  }
+  .masthead-search input[type="text"] { width: 100px; }
+  .masthead-search input[type="text"]:focus { width: 130px; }
+}
+
+.nav-links a i[data-lucide],
+.nav-links a svg {
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  margin-right: 4px;
+  margin-top: -2px;
+  stroke-width: 2;
+}
+.nav-auth { display: flex; align-items: center; gap: 2px; }
+.nav-auth a { padding: 5px 8px !important; }
+.nav-auth-sep { color: var(--rule-thin); font-size: 0.8rem; padding: 0 2px; user-select: none; }

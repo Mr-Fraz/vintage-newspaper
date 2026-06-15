@@ -79,9 +79,9 @@ include __DIR__ . '/../includes/navbar.php';
 <div class="search-wrap">
     <h1>Search Articles</h1>
 
+    <?php if (!$searched): ?>
     <form method="GET" action="" id="search-form" autocomplete="off">
 
-        <!-- Search box with live suggestions -->
         <div class="search-box-wrap">
             <input type="text" name="q" id="search-input"
                    placeholder="Search articles…"
@@ -89,7 +89,6 @@ include __DIR__ . '/../includes/navbar.php';
             <ul id="search-suggestions" hidden></ul>
         </div>
 
-        <!-- Filters toggle -->
         <details <?php if ($dateFrom||$dateTo||$authorF||$categoryId) echo 'open'; ?> style="margin-top:.7rem">
             <summary style="cursor:pointer;color:#8b6914;font-size:.9rem;">▾ Filters</summary>
             <div class="filters-panel" style="margin-top:.5rem">
@@ -148,12 +147,13 @@ include __DIR__ . '/../includes/navbar.php';
         </details>
 
     </form>
+    <?php endif; ?>
 
-    <!-- Results -->
     <?php if ($searched): ?>
         <p class="result-count">
             <?php echo count($articles); ?> result(s)
             <?php if ($query) echo 'for "<strong>' . htmlspecialchars($query) . '</strong>"'; ?>
+            &nbsp;&middot;&nbsp; <a href="search.php" style="color:#8b6914;font-size:0.85rem;">&larr; New Search</a>
         </p>
 
         <?php if (count($articles) > 0): ?>

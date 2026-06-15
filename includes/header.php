@@ -24,6 +24,7 @@ if (!defined('SITE_NAME')) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/style.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
     <!-- <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/dark-mode.css"> -->
     <?php if (isset($extraCSS)) echo $extraCSS; ?>
 </head>
