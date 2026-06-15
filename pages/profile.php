@@ -119,7 +119,7 @@ include __DIR__ . '/../includes/navbar.php';
 
                 <hr style="border:none;border-top:1px solid #ccc;margin:20px 0;">
                 <p style="font-size:0.8rem;color:#888;margin-bottom:14px;">
-                    Change Password <em>(optional — leave blank to keep current)</em>
+                    Change Password <em>(leave blank to keep current password)</em>
                 </p>
 
                 <div class="form-group">
