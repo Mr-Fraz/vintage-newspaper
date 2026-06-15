@@ -93,7 +93,7 @@ include __DIR__ . '/../includes/navbar.php';
             <h1>My Profile</h1>
             <p style="color:#888;margin-bottom:24px;font-size:0.85rem;">
                 Logged in as <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
-                &nbsp;·&nbsp; Leave password fields blank to keep current password.
+                &nbsp;·&nbsp;
             </p>
 
             <?php if (!empty($error)): ?>
