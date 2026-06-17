@@ -20,6 +20,7 @@ include __DIR__ . '/../includes/admin-header.php';
             <h1>Users</h1>
         </header>
         
+        <div class="table-scroll">
         <table class="admin-table">
             <thead>
                 <tr>
@@ -46,6 +47,7 @@ include __DIR__ . '/../includes/admin-header.php';
                 <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
     </main>
 </div>
 

@@ -47,6 +47,7 @@ include __DIR__ . '/includes/admin-header.php';
         <section class="admin-section">
             <h2>Recent Articles</h2>
             
+            <div class="table-scroll">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -74,6 +75,7 @@ include __DIR__ . '/includes/admin-header.php';
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            </div>
         </section>
     </main>
 </div>

@@ -92,6 +92,9 @@ $authors     = DB::getPublishedAuthors();
         </div>
 
         <ul class="nav-links">
+            <button type="button" class="nav-links-close" id="nav-close-btn" aria-label="Close menu">
+                <i data-lucide="x" style="width:16px;height:16px;"></i>
+            </button>
             <li><a href="<?php echo SITE_URL; ?>"><i data-lucide="home"></i> Home</a></li>
 
             <?php if (!empty($categories)): ?>
@@ -100,7 +103,13 @@ $authors     = DB::getPublishedAuthors();
                     <i data-lucide="layout-grid"></i> Categories <span class="dropdown-arrow">▾</span>
                 </a>
                 <ul class="dropdown-menu">
+                    <button type="button" class="dropdown-menu-close" id="cat-close-btn" aria-label="Close categories">
+                        <i data-lucide="x" style="width:16px;height:16px;"></i>
+                    </button>
                     <div class="dropdown-menu-inner">
+                    <li class="dropdown-menu-back" id="cat-back-btn">
+                        <i data-lucide="chevron-left" style="width:14px;height:14px;"></i> Back
+                    </li>
                     <?php foreach ($categories as $cat): ?>
                         <li><a href="<?php echo SITE_URL; ?>/pages/category.php?slug=<?php echo htmlspecialchars($cat['slug']); ?>">
                             <?php echo htmlspecialchars($cat['name']); ?>
@@ -128,6 +137,7 @@ $authors     = DB::getPublishedAuthors();
             <span></span><span></span><span></span>
         </div>
     </div>
+    <div class="nav-links-backdrop" id="nav-backdrop"></div>
 </nav>
 
 <script>
@@ -149,6 +159,13 @@ $authors     = DB::getPublishedAuthors();
         panel.hidden = !panel.hidden;
         suggs.hidden = true;
         filterBtn.classList.toggle('active', !panel.hidden);
+
+        if (!panel.hidden && window.innerWidth <= 768) {
+            const btnRect = filterBtn.getBoundingClientRect();
+            panel.style.top = (btnRect.bottom + 8) + 'px';
+        } else {
+            panel.style.top = '';
+        }
     });
 
     // ── Build search URL and navigate ───────────────────
@@ -235,5 +252,15 @@ $authors     = DB::getPublishedAuthors();
         const wrap = document.querySelector('.masthead-search-wrap');
         if (wrap && !wrap.contains(e.target)) { hideSuggs(); panel.hidden = true; filterBtn.classList.remove('active'); }
     });
+
+    // ── Reliable Lucide icon init (handles load-order race) ──
+    function initIcons() {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        } else {
+            setTimeout(initIcons, 50);
+        }
+    }
+    initIcons();
 })();
 </script>

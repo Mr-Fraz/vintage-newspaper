@@ -18,6 +18,7 @@ include __DIR__ . '/../includes/admin-header.php';
             <a href="add.php" class="btn btn-primary">+ New Category</a>
         </header>
         
+        <div class="table-scroll">
         <table class="admin-table">
             <thead>
                 <tr>
@@ -45,6 +46,7 @@ include __DIR__ . '/../includes/admin-header.php';
                 <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
     </main>
 </div>
 

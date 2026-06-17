@@ -23,6 +23,7 @@ include __DIR__ . '/../includes/admin-header.php';
     <?php include __DIR__ . '/../includes/sidebar.php'; ?>
     <main class="admin-main">
         <header class="admin-page-header"><h1>Comments</h1></header>
+        <div class="table-scroll">
         <table class="admin-table">
             <thead>
                 <tr><th>Author</th><th>Comment</th><th>Article</th><th>Status</th><th>Date</th><th>Actions</th></tr>
@@ -49,6 +50,7 @@ include __DIR__ . '/../includes/admin-header.php';
             <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
     </main>
 </div>
 </body></html>
