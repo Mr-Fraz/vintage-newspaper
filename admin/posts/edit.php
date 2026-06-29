@@ -222,6 +222,30 @@ include __DIR__ . '/../includes/admin-header.php';
         </form>
     </main>
 </div>
+<style>
+    /* Match TinyMCE chrome to site parchment theme */
+    .tox-tinymce { border-color: #c4a882 !important; }
+    .tox .tox-editor-header,
+    .tox .tox-toolbar,
+    .tox .tox-toolbar__primary,
+    .tox .tox-menubar,
+    .tox .tox-statusbar {
+        background: #f0e6d0 !important;
+        border-color: #c4a882 !important;
+    }
+    .tox .tox-tbtn svg,
+    .tox .tox-mbtn,
+    .tox .tox-statusbar a,
+    .tox .tox-statusbar__path-item {
+        color: #1c0f07 !important;
+        fill: #1c0f07 !important;
+    }
+    .tox .tox-tbtn:hover,
+    .tox .tox-mbtn:hover {
+        background: #d4c89a !important;
+    }
+    .tox .tox-edit-area__iframe { background: #f0e6d0 !important; }
+</style>
 <script>
     tinymce.init({
         selector: '#content',
@@ -234,6 +258,7 @@ include __DIR__ . '/../includes/admin-header.php';
         menubar: true,
         skin: 'oxide',
         content_css: 'default',
+        content_style: "body { background: #f0e6d0; color: #1c0f07; }",
         branding: false,
         promotion: false,
         images_upload_url: '<?php echo SITE_URL; ?>/api/upload.php',
