@@ -2,27 +2,29 @@
 
 // Mobile Menu Toggle
 document.addEventListener('DOMContentLoaded', function() {
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
+    const hamburger = document.getElementById('menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
     const backdrop = document.getElementById('nav-backdrop');
     const navCloseBtn = document.getElementById('nav-close-btn');
 
     function closeMenu() {
-        navLinks.classList.remove('active');
-        hamburger.classList.remove('active');
-        if (backdrop) backdrop.classList.remove('active');
+        navMenu.classList.remove('is-active');
+        hamburger.classList.remove('is-active');
+        hamburger.setAttribute('aria-expanded', 'false');
+        if (backdrop) backdrop.classList.remove('is-active');
         document.querySelectorAll('.has-dropdown.open').forEach(function (el) {
             el.classList.remove('open');
         });
     }
 
-    if (hamburger && navLinks) {
+    if (hamburger && navMenu) {
         hamburger.addEventListener('click', function(e) {
             e.stopPropagation();
-            const opening = !navLinks.classList.contains('active');
-            navLinks.classList.toggle('active', opening);
-            hamburger.classList.toggle('active', opening);
-            if (backdrop) backdrop.classList.toggle('active', opening);
+            const opening = !navMenu.classList.contains('is-active');
+            navMenu.classList.toggle('is-active', opening);
+            hamburger.classList.toggle('is-active', opening);
+            hamburger.setAttribute('aria-expanded', String(opening));
+            if (backdrop) backdrop.classList.toggle('is-active', opening);
         });
 
         if (navCloseBtn) {
@@ -33,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Close menu when a real nav link is clicked (not the Categories toggle)
-        navLinks.querySelectorAll('a').forEach(function(link) {
+        navMenu.querySelectorAll('a').forEach(function(link) {
             if (link.classList.contains('dropdown-toggle')) return;
             link.addEventListener('click', function() {
                 closeMenu();

@@ -258,9 +258,69 @@ include __DIR__ . '/../includes/admin-header.php';
         menubar: true,
         skin: 'oxide',
         content_css: 'default',
-        content_style: "body { background: #f0e6d0; color: #1c0f07; }",
+        body_class: 'article-content',
+        content_style: `
+            body.article-content {
+                background: #f0e6d0;
+                color: #1c0f07;
+                max-width: 700px;
+                margin: 0 auto;
+                padding: 16px 20px;
+                font-size: 1.125rem;
+                line-height: 1.55;
+            }
+            body.article-content img,
+            body.article-content figure img {
+                max-width: 100% !important;
+                display: block;
+                margin: 20px auto;
+                border: 1px solid #2a1e0e;
+            }
+            body.article-content img.alignleft,
+            body.article-content figure.alignleft,
+            body.article-content figure:has(> img.alignleft) {
+                float: left !important;
+                display: inline !important;
+                margin: 6px 20px 12px 0 !important;
+                max-width: 45% !important;
+            }
+            body.article-content img.alignright,
+            body.article-content figure.alignright,
+            body.article-content figure:has(> img.alignright) {
+                float: right !important;
+                display: inline !important;
+                margin: 6px 0 12px 20px !important;
+                max-width: 45% !important;
+            }
+            body.article-content img.aligncenter,
+            body.article-content figure.aligncenter,
+            body.article-content figure:has(> img.aligncenter) {
+                float: none !important;
+                display: block !important;
+                margin: 20px auto !important;
+            }
+            body.article-content::after { content: ""; display: table; clear: both; }
+            body.article-content figcaption {
+                font-family: "Playfair Display", Georgia, serif;
+                font-size: 0.75rem;
+                font-variant: small-caps;
+                letter-spacing: 1px;
+                color: #6b5a3e;
+                text-align: center;
+                border: 1px solid #8b7550;
+                padding: 4px 8px;
+            }
+        `,
         branding: false,
         promotion: false,
+        image_dimensions: true,
+        image_advtab: true,
+        image_class_list: [
+            { title: 'None (full width)', value: '' },
+            { title: 'Align Left — wrap text right', value: 'alignleft' },
+            { title: 'Align Right — wrap text left', value: 'alignright' },
+            { title: 'Center — no wrap', value: 'aligncenter' }
+        ],
         images_upload_url: '<?php echo SITE_URL; ?>/api/upload.php',
         images_upload_credentials: true,
         images_upload_handler: function(blobInfo, progress) {

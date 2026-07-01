@@ -91,7 +91,7 @@ $authors     = DB::getPublishedAuthors();
             <a href="<?php echo SITE_URL; ?>"><h1><?php echo SITE_NAME; ?></h1></a>
         </div>
 
-        <ul class="nav-links">
+        <ul class="nav-links" id="nav-menu">
             <button type="button" class="nav-links-close" id="nav-close-btn" aria-label="Close menu">
                 <i data-lucide="x" style="width:16px;height:16px;"></i>
             </button>
@@ -133,9 +133,9 @@ $authors     = DB::getPublishedAuthors();
             <?php endif; ?>
         </ul>
 
-        <div class="hamburger" aria-label="Open menu" role="button" tabindex="0">
+        <button type="button" class="hamburger" id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
             <span></span><span></span><span></span>
-        </div>
+        </button>
     </div>
     <div class="nav-links-backdrop" id="nav-backdrop"></div>
 </nav>

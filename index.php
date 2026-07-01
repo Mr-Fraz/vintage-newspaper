@@ -47,7 +47,7 @@ include __DIR__ . '/includes/navbar.php';
             <div class="col-sidebar">
                 <div class="col-section-head">Latest Dispatches</div>
                 <?php foreach (array_slice($articles, 1, 3) as $article): ?>
-                    <article class="article-card">
+                    <article class="article-card dir-<?php echo getTextDirection($article['title']); ?>">
                         <?php if (!empty($article['image'])): ?>
                             <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $article['image']; ?>"
                                  alt="<?php echo htmlspecialchars($article['title']); ?>">
@@ -66,10 +66,12 @@ include __DIR__ . '/includes/navbar.php';
             </div>
 
             <!-- COL 4: Special Features -->
+            <?php $specialFeatures = array_slice($articles, 4, 3); ?>
+            <?php if (!empty($specialFeatures)): ?>
             <div class="col-feature">
                 <div class="col-section-head">Special Features</div>
-                <?php foreach (array_slice($articles, 4, 3) as $article): ?>
-                    <article class="article-card">
+                <?php foreach ($specialFeatures as $article): ?>
+                    <article class="article-card dir-<?php echo getTextDirection($article['title']); ?>">
                         <div class="article-content">
                             <span class="category-badge"><?php echo $article['category_name']; ?></span>
                             <h3><a href="<?php echo SITE_URL; ?>/pages/article.php?id=<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a></h3>
@@ -82,6 +84,7 @@ include __DIR__ . '/includes/navbar.php';
                     </article>
                 <?php endforeach; ?>
             </div>
+            <?php endif; ?>
 
             <!-- FULL-WIDTH: Further Intelligence -->
             <?php if (count($articles) > 7): ?>

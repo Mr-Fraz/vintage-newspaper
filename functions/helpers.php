@@ -207,6 +207,13 @@ class Helper
 
         return ($data['count'] > $limit);
     }
+
+    // Detect text direction (Arabic/Urdu/Persian block)
+    public static function getTextDirection($text)
+    {
+        $rtlPattern = '/[\x{0600}-\x{06FF}\x{0750}-\x{077F}\x{08A0}-\x{08FF}\x{FB50}-\x{FDFF}\x{FE70}-\x{FEFF}]/u';
+        return preg_match($rtlPattern, $text) ? 'rtl' : 'ltr';
+    }
 }
 ?>
 
@@ -230,5 +237,12 @@ if (!function_exists('verifyCSRFToken')) {
     function verifyCSRFToken($token)
     {
         return Helper::verifyCSRFToken($token);
+    }
+}
+
+if (!function_exists('getTextDirection')) {
+    function getTextDirection($text)
+    {
+        return Helper::getTextDirection($text);
     }
 }
