@@ -17,27 +17,31 @@ include __DIR__ . '/includes/admin-header.php';
     
     <main class="admin-main">
         <header class="admin-page-header">
-            <h1>Dashboard</h1>
+            <h1>Dashboard <span class="page-subtitle">Editorial control room &mdash; <?php echo date('l, F j, Y'); ?></span></h1>
         </header>
         
         <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card">
+                <i data-lucide="newspaper" class="stat-icon"></i>
                 <h3>Total Articles</h3>
                 <p class="stat-number"><?php echo $stats['total_articles']; ?></p>
             </div>
             
             <div class="stat-card">
+                <i data-lucide="check-circle-2" class="stat-icon"></i>
                 <h3>Published</h3>
                 <p class="stat-number"><?php echo $stats['published_articles']; ?></p>
             </div>
             
             <div class="stat-card">
+                <i data-lucide="layout-grid" class="stat-icon"></i>
                 <h3>Categories</h3>
                 <p class="stat-number"><?php echo $stats['total_categories']; ?></p>
             </div>
             
             <div class="stat-card">
+                <i data-lucide="users" class="stat-icon"></i>
                 <h3>Users</h3>
                 <p class="stat-number"><?php echo $stats['total_users']; ?></p>
             </div>

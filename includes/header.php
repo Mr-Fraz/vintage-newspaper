@@ -10,7 +10,27 @@ if (!defined('SITE_NAME')) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?><?php echo SITE_NAME; ?></title>
+    <?php if (!empty($metaDescription)): ?>
+    <meta name="description" content="<?php echo htmlspecialchars(strip_tags($metaDescription)); ?>">
+    <?php endif; ?>
+    <?php if (!empty($canonicalUrl)): ?>
+    <link rel="canonical" href="<?php echo htmlspecialchars($canonicalUrl); ?>">
+    <?php endif; ?>
+    <meta property="og:site_name" content="<?php echo SITE_NAME; ?>">
+    <meta property="og:title" content="<?php echo htmlspecialchars(isset($pageTitle) ? $pageTitle : SITE_NAME); ?>">
+    <?php if (!empty($metaDescription)): ?>
+    <meta property="og:description" content="<?php echo htmlspecialchars(strip_tags($metaDescription)); ?>">
+    <?php endif; ?>
+    <?php if (!empty($ogImage)): ?>
+    <meta property="og:image" content="<?php echo htmlspecialchars($ogImage); ?>">
+    <?php endif; ?>
+    <meta property="og:type" content="<?php echo !empty($canonicalUrl) ? 'article' : 'website'; ?>">
+    <?php if (!empty($canonicalUrl)): ?>
+    <meta property="og:url" content="<?php echo htmlspecialchars($canonicalUrl); ?>">
+    <?php endif; ?>
+    <meta name="twitter:card" content="<?php echo !empty($ogImage) ? 'summary_large_image' : 'summary'; ?>">
     <script>
+        window.SITE_URL = '<?php echo SITE_URL; ?>';
         if (localStorage.getItem('vn_dark_mode') === 'dark') {
             document.documentElement.classList.add('dark-mode-preload');
         }

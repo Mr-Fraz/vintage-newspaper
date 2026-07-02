@@ -1,7 +1,7 @@
 <footer class="footer">
         <div class="container">
 
-            <!-- DESKTOP: 3-section layout -->
+            <!-- DESKTOP: 4-section layout -->
             <div class="footer-content footer-desktop">
                 <div class="footer-section">
                     <h3><?php echo SITE_NAME; ?></h3>
@@ -12,6 +12,7 @@
                     <ul>
                         <li><a href="<?php echo SITE_URL; ?>">Home</a></li>
                         <li><a href="<?php echo SITE_URL; ?>/pages/about.php">About</a></li>
+                        <li><a href="<?php echo SITE_URL; ?>/pages/archive.php">Archive</a></li>
                         <li><a href="<?php echo SITE_URL; ?>/pages/contact.php">Contact</a></li>
                     </ul>
                 </div>
@@ -26,6 +27,15 @@
                         <?php endforeach; ?>
                     </ul>
                 </div>
+                <div class="footer-section footer-newsletter">
+                    <h4>The Gazette Post</h4>
+                    <p>Receive the latest intelligence by post each morning.</p>
+                    <form class="newsletter-form">
+                        <input type="email" name="email" placeholder="Your email address" required>
+                        <button type="submit"><i data-lucide="mail"></i> Subscribe</button>
+                    </form>
+                    <div class="newsletter-message" role="status" aria-live="polite"></div>
+                </div>
             </div>
             <div class="footer-bottom footer-desktop">
                 <p>&copy; <?php echo date('Y'); ?> <?php echo SITE_NAME; ?>. All rights reserved.</p>
@@ -38,6 +48,7 @@
                         <span class="footer-mobile-head">Navigate</span>
                         <a href="<?php echo SITE_URL; ?>">Home</a>
                         <a href="<?php echo SITE_URL; ?>/pages/about.php">About</a>
+                        <a href="<?php echo SITE_URL; ?>/pages/archive.php">Archive</a>
                         <a href="<?php echo SITE_URL; ?>/pages/contact.php">Contact</a>
                     </div>
                     <div class="footer-mobile-col">

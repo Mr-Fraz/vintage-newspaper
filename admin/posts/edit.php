@@ -253,7 +253,11 @@ include __DIR__ . '/../includes/admin-header.php';
         relative_urls: false, // ← ADD THIS
         remove_script_host: false, // ← ADD THIS
         plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        toolbar: 'undo redo | blocks styles fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        style_formats: [
+            { title: 'Pull Quote', block: 'p', classes: 'pull-quote' },
+            { title: 'Byline', inline: 'span', classes: 'byline' }
+        ],
         height: 500,
         menubar: true,
         skin: 'oxide',
@@ -309,6 +313,27 @@ include __DIR__ . '/../includes/admin-header.php';
                 text-align: center;
                 border: 1px solid #8b7550;
                 padding: 4px 8px;
+            }
+            body.article-content .pull-quote {
+                font-family: "Playfair Display", Georgia, serif;
+                font-style: italic;
+                font-size: 1.5rem;
+                line-height: 1.4;
+                text-align: center;
+                border-top: 3px double #2a1e0e;
+                border-bottom: 3px double #2a1e0e;
+                padding: 16px 10px;
+                margin: 28px auto;
+                max-width: 80%;
+            }
+            body.article-content > p:first-of-type::first-letter {
+                float: left;
+                font-family: "Cinzel", Georgia, serif;
+                font-size: 3.6rem;
+                font-weight: 900;
+                line-height: 0.8;
+                padding: 4px 8px 0 0;
+                color: #7a1a1a;
             }
         `,
         branding: false,

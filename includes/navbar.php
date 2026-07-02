@@ -88,7 +88,7 @@ $authors     = DB::getPublishedAuthors();
 <nav class="navbar">
     <div class="container">
         <div class="logo">
-            <a href="<?php echo SITE_URL; ?>"><h1><?php echo SITE_NAME; ?></h1></a>
+            <a href="<?php echo SITE_URL; ?>"><span class="logo-text"><?php echo SITE_NAME; ?></span></a>
         </div>
 
         <ul class="nav-links" id="nav-menu">

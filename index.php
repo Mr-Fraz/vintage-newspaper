@@ -9,9 +9,32 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $articles = DB::getArticles($page);
 $totalArticles = DB::countArticles();
 
+try {
+    $breakingNews = DB::getBreakingNews(6);
+} catch (Exception $e) {
+    error_log('getBreakingNews failed: ' . $e->getMessage());
+    $breakingNews = [];
+}
+
+$popularArticles = DB::getPopularArticles(5);
+
 include __DIR__ . '/includes/header.php';
 include __DIR__ . '/includes/navbar.php';
 ?>
+
+<?php if (!empty($breakingNews)): ?>
+<div class="breaking-ticker no-print" role="marquee" aria-label="Breaking news">
+    <span class="breaking-ticker-label">Breaking</span>
+    <div class="breaking-ticker-track">
+        <div class="breaking-ticker-items">
+            <?php foreach (array_merge($breakingNews, $breakingNews) as $b): // duplicated for seamless loop ?>
+                <a href="<?php echo SITE_URL; ?>/pages/article.php?id=<?php echo $b['id']; ?>"><?php echo htmlspecialchars($b['title']); ?></a>
+                <span class="breaking-sep">&#9670;</span>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 <main class="main-content">
     <div class="container">
@@ -138,6 +161,22 @@ include __DIR__ . '/includes/navbar.php';
                 <span class="advert-price">Est. since 1842</span>
             </div>
         </div>
+
+        <!-- Widely Read -->
+        <?php if (!empty($popularArticles)): ?>
+        <div class="col-full-row">
+            <div class="col-section-head">Most Widely Read</div>
+            <ol class="popular-list">
+                <?php foreach ($popularArticles as $i => $p): ?>
+                    <li>
+                        <span class="popular-rank"><?php echo $i + 1; ?></span>
+                        <a href="<?php echo SITE_URL; ?>/pages/article.php?id=<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['title']); ?></a>
+                        <span class="popular-meta"><?php echo htmlspecialchars($p['category_name'] ?? ''); ?> &middot; <?php echo (int)$p['views']; ?> reads</span>
+                    </li>
+                <?php endforeach; ?>
+            </ol>
+        </div>
+        <?php endif; ?>
 
         <!-- Pagination -->
         <?php echo Helper::pagination($totalArticles, POSTS_PER_PAGE, $page, SITE_URL); ?>

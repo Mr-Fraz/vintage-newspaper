@@ -212,6 +212,99 @@ class DB
         return $stmt->fetch();
     }
 
+    // +1 view count (call once per article page load)
+    public static function incrementViews($id)
+    {
+        self::init();
+        $stmt = self::$conn->prepare("UPDATE articles SET views = views + 1 WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    // Related articles: same category first, excludes current article
+    public static function getRelatedArticles($articleId, $categoryId, $limit = 3)
+    {
+        self::init();
+        $sql = "SELECT a.id, a.title, a.excerpt, a.image, a.image_alt, a.created_at,
+                       c.name as category_name, u.username as author
+                FROM articles a
+                LEFT JOIN categories c ON a.category_id = c.id
+                LEFT JOIN users u ON a.author_id = u.id
+                WHERE a.status = 'published' AND a.id != :id AND a.category_id = :cat
+                ORDER BY a.created_at DESC
+                LIMIT :limit";
+        $stmt = self::$conn->prepare($sql);
+        $stmt->bindValue(':id', $articleId, PDO::PARAM_INT);
+        $stmt->bindValue(':cat', $categoryId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        $related = $stmt->fetchAll();
+
+        // Backfill with recent articles from other categories if not enough
+        if (count($related) < $limit) {
+            $need = $limit - count($related);
+            $excludeIds = array_merge([$articleId], array_column($related, 'id'));
+            $placeholders = implode(',', array_fill(0, count($excludeIds), '?'));
+            $sql2 = "SELECT a.id, a.title, a.excerpt, a.image, a.image_alt, a.created_at,
+                            c.name as category_name, u.username as author
+                     FROM articles a
+                     LEFT JOIN categories c ON a.category_id = c.id
+                     LEFT JOIN users u ON a.author_id = u.id
+                     WHERE a.status = 'published' AND a.id NOT IN ($placeholders)
+                     ORDER BY a.created_at DESC
+                     LIMIT $need";
+            $stmt2 = self::$conn->prepare($sql2);
+            $stmt2->execute($excludeIds);
+            $related = array_merge($related, $stmt2->fetchAll());
+        }
+
+        return $related;
+    }
+
+    // Most-viewed published articles (for "Popular" widget)
+    public static function getPopularArticles($limit = 5)
+    {
+        self::init();
+        $sql = "SELECT a.id, a.title, a.views, a.created_at,
+                       c.name as category_name
+                FROM articles a
+                LEFT JOIN categories c ON a.category_id = c.id
+                WHERE a.status = 'published'
+                ORDER BY a.views DESC, a.created_at DESC
+                LIMIT :limit";
+        $stmt = self::$conn->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    // Latest articles from the "Breaking News" category, for the homepage ticker
+    public static function getBreakingNews($limit = 6)
+    {
+        self::init();
+        $sql = "SELECT a.id, a.title
+                FROM articles a
+                JOIN categories c ON a.category_id = c.id
+                WHERE a.status = 'published' AND c.slug = 'breaking-news'
+                ORDER BY a.created_at DESC
+                LIMIT :limit";
+        $stmt = self::$conn->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+
+        // Fallback: no breaking-news articles yet, use latest published overall
+        if (empty($rows)) {
+            $stmt2 = self::$conn->prepare(
+                "SELECT id, title FROM articles WHERE status = 'published' ORDER BY created_at DESC LIMIT :limit"
+            );
+            $stmt2->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt2->execute();
+            $rows = $stmt2->fetchAll();
+        }
+        return $rows;
+    }
+
     // Get article for admin editing (any status)
     public static function getArticleForEdit($id)
     {
@@ -747,4 +840,114 @@ class DB
         $stmt->execute(['slug' => $slug, 'lang' => $lang]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-}   
+
+    // --- Author profile ---
+
+    public static function getAuthor($id)
+    {
+        self::init();
+        $stmt = self::$conn->prepare(
+            "SELECT id, username, avatar, bio, title, created_at FROM users WHERE id = :id LIMIT 1"
+        );
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    public static function getArticlesByAuthor($authorId, $page = 1, $limit = POSTS_PER_PAGE)
+    {
+        self::init();
+        $offset = ($page - 1) * $limit;
+        $sql = "SELECT a.id, a.title, a.excerpt, a.image, a.image_alt, a.created_at, a.views,
+                       c.name as category_name
+                FROM articles a
+                LEFT JOIN categories c ON a.category_id = c.id
+                WHERE a.status = 'published' AND a.author_id = :author_id
+                ORDER BY a.created_at DESC
+                LIMIT :limit OFFSET :offset";
+        $stmt = self::$conn->prepare($sql);
+        $stmt->bindValue(':author_id', $authorId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public static function countArticlesByAuthor($authorId)
+    {
+        self::init();
+        $stmt = self::$conn->prepare(
+            "SELECT COUNT(*) FROM articles WHERE status = 'published' AND author_id = :author_id"
+        );
+        $stmt->bindValue(':author_id', $authorId, PDO::PARAM_INT);
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+
+    // --- Newsletter ---
+
+    public static function subscribeNewsletter($email)
+    {
+        self::init();
+        try {
+            $stmt = self::$conn->prepare(
+                "INSERT INTO newsletter_subscribers (email) VALUES (:email)
+                 ON DUPLICATE KEY UPDATE status = 'active'"
+            );
+            $stmt->execute(['email' => $email]);
+            return true;
+        } catch (Exception $e) {
+            error_log('subscribeNewsletter error: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    // --- Archive ---
+
+    // List of Year-Month buckets that have published articles, with counts
+    public static function getArchiveMonths()
+    {
+        self::init();
+        $sql = "SELECT YEAR(created_at) as yr, MONTH(created_at) as mo, COUNT(*) as total
+                FROM articles
+                WHERE status = 'published'
+                GROUP BY YEAR(created_at), MONTH(created_at)
+                ORDER BY yr DESC, mo DESC";
+        $stmt = self::$conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public static function getArticlesByMonth($year, $month, $page = 1, $limit = POSTS_PER_PAGE)
+    {
+        self::init();
+        $offset = ($page - 1) * $limit;
+        $sql = "SELECT a.id, a.title, a.excerpt, a.image, a.image_alt, a.created_at,
+                       c.name as category_name, u.username as author
+                FROM articles a
+                LEFT JOIN categories c ON a.category_id = c.id
+                LEFT JOIN users u ON a.author_id = u.id
+                WHERE a.status = 'published' AND YEAR(a.created_at) = :yr AND MONTH(a.created_at) = :mo
+                ORDER BY a.created_at DESC
+                LIMIT :limit OFFSET :offset";
+        $stmt = self::$conn->prepare($sql);
+        $stmt->bindValue(':yr', $year, PDO::PARAM_INT);
+        $stmt->bindValue(':mo', $month, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public static function countArticlesByMonth($year, $month)
+    {
+        self::init();
+        $stmt = self::$conn->prepare(
+            "SELECT COUNT(*) FROM articles WHERE status = 'published' AND YEAR(created_at) = :yr AND MONTH(created_at) = :mo"
+        );
+        $stmt->bindValue(':yr', $year, PDO::PARAM_INT);
+        $stmt->bindValue(':mo', $month, PDO::PARAM_INT);
+        $stmt->execute();
+        return (int) $stmt->fetchColumn();
+    }
+}

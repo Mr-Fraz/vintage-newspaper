@@ -169,3 +169,42 @@ if (typeof lucide !== "undefined") lucide.createIcons();
 document.addEventListener("DOMContentLoaded", function() {
   if (typeof lucide !== "undefined") lucide.createIcons();
 });
+
+// Newsletter subscription (footer)
+document.addEventListener('DOMContentLoaded', function () {
+  var form = document.getElementById('newsletter-form');
+  var msgBox = document.getElementById('newsletter-message');
+  if (!form || !msgBox) return;
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var emailInput = form.querySelector('input[name="email"]');
+    var submitBtn = form.querySelector('button[type="submit"]');
+    var email = emailInput.value.trim();
+
+    submitBtn.disabled = true;
+    msgBox.className = 'newsletter-message';
+    msgBox.textContent = '';
+
+    var apiUrl = (window.SITE_URL || '') + '/api/newsletter.php';
+
+    fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'email=' + encodeURIComponent(email)
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        msgBox.textContent = data.message;
+        msgBox.classList.add(data.success ? 'newsletter-success' : 'newsletter-error');
+        if (data.success) form.reset();
+      })
+      .catch(function () {
+        msgBox.textContent = 'Network error. Please try again.';
+        msgBox.classList.add('newsletter-error');
+      })
+      .finally(function () {
+        submitBtn.disabled = false;
+      });
+  });
+});

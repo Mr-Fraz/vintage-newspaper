@@ -2071,3 +2071,34 @@
   background: #5a3e1b;
   color: #f2ead2;
 }
+/* ============================================
+   PHASE 3 POLISH — dashboard stat icons
+   (appended last so it wins over earlier duplicate
+    .stat-card rules elsewhere in this file)
+   ============================================ */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+}
+.stat-icon {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 26px;
+  height: 26px;
+  color: var(--a-secondary, #8b6914);
+  opacity: 0.3;
+}
+.admin-page-header {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.admin-page-header .page-subtitle {
+  display: block;
+  font-family: var(--ff-body, "Source Serif 4", Georgia, serif);
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--a-text-soft, #6b5a3e);
+  margin-top: 4px;
+  letter-spacing: 0;
+}

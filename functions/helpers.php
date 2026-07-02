@@ -157,22 +157,25 @@ class Helper
 
         if ($totalPages <= 1) return '';
 
+        // Support URLs that already carry a query string (e.g. author.php?id=5)
+        $sep = (strpos($url, '?') !== false) ? '&' : '?';
+
         $html = '<div class="pagination">';
 
         // Previous
         if ($currentPage > 1) {
-            $html .= '<a href="' . $url . '?page=' . ($currentPage - 1) . '">&laquo; Prev</a>';
+            $html .= '<a href="' . $url . $sep . 'page=' . ($currentPage - 1) . '">&laquo; Prev</a>';
         }
 
         // Pages
         for ($i = 1; $i <= $totalPages; $i++) {
             $active = ($i == $currentPage) ? 'active' : '';
-            $html .= '<a href="' . $url . '?page=' . $i . '" class="' . $active . '">' . $i . '</a>';
+            $html .= '<a href="' . $url . $sep . 'page=' . $i . '" class="' . $active . '">' . $i . '</a>';
         }
 
         // Next
         if ($currentPage < $totalPages) {
-            $html .= '<a href="' . $url . '?page=' . ($currentPage + 1) . '">Next &raquo;</a>';
+            $html .= '<a href="' . $url . $sep . 'page=' . ($currentPage + 1) . '">Next &raquo;</a>';
         }
 
         $html .= '</div>';
