@@ -27,40 +27,59 @@ include __DIR__ . '/../includes/navbar.php';
       <div class="contact-grid">
 
         <div class="contact-col">
-          <h2>Digital Dispatches</h2>
+          <h2><i data-lucide="send"></i> Digital Dispatches</h2>
           <div class="contact-method">
-            <span class="contact-label">Electronic Mail</span>
-            <span class="contact-value"><a href="mailto:vintagepress@example.com">vintagepress@example.com</a></span>
+            <i data-lucide="mail" class="contact-icon"></i>
+            <div>
+              <span class="contact-label">Electronic Mail</span>
+              <span class="contact-value"><a href="mailto:vintagepress@example.com">vintagepress@example.com</a></span>
+            </div>
           </div>
           <div class="contact-method">
-            <span class="contact-label">World Wide Web</span>
-            <span class="contact-value"><a href="<?php echo SITE_URL; ?>" target="_blank"><?php echo SITE_NAME; ?></a></span>
+            <i data-lucide="globe" class="contact-icon"></i>
+            <div>
+              <span class="contact-label">World Wide Web</span>
+              <span class="contact-value"><a href="<?php echo SITE_URL; ?>" target="_blank"><?php echo SITE_NAME; ?></a></span>
+            </div>
           </div>
           <div class="contact-method">
-            <span class="contact-label">LinkedIn Profile</span>
-            <span class="contact-value"><a href="https://linkedin.com/in/yourprofile" target="_blank">linkedin.com/vintagenews</a></span>
+            <i data-lucide="linkedin" class="contact-icon"></i>
+            <div>
+              <span class="contact-label">LinkedIn Profile</span>
+              <span class="contact-value"><a href="https://linkedin.com/in/yourprofile" target="_blank">linkedin.com/vintagenews</a></span>
+            </div>
           </div>
         </div>
 
         <div class="contact-col">
-          <h2>Post &amp; Telegraph</h2>
+          <h2><i data-lucide="map-pin"></i> Post &amp; Telegraph</h2>
           <div class="contact-method">
-            <span class="contact-label">Physical Press Office</span>
-            <span class="contact-value">123 Press Pass Lane<br>Inkwell City, IC 54321</span>
+            <i data-lucide="building-2" class="contact-icon"></i>
+            <div>
+              <span class="contact-label">Physical Press Office</span>
+              <span class="contact-value">123 Press Pass Lane<br>Inkwell City, IC 54321</span>
+            </div>
           </div>
           <div class="contact-method">
-            <span class="contact-label">Telephone Exchange</span>
-            <span class="contact-value">KLondike 5-0199</span>
+            <i data-lucide="phone" class="contact-icon"></i>
+            <div>
+              <span class="contact-label">Telephone Exchange</span>
+              <span class="contact-value">KLondike 5-0199</span>
+            </div>
           </div>
           <div class="contact-method">
-            <span class="contact-label">Telegraph Code</span>
-            <span class="contact-value">VINTAGEPRESS-XYZ</span>
+            <i data-lucide="radio" class="contact-icon"></i>
+            <div>
+              <span class="contact-label">Telegraph Code</span>
+              <span class="contact-value">VINTAGEPRESS-XYZ</span>
+            </div>
           </div>
         </div>
 
       </div>
 
       <div class="cta-box">
+        <i data-lucide="megaphone" class="cta-icon"></i>
         <h3>"Stop the Presses!"</h3>
         <p>Seeking a designer versed in the historical arts? Have an inquiry regarding a digital archive project? The Gazette is currently accepting new commissions and collaborations.</p>
         <p><strong>Dispatch your inquiry today via the electronic mail channel listed above.</strong></p>

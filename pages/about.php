@@ -3,6 +3,10 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../functions/db.php';
 $pageTitle = 'About';
 $extraCSS = '<link rel="stylesheet" href="' . SITE_URL . '/assets/css/pages.css">';
+
+$totalArticles = DB::countArticles();
+$totalCategories = count(DB::getCategories());
+
 include __DIR__ . '/../includes/header.php';
 include __DIR__ . '/../includes/navbar.php';
 ?>
@@ -22,6 +26,25 @@ include __DIR__ . '/../includes/navbar.php';
         </div>
       </div>
 
+      <!-- Stats strip -->
+      <div class="about-stats">
+        <div class="about-stat">
+          <i data-lucide="newspaper"></i>
+          <span class="about-stat-num"><?php echo $totalArticles; ?></span>
+          <span class="about-stat-label">Dispatches Published</span>
+        </div>
+        <div class="about-stat">
+          <i data-lucide="layout-grid"></i>
+          <span class="about-stat-num"><?php echo $totalCategories; ?></span>
+          <span class="about-stat-label">Categories Covered</span>
+        </div>
+        <div class="about-stat">
+          <i data-lucide="calendar"></i>
+          <span class="about-stat-num"><?php echo date('Y'); ?></span>
+          <span class="about-stat-label">Est. &amp; Running</span>
+        </div>
+      </div>
+
       <div class="section-head">About This Gazette</div>
 
       <div class="content-grid">
@@ -36,19 +59,19 @@ include __DIR__ . '/../includes/navbar.php';
 
         <div class="content-sidebar">
           <div class="sidebar-box">
-            <h3>The Editor's Note</h3>
+            <h3><i data-lucide="feather"></i> The Editor's Note</h3>
             <p>Welcome to our chronicle. This project is a testament to the power of design to evoke nostalgia and tell a story beyond the text itself.</p>
             <p><strong>Lead Designer:</strong> Muhammad Faraz<br>
                <strong>Technology:</strong> PHP, CSS3, Apache<br>
                <strong>Est.</strong> <?php echo date('Y'); ?></p>
           </div>
           <div class="sidebar-box">
-            <h3>Our Principles</h3>
+            <h3><i data-lucide="scroll"></i> Our Principles</h3>
             <ul>
-              <li>Truth in every dispatch</li>
-              <li>Clarity of expression</li>
-              <li>Fidelity to the reader</li>
-              <li>Excellence in craft</li>
+              <li><i data-lucide="check"></i> Truth in every dispatch</li>
+              <li><i data-lucide="check"></i> Clarity of expression</li>
+              <li><i data-lucide="check"></i> Fidelity to the reader</li>
+              <li><i data-lucide="check"></i> Excellence in craft</li>
             </ul>
           </div>
         </div>

@@ -221,6 +221,31 @@ class DB
         $stmt->execute();
     }
 
+    // +1 view, but only once per logged-in user (repeat reads by the same
+    // account no longer inflate the count). Guests are deduped via session
+    // in article.php instead, since we can't persistently identify them.
+    public static function incrementViewsOnce($articleId, $userId)
+    {
+        self::init();
+        try {
+            $stmt = self::$conn->prepare(
+                "INSERT IGNORE INTO article_reads (article_id, user_id) VALUES (:aid, :uid)"
+            );
+            $stmt->bindValue(':aid', $articleId, PDO::PARAM_INT);
+            $stmt->bindValue(':uid', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            if ($stmt->rowCount() > 0) {
+                self::incrementViews($articleId);
+                return true; // first read, counted
+            }
+            return false; // already read before, not counted
+        } catch (Exception $e) {
+            error_log('incrementViewsOnce error: ' . $e->getMessage());
+            return false;
+        }
+    }
+
     // Related articles: same category first, excludes current article
     public static function getRelatedArticles($articleId, $categoryId, $limit = 3)
     {

@@ -102,8 +102,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_body'])) {
 
 $comments = DB::getComments($id);
 
-// +1 view (best-effort, non-blocking)
-DB::incrementViews($id);
+// +1 view — deduped so repeat reads by the same person don't inflate the count.
+// Logged-in users: tracked permanently via article_reads table.
+// Guests: tracked for the current browser session only (no persistent identity).
+$viewerUserId = $_SESSION['user_id'] ?? null;
+if ($viewerUserId) {
+    DB::incrementViewsOnce($id, $viewerUserId);
+} else {
+    if (empty($_SESSION['viewed_articles'][$id])) {
+        DB::incrementViews($id);
+        $_SESSION['viewed_articles'][$id] = true;
+    }
+}
 
 // Related articles from same category
 $relatedArticles = DB::getRelatedArticles($id, $article['category_id'] ?? 0, 3);

@@ -67,9 +67,11 @@ include __DIR__ . '/includes/navbar.php';
             </div>
 
             <!-- COL 3: Latest Dispatches -->
+            <?php $latestArticles = array_slice($articles, 1, 3); ?>
+            <?php if (!empty($latestArticles)): ?>
             <div class="col-sidebar">
                 <div class="col-section-head">Latest Dispatches</div>
-                <?php foreach (array_slice($articles, 1, 3) as $article): ?>
+                <?php foreach ($latestArticles as $article): ?>
                     <article class="article-card dir-<?php echo getTextDirection($article['title']); ?>">
                         <?php if (!empty($article['image'])): ?>
                             <img src="<?php echo SITE_URL; ?>/uploads/articles/<?php echo $article['image']; ?>"
@@ -87,6 +89,7 @@ include __DIR__ . '/includes/navbar.php';
                     </article>
                 <?php endforeach; ?>
             </div>
+            <?php endif; ?>
 
             <!-- COL 4: Special Features -->
             <?php $specialFeatures = array_slice($articles, 4, 3); ?>
