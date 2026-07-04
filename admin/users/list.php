@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/auth-check.php';
+Auth::requireAdmin(); // User management stays admin-exclusive
 require_once __DIR__ . '/../../functions/helpers.php';
 
 $pageTitle = 'Users';

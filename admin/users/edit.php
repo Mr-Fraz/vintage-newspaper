@@ -3,6 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 require_once __DIR__ . '/../includes/auth-check.php';
+Auth::requireAdmin(); // User management stays admin-exclusive
 require_once __DIR__ . '/../../functions/helpers.php';
 require_once __DIR__ . '/../../functions/db.php';
 
